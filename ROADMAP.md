@@ -27,29 +27,26 @@ Este roadmap estrutura a implementação completa do **Human-AI Cognitive Interf
 #### Tarefas:
 
 1. **Reestruturação de Diretórios**
-   - Criar estrutura monorepo:
+   - Criar estrutura de projeto simplificada (repositório único):
      ```
      /
-     ├── apps/
-     │   ├── web/                    # React Router v7 Framework app (com API embutida via actions/loaders)
-     │   └── mobile/                 # React Native (futuro)
-     │   └── raycast/                # Extensão atual (migrada)
-     ├── packages/
-     │   ├── core/                   # Motor canônico (match, derivação)
-     │   ├── ui/                     # Componentes compartilhados
-     │   ├── types/                  # Tipos TypeScript canônicos
-     │   └── config/                 # JSONs canônicos, schemas
-     ├── infra/
-     │   ├── docker/                 # Dockerfiles (para desenvolvimento local)
-     │   └── cloudflare/             # Configurações Cloudflare (wrangler.toml, etc.)
-     └── docs/                       # Documentação existente
+     ├── app/                      # React Router v7 Framework app
+     │   ├── root.tsx
+     │   ├── routes/               # Rotas da aplicação
+     │   └── components/           # Componentes React
+     ├── core/                     # Motor canônico (match, derivação)
+     ├── config/                   # JSONs canônicos
+     ├── types/                    # Tipos TypeScript
+     ├── workers/                  # Cloudflare Worker handlers
+     ├── db/                       # Schema D1
+     ├── public/                   # Assets estáticos
+     ├── docs/                     # Documentação existente
+     └── .github/workflows/        # CI/CD
      ```
 
 2. **Configuração de Tooling**
-   - **Turborepo** ou **Nx** para gestão do monorepo
    - **pnpm** como package manager
    - **Biome** (já em uso) para lint/format
-   - **Changesets** para versionamento
    - **GitHub Actions** para CI/CD
    - **Wrangler CLI** para deploy Cloudflare Workers
    - **Cloudflare Dashboard** para configuração de domínio, DNS, WAF
@@ -59,9 +56,64 @@ Este roadmap estrutura a implementação completa do **Human-AI Cognitive Interf
    - Definir contratos de API (OpenAPI 3.1)
    - Documentar decisões de arquitetura (ADR)
 
+**Nota**: A Etapa 0.1 foi inicialmente implementada como monorepo, mas foi simplificada na Etapa 0.15.
+
 **Referências**:
 - `docs/12-constitution.md` (regra de precedência JSON → Código → Markdown)
 - `docs/04-process-phases.md` (separação de regimes)
+
+---
+
+### Etapa 0.15: Simplificação da Estrutura (Remover Monorepo)
+
+**Objetivo**: Simplificar a arquitetura removendo o monorepo, mantendo apenas a aplicação web como foco principal.
+
+**Justificativa**:
+- Teremos apenas a versão web como produto principal
+- Uma versão mobile futura pode consumir a API via loaders/actions do React Router v7
+- A extensão Raycast pode ser mantida em repositório separado ou consumir a API web
+- Menor complexidade de tooling (sem Turborepo, workspaces, etc.)
+
+#### Tarefas:
+
+1. **Reestruturação para Repositório Simples**
+   - Remover estrutura monorepo (`apps/`, `packages/`)
+   - Consolidar código em estrutura plana:
+     ```
+     /
+     ├── app/                    # React Router v7 app
+     │   ├── root.tsx
+     │   ├── routes/
+     │   └── components/
+     ├── core/                   # Motor canônico
+     ├── config/                 # JSONs canônicos
+     ├── types/                  # Tipos TypeScript
+     ├── workers/                # Cloudflare Worker
+     ├── db/                     # Schema D1
+     └── public/                 # Assets
+     ```
+
+2. **Atualizar Configurações**
+   - Remover `turbo.json`, `pnpm-workspace.yaml`
+   - Atualizar `package.json` (dependências sem workspace)
+   - Atualizar `tsconfig.json` (paths simplificados)
+   - Criar `vite.config.ts`, `react-router.config.ts`
+   - Mover `wrangler.toml` para raiz
+
+3. **Atualizar Importações**
+   - Substituir `@haci/*` por imports relativos ou `~/`
+   - Configurar path aliases no tsconfig
+
+4. **Atualizar CI/CD**
+   - Simplificar workflows (sem pnpm workspaces)
+   - Remover scripts de monorepo
+
+5. **Atualizar Documentação**
+   - Revisar `ARCHITECTURE.md`
+   - Atualizar ADR 001 ou criar ADR novo sobre decisão de simplificação
+
+**Referências**:
+- Plano detalhado: `.claude/plans/etapa-0.15-simplificacao.md`
 
 ---
 
@@ -71,7 +123,7 @@ Este roadmap estrutura a implementação completa do **Human-AI Cognitive Interf
 
 #### Tarefas:
 
-1. **Tipos de Dados Base** (`packages/types/src/core.ts`)
+1. **Tipos de Dados Base** (`types/core.ts`)
    ```typescript
    export type Scale1to5 = 1 | 2 | 3 | 4 | 5;
 
@@ -90,7 +142,7 @@ Este roadmap estrutura a implementação completa do **Human-AI Cognitive Interf
      | "role.transform";
    ```
 
-2. **Tipos de Contrato** (`packages/types/src/contract.ts`)
+2. **Tipos de Contrato** (`types/contract.ts`)
    ```typescript
    export type CognitiveContract = {
      role: InitialRoleId;
@@ -108,7 +160,7 @@ Este roadmap estrutura a implementação completa do **Human-AI Cognitive Interf
    };
    ```
 
-3. **Tipos de Modo de Operação** (`packages/types/src/mode.ts`)
+3. **Tipos de Modo de Operação** (`types/mode.ts`)
    ```typescript
    export type OperationMode =
      | "MODE_PREPARATION"
@@ -116,7 +168,7 @@ Este roadmap estrutura a implementação completa do **Human-AI Cognitive Interf
      | "MODE_EXECUTION";
    ```
 
-4. **Tipos de Critérios** (`packages/types/src/criteria.ts`)
+4. **Tipos de Critérios** (`types/criteria.ts`)
    ```typescript
    export type CriterionId =
      | "C1" | "C2" | "C3" | "C4" | "C5" | "C6" | "C7"
@@ -157,7 +209,7 @@ Este roadmap estrutura a implementação completa do **Human-AI Cognitive Interf
 
 #### Tarefas:
 
-1. **Níveis Canônicos** (`packages/config/canonical-levels.json`)
+1. **Níveis Canônicos** (`config/canonical-levels.json`)
    ```json
    {
      "version": "1.0.0",
@@ -206,7 +258,7 @@ Este roadmap estrutura a implementação completa do **Human-AI Cognitive Interf
    }
    ```
 
-2. **Réguas Cognitivas** (`packages/config/cognitive-rulers.json`)
+2. **Réguas Cognitivas** (`config/cognitive-rulers.json`)
    ```json
    {
      "version": "1.0.0",
@@ -269,7 +321,7 @@ Este roadmap estrutura a implementação completa do **Human-AI Cognitive Interf
    }
    ```
 
-3. **Papéis Iniciais** (`packages/config/initial-roles.json`)
+3. **Papéis Iniciais** (`config/initial-roles.json`)
    ```json
    {
      "version": "1.0.0",
@@ -320,7 +372,7 @@ Este roadmap estrutura a implementação completa do **Human-AI Cognitive Interf
    }
    ```
 
-4. **Hard Blocks** (`packages/config/hard-blocks.json`)
+4. **Hard Blocks** (`config/hard-blocks.json`)
    ```json
    {
      "version": "1.0.0",
@@ -371,10 +423,10 @@ Este roadmap estrutura a implementação completa do **Human-AI Cognitive Interf
    }
    ```
 
-5. **Catálogo de Critérios** (`packages/config/criteria-catalog.json`)
+5. **Catálogo de Critérios** (`config/criteria-catalog.json`)
    Implementar C1-C14 conforme `docs/08-criteria-and-collection-protocol.md`
 
-6. **Algoritmo de Derivação** (`packages/config/derivation-rules.json`)
+6. **Algoritmo de Derivação** (`config/derivation-rules.json`)
    Implementar regras R0-R8 conforme `info/criteria-derivation-algorithm.md`
 
 **Referências**:
@@ -392,7 +444,7 @@ Este roadmap estrutura a implementação completa do **Human-AI Cognitive Interf
 
 #### Tarefas:
 
-1. **Cálculo de Distância** (`packages/core/src/match/distance.ts`)
+1. **Cálculo de Distância** (`core/match/distance.ts`)
    ```typescript
    export function calculateWeightedManhattanDistance(
      userVector: RulersVector,
@@ -407,7 +459,7 @@ Este roadmap estrutura a implementação completa do **Human-AI Cognitive Interf
    }
    ```
 
-2. **Pesos Canônicos** (`packages/core/src/match/weights.ts`)
+2. **Pesos Canônicos** (`core/match/weights.ts`)
    ```typescript
    export const DEFAULT_RULER_WEIGHTS: Record<RulerId, number> = {
      inference: 1.0,
@@ -418,7 +470,7 @@ Este roadmap estrutura a implementação completa do **Human-AI Cognitive Interf
    };
    ```
 
-3. **Score Normalizado** (`packages/core/src/match/score.ts`)
+3. **Score Normalizado** (`core/match/score.ts`)
    ```typescript
    export function normalizeScore(
      distance: number,
@@ -428,12 +480,12 @@ Este roadmap estrutura a implementação completa do **Human-AI Cognitive Interf
    }
    ```
 
-4. **Prior por Papel** (`packages/core/src/match/priors.ts`)
+4. **Prior por Papel** (`core/match/priors.ts`)
    - Implementar boost de score condicionado ao papel inicial
    - Máximo contribuição: 0.15 (15%)
    - Tabela de boosts em JSON config
 
-5. **Hard Blocks** (`packages/core/src/match/hard-blocks.ts`)
+5. **Hard Blocks** (`core/match/hard-blocks.ts`)
    ```typescript
    export function evaluateHardBlocks(
      contract: CognitiveContract
@@ -443,7 +495,7 @@ Este roadmap estrutura a implementação completa do **Human-AI Cognitive Interf
    }
    ```
 
-6. **Thresholds** (`packages/core/src/match/thresholds.ts`)
+6. **Thresholds** (`core/match/thresholds.ts`)
    ```typescript
    export const DEFAULT_THRESHOLDS = {
      autoSelectMin: 90,      // Auto-seleção se score >= 90
@@ -453,12 +505,12 @@ Este roadmap estrutura a implementação completa do **Human-AI Cognitive Interf
    };
    ```
 
-7. **Sugestão de Correções** (`packages/core/src/match/corrections.ts`)
+7. **Sugestão de Correções** (`core/match/corrections.ts`)
    - Gerar deltas discretos (máx. 2 réguas, ±1 cada)
    - Sem loop (aplicação one-shot)
    - Retornar 2-3 alternativas de correção
 
-8. **Seleção de Track** (`packages/core/src/match/track-selection.ts`)
+8. **Seleção de Track** (`core/match/track-selection.ts`)
    Implementar regra de `docs/12-constitution.md` seção 5.1:
    - Se `decision == 3`: apenas operational (N1-N6)
    - Senão se `meta >= 4`: apenas meta (N7-N8)
@@ -482,7 +534,7 @@ Este roadmap estrutura a implementação completa do **Human-AI Cognitive Interf
 
 #### Tarefas:
 
-1. **Regras de Derivação** (`packages/core/src/derivation/rules.ts`)
+1. **Regras de Derivação** (`core/derivation/rules.ts`)
    Implementar R0-R8:
    - **R0**: C1 (Objetivo Operacional) sempre incluído
    - **R1**: C2 (Artefato) quando nível exige output estruturado
@@ -494,15 +546,15 @@ Este roadmap estrutura a implementação completa do **Human-AI Cognitive Interf
    - **R7**: C10/C11/C12 quando nível exige validação estruturada
    - **R8**: Ordenação UX (C1 primeiro, C14 último)
 
-2. **Critérios Implícitos** (`packages/core/src/derivation/implicit.ts`)
+2. **Critérios Implícitos** (`core/derivation/implicit.ts`)
    - Identificar quais critérios são satisfeitos pelo próprio contrato
    - Marcar como `implicitCriteria` no protocolo
 
-3. **Ordenação de Blocos** (`packages/core/src/derivation/ordering.ts`)
+3. **Ordenação de Blocos** (`core/derivation/ordering.ts`)
    - Priorizar critérios com dependências
    - Reduzir fadiga cognitiva (simplicidade primeiro)
 
-4. **Geração de Blocos** (`packages/core/src/derivation/blocks.ts`)
+4. **Geração de Blocos** (`core/derivation/blocks.ts`)
    - Transformar critérios em blocos de coleta
    - Personalizar instruction com base no contrato
    - Incluir micro-exemplos alinhados
@@ -524,21 +576,21 @@ Este roadmap estrutura a implementação completa do **Human-AI Cognitive Interf
 
 #### Tarefas:
 
-1. **Prompt de Match/Contrato** (`packages/core/src/prompts/contract.ts`)
+1. **Prompt de Match/Contrato** (`core/prompts/contract.ts`)
    - Template para explicar o contrato cognitivo ao usuário
    - Incluir explicação de nível, réguas, hard blocks
    - Formato: Markdown estruturado
 
-2. **Prompt de Protocolo de Coleta** (`packages/core/src/prompts/collection.ts`)
+2. **Prompt de Protocolo de Coleta** (`core/prompts/collection.ts`)
    - **CRÍTICO**: Incluir proibição central (não executar tarefa final)
    - Template dinâmico baseado no catálogo de critérios
    - Instruções de personalização por bloco
 
 3. **Prompt de Execução** (fora de escopo, mas interface definida)
-   - `packages/core/src/prompts/execution-interface.ts`
+   - `core/prompts/execution-interface.ts`
    - Define como o contrato + inputs coletados se transformam em instrução final
 
-4. **Sistema de Templates** (`packages/core/src/prompts/engine.ts`)
+4. **Sistema de Templates** (`core/prompts/engine.ts`)
    - Engine de substituição de variáveis
    - Validação de templates (todos os placeholders devem ser preenchidos)
 
@@ -646,8 +698,8 @@ Este roadmap estrutura a implementação completa do **Human-AI Cognitive Interf
    - Comunicação via fetch do web app
 
 2. **Shared Package**
-   - `packages/api-client`: Cliente HTTP para API (usado por web/mobile)
-   - `packages/api-handlers`: Handlers compartilhados (se necessário)
+   - `api-client`: Cliente HTTP para API (usado por web/mobile)
+   - `api-handlers`: Handlers compartilhados (se necessário)
 
 3. **Autenticação** (futuro)
    - JWT para API key
@@ -787,7 +839,7 @@ Este roadmap estrutura a implementação completa do **Human-AI Cognitive Interf
 
 #### Tarefas:
 
-1. **Setup React Router v7 Framework** (`apps/web/`)
+1. **Setup React Router v7 Framework** (`app/`, `workers/`)
    - Criar projeto com `npx create-react-router@latest` (ou via template)
    - Estrutura de rotas em `app/routes.ts`
    - File-based routing opcional
@@ -814,7 +866,7 @@ Este roadmap estrutura a implementação completa do **Human-AI Cognitive Interf
    ├── lib/
    │   ├── api.ts               # Cliente HTTP
    │   └── utils.ts             # Utilitários
-   └── types/                    # Tipos locais (reexport de @haci/types)
+   └── types/                    # Tipos locais (reexport de ~/types)
    ```
 
 3. **Estado Global**
@@ -1058,7 +1110,7 @@ Este roadmap estrutura a implementação completa do **Human-AI Cognitive Interf
 
 #### Tarefas:
 
-1. **Setup Cloudflare Workers** (`apps/web/`)
+1. **Setup Cloudflare Workers** (`workers/`)
    - Instalar `wrangler` como dependência de desenvolvimento
    - Configurar `wrangler.toml`:
      ```toml
@@ -1355,7 +1407,7 @@ Este roadmap estrutura a implementação completa do **Human-AI Cognitive Interf
 
 ### Etapa 6.1: Testes Unitários
 
-**Objetivo**: Cobertura > 80% em `packages/core`.
+**Objetivo**: Cobertura > 80% em `core/`.
 
 #### Tarefas:
 
