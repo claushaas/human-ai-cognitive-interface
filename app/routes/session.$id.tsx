@@ -1,4 +1,5 @@
 import type { LoaderFunctionArgs } from 'react-router';
+import { Outlet } from 'react-router';
 import { generateCollectionPrompt } from '~/core/prompts/collection';
 import { generateContractPrompt } from '~/core/prompts/contract';
 import { createRepositories } from '~/db';
@@ -29,18 +30,8 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
 	const contracts = await repos.contracts.findBySessionId(sessionId);
 	const contract = contracts[0];
 
-	if (!contract) {
-		return new Response(
-			JSON.stringify({ error: 'No contract found for session' }),
-			{
-				headers: { 'Content-Type': 'application/json' },
-				status: 404,
-			},
-		);
-	}
-
 	// Parse contrato e protocolo de coleção
-	const contractData = contract.contract_data
+	const contractData = contract?.contract_data
 		? (JSON.parse(contract.contract_data) as CognitiveContract)
 		: null;
 	const protocolData = session.protocol
@@ -71,4 +62,8 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
 		}),
 		{ headers: { 'Content-Type': 'application/json' } },
 	);
+}
+
+export default function SessionLayout() {
+	return <Outlet />;
 }
