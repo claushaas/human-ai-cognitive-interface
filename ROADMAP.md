@@ -239,7 +239,7 @@ Este roadmap estrutura a implementação completa do **Human-AI Cognitive Interf
 
 ---
 
-### Etapa 0.3: Configuração Canônica como Código (JSONs)
+### Etapa 0.3: Configuração Canônica como Código (JSONs) - ✅
 
 **Objetivo**: Criar os arquivos JSON canônicos que servem como fonte de verdade.
 
@@ -474,7 +474,7 @@ Este roadmap estrutura a implementação completa do **Human-AI Cognitive Interf
 
 ## FASE 1: Motor Canônico (Core Engine)
 
-### Etapa 1.1: Motor de Match de Níveis
+### Etapa 1.1: Motor de Match de Níveis - ✅
 
 **Objetivo**: Implementar funções puras para cálculo de match entre vetores de réguas e níveis canônicos.
 
