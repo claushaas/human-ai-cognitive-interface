@@ -3,7 +3,7 @@ FROM node:20-slim AS base
 WORKDIR /app
 
 # Install pnpm
-RUN npm install -g pnpm@10.32.0
+RUN npm install -g pnpm@10.32.1
 
 # Copy package files
 COPY package.json pnpm-workspace.yaml turbo.json ./
@@ -24,7 +24,7 @@ FROM node:20-slim AS production
 
 WORKDIR /app
 
-RUN npm install -g pnpm@10.32.0
+RUN npm install -g pnpm@10.32.1
 
 COPY --from=base /app/package.json /app/pnpm-workspace.yaml /app/turbo.json ./
 COPY --from=base /app/packages ./packages
