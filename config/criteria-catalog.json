@@ -1,0 +1,253 @@
+{
+	"criteria": [
+		{
+			"alwaysIncluded": true,
+			"block": {
+				"avoid": [
+					"Múltiplos objetivos misturados",
+					"Instruções vagas ou ambíguas",
+					"Pressupostos não declarados"
+				],
+				"example": "Analisar o código de autenticação e identificar vulnerabilidades.",
+				"include": [
+					"Verbo de ação no início (analisar, criar, transformar, etc.)",
+					"Objeto direto claro (o que será trabalhado)",
+					"Contexto mínimo necessário para entendimento"
+				]
+			},
+			"description": "O que você precisa realizar de forma clara e direta",
+			"id": "C1",
+			"title": "Objetivo Operacional"
+		},
+		{
+			"activationCondition": "Nível exige output estruturado (N3+)",
+			"alwaysIncluded": false,
+			"block": {
+				"avoid": [
+					"Assumir formato padrão sem declarar",
+					"Múltiplos formatos conflitantes"
+				],
+				"example": "Um relatório em markdown com seções para cada vulnerabilidade.",
+				"include": [
+					"Tipo de artefato (código, documento, análise, etc.)",
+					"Estrutura esperada (se aplicável)",
+					"Nível de detalhe desejado"
+				]
+			},
+			"description": "Qual formato de saída você espera receber",
+			"id": "C2",
+			"title": "Artefato/Resultado Esperado"
+		},
+		{
+			"activationCondition": "Escopo >= 3 (departamental ou mais amplo)",
+			"alwaysIncluded": false,
+			"block": {
+				"avoid": [
+					"Escopo implícito não declarado",
+					"Misturar níveis de granularidade"
+				],
+				"example": "Apenas o módulo de autenticação, sem incluir autorização ou sessão.",
+				"include": [
+					"Componentes/sistemas envolvidos",
+					"Limites explícitos (o que está fora)",
+					"Dependências relevantes"
+				]
+			},
+			"description": "Limites do que deve ser considerado na tarefa",
+			"id": "C3",
+			"title": "Escopo de Atuação"
+		},
+		{
+			"activationCondition": "Fonte >= 3 (parcialmente aberta ou mais)",
+			"alwaysIncluded": false,
+			"block": {
+				"avoid": ["Fontes conflitantes", "Fontes não verificáveis"],
+				"example": "Documentação oficial do React e código em src/components/",
+				"include": [
+					"Documentação de referência",
+					"Código-fonte relevante",
+					"Restrições de fontes externas"
+				]
+			},
+			"description": "Quais são as fontes de informação válidas",
+			"id": "C4",
+			"title": "Fonte da Verdade"
+		},
+		{
+			"activationCondition": "Inferência >= 3",
+			"alwaysIncluded": false,
+			"block": {
+				"avoid": [
+					"Inferências não validadas apresentadas como fato",
+					"Suposições críticas"
+				],
+				"example": "Pode inferir padrões de código, mas não crie funcionalidades não declaradas.",
+				"include": [
+					"Inferências permitidas",
+					"Áreas que exigem explicitidade",
+					"Grau de especulação aceitável"
+				]
+			},
+			"description": "O que pode ser inferido vs. o que precisa ser explícito",
+			"id": "C5",
+			"title": "Limites de Inferência"
+		},
+		{
+			"activationCondition": "Decisão >= 2",
+			"alwaysIncluded": false,
+			"block": {
+				"avoid": ["Ambiguidade sobre autoridade", "Decisões conflitantes"],
+				"example": "Recomende abordagens com prós/contras, mas não implemente sem aprovação.",
+				"include": [
+					"Nível de autonomia permitido",
+					"Decisões que requerem aprovação",
+					"Critérios de priorização"
+				]
+			},
+			"description": "Quem toma decisões e limites de autonomia",
+			"id": "C6",
+			"title": "Autoridade/Decisão"
+		},
+		{
+			"alwaysIncluded": true,
+			"block": {
+				"avoid": [
+					"Misturar modos sem clareza",
+					"Executar quando deveria preparar"
+				],
+				"example": "Este é um pedido de preparação: derive critérios, não execute a tarefa.",
+				"include": [
+					"Modo atual (preparação ou execução)",
+					"Próximos passos esperados"
+				]
+			},
+			"description": "Se este é um pedido de execução ou de preparação",
+			"id": "C7",
+			"implicit": true,
+			"title": "Execução vs Preparação"
+		},
+		{
+			"activationCondition": "role.transform ou role.synthesize",
+			"alwaysIncluded": false,
+			"block": {
+				"avoid": [
+					"Transformações não declaradas",
+					"Mudanças de escopo não autorizadas"
+				],
+				"example": "Reestruturar seções é permitido; alterar conteúdo técnico não.",
+				"include": [
+					"Tipos de transformação (reestruturar, traduzir, refatorar)",
+					"Margem para mudanças de formato",
+					"Elementos que podem ser modificados"
+				]
+			},
+			"description": "Quais transformações são válidas para esta tarefa",
+			"id": "C8",
+			"title": "Transformações Permitidas"
+		},
+		{
+			"activationCondition": "role.transform",
+			"alwaysIncluded": false,
+			"block": {
+				"avoid": ["Proibições vagas", "Restrições conflitantes"],
+				"example": "Não alterar nomes de variáveis públicas ou APIs exportadas.",
+				"include": [
+					"Elementos intocáveis",
+					"Propriedades críticas a preservar",
+					"Limites absolutos"
+				]
+			},
+			"description": "O que NÃO deve ser transformado ou alterado",
+			"id": "C9",
+			"title": "Transformações Proibidas"
+		},
+		{
+			"activationCondition": "Níveis N5+ ou role.document",
+			"alwaysIncluded": false,
+			"block": {
+				"avoid": [
+					"Formato incompatível com o artefato",
+					"Detalhes desnecessários"
+				],
+				"example": "Markdown com headings ## para seções principais.",
+				"include": [
+					"Estrutura (seções, ordem)",
+					"Convenções (nomenclatura, estilo)",
+					"Meio de entrega (arquivo, mensagem, etc.)"
+				]
+			},
+			"description": "Detalhes do formato de entrega",
+			"id": "C10",
+			"implicit": "role.document ou N8",
+			"title": "Formato de Saída"
+		},
+		{
+			"activationCondition": "Níveis N5+",
+			"alwaysIncluded": false,
+			"block": {
+				"avoid": ["Critérios subjetivos", "Validação impossível"],
+				"example": "Código deve passar nos testes existentes sem modificações.",
+				"include": [
+					"Critérios objetivos de sucesso",
+					"Métodos de validação",
+					"Quem valida (se aplicável)"
+				]
+			},
+			"description": "Como o resultado será validado",
+			"id": "C11",
+			"title": "Critérios de Sucesso/Validação"
+		},
+		{
+			"activationCondition": "Níveis N5+",
+			"alwaysIncluded": false,
+			"block": {
+				"avoid": ["Continuar em erro conhecido", "Ignorar bloqueios"],
+				"example": "Se encontrar dependências circulares, pare e reporte.",
+				"include": [
+					"Condições de bloqueio",
+					"Quando pedir clarificação",
+					"Fallbacks aceitáveis"
+				]
+			},
+			"description": "Quando interromper ou reportar erro",
+			"id": "C12",
+			"title": "Condições de Parada/Erro"
+		},
+		{
+			"activationCondition": "(role.transform ou role.document) E scope >= 4",
+			"alwaysIncluded": false,
+			"block": {
+				"avoid": ["Dependências implícitas", "Versões não declaradas"],
+				"example": "TypeScript 5.x, Node 20+, strict mode habilitado.",
+				"include": [
+					"Tecnologias envolvidas",
+					"Versões críticas",
+					"Restrições de ambiente"
+				]
+			},
+			"description": "Dependências técnicas e contexto relevante",
+			"id": "C13",
+			"title": "Dependências/Contexto Técnico"
+		},
+		{
+			"activationCondition": "N6 (governança)",
+			"alwaysIncluded": false,
+			"block": {
+				"avoid": [
+					"Ignorar requisitos de segurança",
+					"Conformidade superficial"
+				],
+				"example": "Não expor chaves de API ou dados sensíveis no código.",
+				"include": [
+					"Requisitos de segurança",
+					"Conformidade regulatória",
+					"Políticas organizacionais"
+				]
+			},
+			"description": "Restrições de segurança ou conformidade aplicáveis",
+			"id": "C14",
+			"title": "Restrições de Segurança/Conformidade"
+		}
+	],
+	"version": "1.0.0"
+}

@@ -1,0 +1,213 @@
+{
+	"description": "Regras de derivação de critérios (R0-R8) conforme docs/08-criteria-and-collection-protocol.md",
+	"implicitCriteria": {
+		"C1": {
+			"condition": {
+				"role": ["role.analyze", "role.synthesize"]
+			},
+			"description": "Objetivo implícito para papéis de análise/síntese"
+		},
+		"C7": {
+			"condition": "always",
+			"description": "Sempre implícito no contexto de derivação"
+		},
+		"C10": {
+			"condition": {
+				"or": [{ "role": ["role.document"] }, { "level": ["N8"] }]
+			},
+			"description": "Formato implícito para documentação"
+		}
+	},
+	"ordering": {
+		"description": "Ordem UX dos critérios (C1 primeiro, C14 último)",
+		"groups": {
+			"essential": ["C1", "C2", "C3", "C4"],
+			"supplementary": [
+				"C5",
+				"C6",
+				"C7",
+				"C8",
+				"C9",
+				"C10",
+				"C11",
+				"C12",
+				"C13",
+				"C14"
+			]
+		},
+		"sequence": [
+			"C1",
+			"C2",
+			"C3",
+			"C4",
+			"C5",
+			"C6",
+			"C7",
+			"C8",
+			"C9",
+			"C10",
+			"C11",
+			"C12",
+			"C13",
+			"C14"
+		]
+	},
+	"rules": [
+		{
+			"action": {
+				"criteria": ["C1"],
+				"type": "include"
+			},
+			"condition": "always",
+			"description": "Objetivo Operacional é sempre obrigatório",
+			"id": "R0",
+			"name": "C1 Sempre Incluído",
+			"priority": 1
+		},
+		{
+			"action": {
+				"criteria": ["C2"],
+				"type": "include"
+			},
+			"condition": {
+				"level": ["N3", "N4", "N5", "N6", "N7", "N8"]
+			},
+			"description": "Artefato/Resultado quando nível exige output estruturado",
+			"id": "R1",
+			"name": "C2 para Output Estruturado",
+			"priority": 2
+		},
+		{
+			"action": {
+				"criteria": ["C13"],
+				"type": "include"
+			},
+			"condition": {
+				"role": ["role.transform", "role.document"],
+				"rulers": {
+					"scope": {
+						"gte": 4
+					}
+				}
+			},
+			"description": "Dependências/Contexto Técnico para role.transform ou role.document com escopo amplo",
+			"id": "R2",
+			"name": "C13 para Contexto Técnico",
+			"priority": 3
+		},
+		{
+			"action": {
+				"criteria": ["C5"],
+				"type": "include"
+			},
+			"condition": {
+				"rulers": {
+					"inference": {
+						"gte": 3
+					}
+				}
+			},
+			"description": "Limites de Inferência quando inference >= 3",
+			"id": "R3",
+			"name": "C5 para Inferência Alta",
+			"priority": 4
+		},
+		{
+			"action": {
+				"criteria": ["C6"],
+				"type": "include"
+			},
+			"condition": {
+				"rulers": {
+					"decision": {
+						"gte": 2
+					}
+				}
+			},
+			"description": "Autoridade/Decisão quando decision >= 2",
+			"id": "R4",
+			"name": "C6 para Decisão",
+			"priority": 5
+		},
+		{
+			"action": {
+				"criteria": ["C7"],
+				"type": "include"
+			},
+			"condition": "always",
+			"description": "Execução vs Preparação sempre incluído em modo preparation",
+			"id": "R5",
+			"implicit": true,
+			"name": "C7 Sempre (Preparação)",
+			"priority": 6
+		},
+		{
+			"action": {
+				"criteria": ["C8", "C9"],
+				"type": "include"
+			},
+			"condition": {
+				"role": ["role.transform", "role.synthesize"]
+			},
+			"description": "Transformações Permitidas/Proibidas para role.transform ou role.synthesize",
+			"id": "R6",
+			"name": "C8/C9 para Transformação",
+			"overrides": {
+				"role.synthesize": ["C8"],
+				"role.transform": ["C8", "C9"]
+			},
+			"priority": 7
+		},
+		{
+			"action": {
+				"criteria": ["C10", "C11", "C12"],
+				"type": "include"
+			},
+			"condition": {
+				"level": ["N5", "N6", "N7", "N8"]
+			},
+			"description": "Formato/Sucesso/Parada quando nível exige validação estruturada",
+			"id": "R7",
+			"name": "C10/C11/C12 para Validação",
+			"priority": 8
+		},
+		{
+			"condition": "composite",
+			"description": "Escopo de Atuação e Fonte da Verdade baseado nas réguas",
+			"id": "R8",
+			"name": "C3/C4 para Escopo/Fonte",
+			"priority": 9,
+			"subRules": [
+				{
+					"action": {
+						"criteria": ["C3"],
+						"type": "include"
+					},
+					"condition": {
+						"rulers": {
+							"scope": {
+								"gte": 3
+							}
+						}
+					},
+					"id": "R8a"
+				},
+				{
+					"action": {
+						"criteria": ["C4"],
+						"type": "include"
+					},
+					"condition": {
+						"rulers": {
+							"source": {
+								"gte": 3
+							}
+						}
+					},
+					"id": "R8b"
+				}
+			]
+		}
+	],
+	"version": "1.0.0"
+}
