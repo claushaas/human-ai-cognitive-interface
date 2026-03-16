@@ -99,7 +99,9 @@ export function createExecutionContext(
 	contract: CognitiveContract,
 	protocol: CollectionProtocol,
 	payload: CollectionPayload,
-): { context: ExecutionContext; isValid: true } | { error: string; isValid: false } {
+):
+	| { context: ExecutionContext; isValid: true }
+	| { error: string; isValid: false } {
 	const isValid = validateCollectionPayload(payload, protocol);
 
 	if (!isValid) {
@@ -112,8 +114,8 @@ export function createExecutionContext(
 	return {
 		context: {
 			contract,
-			protocol,
 			payload,
+			protocol,
 		},
 		isValid: true,
 	};

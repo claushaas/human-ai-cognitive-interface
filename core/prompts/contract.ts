@@ -1,4 +1,10 @@
-import type { CanonicalLevelId, CognitiveContract, InitialRoleId, RulerId, Scale1to5 } from '~/types';
+import type {
+	CanonicalLevelId,
+	CognitiveContract,
+	InitialRoleId,
+	RulerId,
+	Scale1to5,
+} from '~/types';
 
 /**
  * Prompt de Match/Contrato Cognitivo
@@ -20,17 +26,24 @@ interface ContractPromptOptions {
  * Labels canônicos para réguas
  */
 const RULER_LABELS: Record<RulerId, string> = {
-	inference: 'Inferência',
 	decision: 'Decisão',
+	inference: 'Inferência',
+	meta: 'Função Meta',
 	scope: 'Escopo',
 	source: 'Fonte',
-	meta: 'Função Meta',
 };
 
 /**
  * Descrições das réguas por nível
  */
 const RULER_DESCRIPTIONS: Record<RulerId, Record<number, string>> = {
+	decision: {
+		1: 'Nenhuma recomendação/priorização',
+		2: 'Recomendação leve (com justificativa; decisão final humana)',
+		3: 'Governança/bloqueio (autoridade para parar e exigir clarificação)',
+		4: 'Recomendação com ação (decision-making support)',
+		5: 'Decisão autônoma',
+	},
 	inference: {
 		1: 'Nenhuma inferência (apenas dados explícitos)',
 		2: 'Inferência mínima (conexões óvias)',
@@ -38,12 +51,12 @@ const RULER_DESCRIPTIONS: Record<RulerId, Record<number, string>> = {
 		4: 'Inferência ampla (padrões e implicações)',
 		5: 'Inferência máxima (leitura entre linhas)',
 	},
-	decision: {
-		1: 'Nenhuma recomendação/priorização',
-		2: 'Recomendação leve (com justificativa; decisão final humana)',
-		3: 'Governança/bloqueio (autoridade para parar e exigir clarificação)',
-		4: 'Recomendação com ação (decision-making support)',
-		5: 'Decisão autônoma',
+	meta: {
+		1: 'Operacional (no conteúdo)',
+		2: 'Tático (processo e conteúdo)',
+		3: 'Estratégico (arquitetura do pensamento)',
+		4: 'Reflexivo (pensamento sobre o pensamento)',
+		5: 'Meta-arquitetural (sistemas de cognição)',
 	},
 	scope: {
 		1: 'Local (item único)',
@@ -58,13 +71,6 @@ const RULER_DESCRIPTIONS: Record<RulerId, Record<number, string>> = {
 		3: 'Parcialmente aberta (contexto geral)',
 		4: 'Aberta (pesquisa limitada)',
 		5: 'Totalmente aberta (pesquisa extensiva)',
-	},
-	meta: {
-		1: 'Operacional (no conteúdo)',
-		2: 'Tático (processo e conteúdo)',
-		3: 'Estratégico (arquitetura do pensamento)',
-		4: 'Reflexivo (pensamento sobre o pensamento)',
-		5: 'Meta-arquitetural (sistemas de cognição)',
 	},
 };
 
@@ -85,30 +91,33 @@ const LEVEL_NAMES: Record<CanonicalLevelId, string> = {
 /**
  * Papéis iniciais com descrições
  */
-const ROLE_DESCRIPTIONS: Record<InitialRoleId, { label: string; description: string }> = {
+const ROLE_DESCRIPTIONS: Record<
+	InitialRoleId,
+	{ label: string; description: string }
+> = {
 	'role.analyze': {
-		label: 'Analisar',
 		description: 'Entender algo que já existe',
-	},
-	'role.synthesize': {
-		label: 'Organizar / Sintetizar',
-		description: 'Estruturar conteúdo existente',
-	},
-	'role.explore': {
-		label: 'Explorar alternativas',
-		description: 'Ver caminhos possíveis sem decidir',
+		label: 'Analisar',
 	},
 	'role.decideSupport': {
-		label: 'Apoiar decisão',
 		description: 'Ajudar a pensar, mas decisão é humana',
+		label: 'Apoiar decisão',
 	},
 	'role.document': {
-		label: 'Documentar / Formalizar',
 		description: 'Transformar em algo oficial e reutilizável',
+		label: 'Documentar / Formalizar',
+	},
+	'role.explore': {
+		description: 'Ver caminhos possíveis sem decidir',
+		label: 'Explorar alternativas',
+	},
+	'role.synthesize': {
+		description: 'Estruturar conteúdo existente',
+		label: 'Organizar / Sintetizar',
 	},
 	'role.transform': {
-		label: 'Transformar conteúdo',
 		description: 'Mudar forma, formato ou estrutura',
+		label: 'Transformar conteúdo',
 	},
 };
 
@@ -157,7 +166,10 @@ export function generateContractPrompt(
 | Régua | Valor | Descrição |
 |-------|-------|-----------|
 `;
-		for (const [rulerId, value] of Object.entries(rulers) as [RulerId, Scale1to5][]) {
+		for (const [rulerId, value] of Object.entries(rulers) as [
+			RulerId,
+			Scale1to5,
+		][]) {
 			const label = RULER_LABELS[rulerId];
 			const description = RULER_DESCRIPTIONS[rulerId][value];
 			prompt += `| ${label} | ${value}/5 | ${description} |\n`;

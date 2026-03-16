@@ -1,4 +1,8 @@
-import type { CollectionBlock, CollectionProtocol, InitialRoleId } from '~/types';
+import type {
+	CollectionBlock,
+	CollectionProtocol,
+	InitialRoleId,
+} from '~/types';
 
 /**
  * Prompt de Protocolo de Coleta
@@ -19,14 +23,14 @@ interface CollectionPromptOptions {
 const ROLE_INSTRUCTIONS: Record<InitialRoleId, string> = {
 	'role.analyze':
 		'Analise o contexto fornecido sem criar novo conteúdo ou executar ações.',
-	'role.synthesize':
-		'Estruture e organize o conteúdo mantendo a coerência e clareza.',
-	'role.explore':
-		'Explore alternativas e possibilidades sem fechar em uma única resposta.',
 	'role.decideSupport':
 		'Forneça recomendações com justificativa, mas não decida pelo usuário.',
 	'role.document':
 		'Documente de forma precisa e reutilizável, mantendo rigor terminológico.',
+	'role.explore':
+		'Explore alternativas e possibilidades sem fechar em uma única resposta.',
+	'role.synthesize':
+		'Estruture e organize o conteúdo mantendo a coerência e clareza.',
 	'role.transform':
 		'Transforme o conteúdo conforme especificado, preservando a intenção original.',
 };

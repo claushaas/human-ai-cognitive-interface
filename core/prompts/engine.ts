@@ -51,10 +51,7 @@ export function extractPlaceholders(template: string): string[] {
  * @param path - Caminho da propriedade (ex: 'user.name')
  * @returns Valor encontrado ou undefined
  */
-function getNestedValue(
-	obj: Record<string, unknown>,
-	path: string,
-): unknown {
+function getNestedValue(obj: Record<string, unknown>, path: string): unknown {
 	return path.split('.').reduce<unknown>((acc, key) => {
 		if (acc && typeof acc === 'object' && key in acc) {
 			return (acc as Record<string, unknown>)[key];
@@ -94,10 +91,10 @@ export function substituteTemplate(
 	}
 
 	return {
+		isValid: missingVars.size === 0,
+		missingVars: Array.from(missingVars),
 		output,
 		substitutedVars: Array.from(substitutedVars),
-		missingVars: Array.from(missingVars),
-		isValid: missingVars.size === 0,
 	};
 }
 
@@ -139,13 +136,6 @@ export function createTemplateEngine(template: string) {
 		},
 
 		/**
-		 * Valida se dados são suficientes para renderizar
-		 */
-		validate(data: Record<string, unknown>): boolean {
-			return validateTemplate(template, data);
-		},
-
-		/**
 		 * Renderiza ou lança erro se faltar variáveis
 		 */
 		renderOrThrow(data: Record<string, unknown>): string {
@@ -156,6 +146,13 @@ export function createTemplateEngine(template: string) {
 				);
 			}
 			return result.output;
+		},
+
+		/**
+		 * Valida se dados são suficientes para renderizar
+		 */
+		validate(data: Record<string, unknown>): boolean {
+			return validateTemplate(template, data);
 		},
 	};
 }
@@ -186,10 +183,10 @@ export function escapeTemplateValue(value: string): string {
  * ```
  */
 const FORMATTERS: Record<string, (value: string) => string> = {
-	upper: (v) => v.toUpperCase(),
+	escape: (v) => escapeTemplateValue(v),
 	lower: (v) => v.toLowerCase(),
 	trim: (v) => v.trim(),
-	escape: (v) => escapeTemplateValue(v),
+	upper: (v) => v.toUpperCase(),
 };
 
 /**

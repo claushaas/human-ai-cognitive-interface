@@ -8,7 +8,7 @@
  * - engine.ts: Engine de substituição de templates
  */
 
-export * from './contract';
 export * from './collection';
-export * from './execution-interface';
+export * from './contract';
 export * from './engine';
+export * from './execution-interface';
