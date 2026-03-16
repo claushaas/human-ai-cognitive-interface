@@ -564,7 +564,7 @@ Este roadmap estrutura a implementação completa do **Human-AI Cognitive Interf
 
 ---
 
-### Etapa 1.2: Motor de Derivação de Critérios
+### Etapa 1.2: Motor de Derivação de Critérios - ✅
 
 **Objetivo**: Implementar função pura que deriva critérios de coleta a partir do contrato.
 
