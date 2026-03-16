@@ -22,45 +22,81 @@ Este roadmap estrutura a implementação completa do **Human-AI Cognitive Interf
 
 ### Etapa 0.1: Estruturação do Projeto - ✅
 
-**Objetivo**: Migrar de extensão Raycast simples para arquitetura de projeto escalável.
+**Objetivo**: Configurar projeto React Router v7 Framework com deploy em Cloudflare Workers.
 
 #### Tarefas:
 
-1. **Reestruturação de Diretórios**
-   - Criar estrutura de projeto simplificada (repositório único):
+1. **Estrutura de Diretórios**
+   - Criar estrutura de repositório único:
      ```
      /
      ├── app/                      # React Router v7 Framework app
      │   ├── root.tsx
      │   ├── routes/               # Rotas da aplicação
-     │   └── components/           # Componentes React
+     │   │   ├── _index.tsx
+     │   │   ├── session.new.tsx
+     │   │   ├── session.$id.stage-0.tsx
+     │   │   ├── session.$id.stage-1.tsx
+     │   │   └── session.$id.stage-2.tsx
+     │   ├── components/           # Componentes React
+     │   └── lib/                  # Utilitários
      ├── core/                     # Motor canônico (match, derivação)
+     │   ├── match/
+     │   ├── derivation/
+     │   └── prompts/
      ├── config/                   # JSONs canônicos
      ├── types/                    # Tipos TypeScript
      ├── workers/                  # Cloudflare Worker handlers
+     │   └── app.ts
      ├── db/                       # Schema D1
      ├── public/                   # Assets estáticos
      ├── docs/                     # Documentação existente
-     └── .github/workflows/        # CI/CD
+     ├── .github/workflows/        # CI/CD
+     ├── package.json              # Single package
+     ├── tsconfig.json             # TypeScript config
+     ├── vite.config.ts            # Vite config
+     ├── react-router.config.ts    # RR7 config
+     └── wrangler.toml             # Cloudflare Workers config
      ```
 
 2. **Configuração de Tooling**
    - **pnpm** como package manager
-   - **Biome** (já em uso) para lint/format
+   - **Biome** para lint/format
+   - **Tailwind CSS 4.x** para estilização
    - **GitHub Actions** para CI/CD
    - **Wrangler CLI** para deploy Cloudflare Workers
-   - **Cloudflare Dashboard** para configuração de domínio, DNS, WAF
 
-3. **Documentação Técnica Inicial**
+3. **Setup Tailwind CSS 4.x**
+   ```bash
+   pnpm add -D tailwindcss @tailwindcss/vite
+   ```
+   - Configurar `vite.config.ts` com plugin do Tailwind:
+     ```typescript
+     import { defineConfig } from "vite";
+     import tailwindcss from "@tailwindcss/vite";
+
+     export default defineConfig({
+       plugins: [tailwindcss()],
+     });
+     ```
+   - Criar `app/styles.css`:
+     ```css
+     @import "tailwindcss";
+     ```
+   - Importar no `app/root.tsx`:
+     ```typescript
+     import "./styles.css";
+     ```
+
+4. **Documentação Técnica Inicial**
    - Criar `ARCHITECTURE.md` com C4 diagrams
-   - Definir contratos de API (OpenAPI 3.1)
+   - Definir contratos de API (via types TypeScript)
    - Documentar decisões de arquitetura (ADR)
-
-**Nota**: A Etapa 0.1 foi inicialmente implementada como monorepo, mas foi simplificada na Etapa 0.15.
 
 **Referências**:
 - `docs/12-constitution.md` (regra de precedência JSON → Código → Markdown)
 - `docs/04-process-phases.md` (separação de regimes)
+- [Tailwind CSS v4 Documentation](https://tailwindcss.com/docs/)
 
 ---
 
@@ -117,7 +153,7 @@ Este roadmap estrutura a implementação completa do **Human-AI Cognitive Interf
 
 ---
 
-### Etapa 0.2: Sistema de Tipos Canônicos
+### Etapa 0.2: Sistema de Tipos Canônicos - ✅
 
 **Objetivo**: Implementar tipos TypeScript que espelhem fielmente as definições canônicas.
 
@@ -860,16 +896,35 @@ Este roadmap estrutura a implementação completa do **Human-AI Cognitive Interf
    │   └── session.new.tsx       # Nova sessão
    ├── components/
    │   ├── stages/               # Componentes por etapa
-   │   ├── ui/                   # Componentes base
+   │   ├── ui/                   # Componentes base (com Tailwind)
    │   └── forms/                # Inputs customizados
    ├── hooks/                    # React hooks
    ├── lib/
    │   ├── api.ts               # Cliente HTTP
    │   └── utils.ts             # Utilitários
+   ├── styles.css               # Tailwind CSS entry
    └── types/                    # Tipos locais (reexport de ~/types)
    ```
 
-3. **Estado Global**
+3. **Estilização com Tailwind CSS 4.x**
+   - CSS-first configuration (sem `tailwind.config.js`)
+   - Import via CSS: `@import "tailwindcss";`
+   - Variantes customizadas via `@theme`:
+     ```css
+     @theme {
+       --color-primary: #3b82f6;
+       --color-secondary: #64748b;
+       --font-sans: "Inter", system-ui, sans-serif;
+     }
+     ```
+   - Componentes utilitários:
+     - Layout: `flex`, `grid`, `container`, `mx-auto`
+     - Espaçamento: `p-4`, `m-2`, `gap-4`
+     - Tipografia: `text-lg`, `font-semibold`, `leading-relaxed`
+     - Cores: `bg-white`, `text-slate-900`, `border-slate-200`
+   - Dark mode: `dark:` variant
+
+4. **Estado Global**
    - Zustand ou Redux Toolkit para estado de sessão
    - React Query (TanStack Query) para server state
 
@@ -913,13 +968,15 @@ Este roadmap estrutura a implementação completa do **Human-AI Cognitive Interf
    - Call-to-action: "Iniciar nova sessão"
 
 2. **Componente de Seleção de Papel**
-   - Grid de 6 cards (papéis canônicos)
-   - Cada card com:
-     - Ícone representativo
-     - Label (Analisar, Sintetizar, etc.)
-     - Descrição curta
-     - Hover: carga semântica
-   - Seleção única (radio behavior)
+   - Grid de 6 cards (papéis canônicos) usando `grid grid-cols-2 md:grid-cols-3 gap-4`
+   - Cada card com Tailwind:
+     - Container: `bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow`
+     - Ícone representativo: `w-12 h-12 text-primary mb-4`
+     - Label (Analisar, Sintetizar, etc.): `text-lg font-semibold text-slate-900`
+     - Descrição curta: `text-sm text-slate-600 mt-2`
+     - Hover: `hover:border-primary hover:bg-slate-50`
+   - Seleção única (radio behavior) com estado visual: `ring-2 ring-primary`
+   - Animações: `transition-all duration-200`
 
 3. **Confirmação**
    - Resumo da seleção
@@ -947,6 +1004,11 @@ Este roadmap estrutura a implementação completa do **Human-AI Cognitive Interf
    - Slider customizado 1-3 (para decision, com cap visual)
    - Labels dinâmicos baseados no valor selecionado
    - Tooltip explicativo para cada posição
+   - Estilização com Tailwind:
+     - Track: `w-full h-2 bg-slate-200 rounded-full`
+     - Thumb: `w-6 h-6 bg-primary rounded-full shadow-md`
+     - Labels: `text-xs text-slate-500 mt-2`
+     - Active state: `bg-primary` vs `bg-slate-300`
 
 2. **Painel de Réguas**
    - Layout: lista vertical ou grid 2x3
@@ -962,18 +1024,23 @@ Este roadmap estrutura a implementação completa do **Human-AI Cognitive Interf
    - Exibição de resultados
 
 4. **Visualização de Match**
-   - Se match forte (>= 90): exibir nível único destacado
-   - Se match ambíguo: exibir 2-3 candidatos com scores
-   - Card para cada nível candidato:
-     - Nome completo (N1-N8)
-     - Score percentual
-     - Vetor de réguas do nível
-     - Badge: "Recomendado", "Alternativa", "Incompatível"
+   - Container: `space-y-4` para lista de candidatos
+   - Se match forte (>= 90): exibir nível único destacado com `bg-green-50 border-green-200`
+   - Se match ambíguo: exibir 2-3 candidatos com scores em `grid gap-4`
+   - Card para cada nível candidato usando Tailwind:
+     - Container: `bg-white rounded-lg shadow-sm border border-slate-200 p-6`
+     - Nome completo (N1-N8): `text-xl font-bold text-slate-900`
+     - Score percentual: `text-2xl font-mono text-primary`
+     - Vetor de réguas: `grid grid-cols-5 gap-2 mt-4`
+     - Badge: "Recomendado" `bg-green-100 text-green-800`, "Alternativa" `bg-yellow-100 text-yellow-800`, "Incompatível" `bg-red-100 text-red-800`
+     - Badge styles: `inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium`
 
 5. **Hard Blocks UI**
-   - Se houver hard blocks: exibir alerta
-   - Explicação do bloqueio
-   - Ação sugerida
+   - Alert container: `bg-red-50 border border-red-200 rounded-lg p-4`
+   - Ícone: `w-5 h-5 text-red-400`
+   - Título: `text-sm font-medium text-red-800`
+   - Descrição: `text-sm text-red-700 mt-1`
+   - Ação sugerida: `text-sm text-red-600 underline`
 
 6. **Correções Locais**
    - Se houver sugestões: exibir opções
@@ -1001,25 +1068,33 @@ Este roadmap estrutura a implementação completa do **Human-AI Cognitive Interf
 #### Tarefas:
 
 1. **Tela de Introdução**
-   - Explicar que esta é a fase de preparação
-   - **Destaque visual**: "NÃO executaremos a tarefa agora"
-   - Mostrar critérios implícitos (já satisfeitos pelo contrato)
+   - Container: `max-w-3xl mx-auto py-8 px-4`
+   - Título: `text-2xl font-bold text-slate-900`
+   - **Destaque visual**: `bg-amber-50 border-l-4 border-amber-400 p-4 rounded-r`
+   - Texto de alerta: "NÃO executaremos a tarefa agora" com `text-amber-800 font-medium`
+   - Critérios implícitos: `grid gap-2` com badges `bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-sm`
 
 2. **Componente de Bloco de Coleta**
-   - Card expandível para cada critério
-   - Estrutura:
-     - Título do bloco
-     - Instrução personalizada
-     - Lista "Incluir" (checklist de dicas)
-     - Lista "Evitar" (alertas)
-     - Exemplo (texto demonstrativo)
-     - Campo de input (textarea)
-     - Rationale (por que perguntamos isso)
+   - Card: `bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden`
+   - Header: `bg-slate-50 px-6 py-4 border-b border-slate-200`
+   - Título: `text-lg font-semibold text-slate-900`
+   - Instrução: `text-slate-600 leading-relaxed`
+   - Lista "Incluir": `space-y-2` com ícones `text-green-500`
+   - Lista "Evitar": `space-y-2` com ícones `text-red-500`
+   - Exemplo: `bg-slate-50 p-4 rounded-md text-sm text-slate-600 italic`
+   - Textarea: `w-full min-h-[120px] p-3 border border-slate-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent`
+   - Rationale: `text-xs text-slate-500 mt-2`
 
 3. **Wizard de Coleta**
-   - Progresso visual (stepper)
-   - Botões: "Anterior", "Próximo", "Pular" (se opcional)
-   - Auto-save (salvar rascunho no localStorage)
+   - Progresso visual (stepper): `flex items-center space-x-2`
+   - Step ativo: `w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-sm font-medium`
+   - Step inativo: `w-8 h-8 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-sm`
+   - Conector: `flex-1 h-0.5 bg-slate-200`
+   - Botões:
+     - "Anterior": `px-4 py-2 border border-slate-300 rounded-md text-slate-700 hover:bg-slate-50`
+     - "Próximo": `px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90`
+     - "Pular": `text-slate-500 hover:text-slate-700 underline`
+   - Auto-save indicator: `text-xs text-green-600 flex items-center gap-1`
 
 4. **Validação de Blocos**
    - Validação em tempo real
@@ -1027,18 +1102,22 @@ Este roadmap estrutura a implementação completa do **Human-AI Cognitive Interf
    - Bloqueio de avanço se inválido
 
 5. **Revisão**
-   - Tela de revisão antes de completar
-   - Lista todos os critérios coletados
-   - Opção de editar
+   - Container: `max-w-3xl mx-auto py-8 px-4`
+   - Título: `text-2xl font-bold text-slate-900 mb-6`
+   - Lista de critérios: `space-y-4`
+   - Item revisão: `bg-slate-50 rounded-lg p-4 border border-slate-200`
+   - Label: `text-sm font-medium text-slate-700`
+   - Resposta: `text-slate-900 mt-1`
+   - Botão editar: `text-sm text-primary hover:underline`
 
 6. **Completude**
-   - Botão "Finalizar Coleta"
-   - Submit para action de completude
-   - Tela de sucesso com:
-     - Resumo do contrato
-     - Resumo da coleta
-     - Opção de copiar prompt final
-     - Opção de exportar JSON
+   - Botão "Finalizar Coleta": `w-full py-3 bg-primary text-white rounded-lg font-medium hover:bg-primary/90`
+   - Tela de sucesso:
+     - Container: `text-center py-12`
+     - Ícone sucesso: `w-16 h-16 mx-auto text-green-500 mb-4`
+     - Título: `text-2xl font-bold text-slate-900`
+     - Resumo em cards: `grid gap-4 mt-8`
+     - Botão copiar: `flex items-center gap-2 px-4 py-2 bg-slate-100 rounded-md hover:bg-slate-200`
 
 **Referências**:
 - `docs/08-criteria-and-collection-protocol.md`
@@ -1197,7 +1276,7 @@ Este roadmap estrutura a implementação completa do **Human-AI Cognitive Interf
    - Executar lint (Biome)
    - Executar testes unitários (Vitest)
    - Executar testes de integração
-   - Build de todos os pacotes
+   - Build da aplicação
    - Verificação de tipos (tsc)
 
 3. **Pipeline de CD (Cloudflare Workers)**
@@ -1483,8 +1562,8 @@ Este roadmap estrutura a implementação completa do **Human-AI Cognitive Interf
 #### Tarefas:
 
 1. **READMEs**
-   - Raiz do monorepo
-   - Cada package/app
+   - Raiz do projeto
+   - `/docs` para documentação técnica
 
 2. **API Documentation**
    - OpenAPI/Swagger
@@ -1556,7 +1635,7 @@ Este roadmap estrutura a implementação completa do **Human-AI Cognitive Interf
 
 **FASE 0**:
 - [ ] Estrutura de diretórios criada
-- [ ] Tooling configurado (Turborepo, pnpm, Biome)
+- [ ] Tooling configurado (pnpm, Biome, Tailwind 4.x)
 - [ ] Tipos TypeScript implementados
 - [ ] JSONs canônicos criados
 
@@ -1581,7 +1660,6 @@ Este roadmap estrutura a implementação completa do **Human-AI Cognitive Interf
 - [ ] Testes E2E passando
 
 **FASE 4**:
-- [ ] Docker funcionando (desenvolvimento local)
 - [ ] Cloudflare Workers configurado
 - [ ] D1 database criado e migrado
 - [ ] CI/CD funcionando (deploy via Wrangler)
