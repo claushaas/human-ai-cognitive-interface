@@ -8,7 +8,7 @@
 	"scripts": {
 		"build": "tsc",
 		"check-types": "tsc --noEmit",
-		"lint": "biome lint .",
+		"lint": "biome check --unsafe --write .",
 		"clean": "rm -rf dist"
 	},
 	"devDependencies": {

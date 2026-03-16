@@ -20,7 +20,7 @@ Este roadmap estrutura a implementação completa do **Human-AI Cognitive Interf
 
 ## FASE 0: Fundamentos e Arquitetura Base
 
-### Etapa 0.1: Estruturação do Projeto
+### Etapa 0.1: Estruturação do Projeto - ✅
 
 **Objetivo**: Migrar de extensão Raycast simples para arquitetura de projeto escalável.
 

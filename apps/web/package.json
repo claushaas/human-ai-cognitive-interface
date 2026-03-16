@@ -8,7 +8,7 @@
 		"dev": "react-router dev",
 		"start": "wrangler dev",
 		"typecheck": "react-router typegen && tsc",
-		"lint": "biome lint .",
+		"lint": "biome check --unsafe --write .",
 		"deploy": "wrangler deploy",
 		"clean": "rm -rf .react-router build dist"
 	},
