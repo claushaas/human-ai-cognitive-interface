@@ -606,7 +606,7 @@ Este roadmap estrutura a implementação completa do **Human-AI Cognitive Interf
 
 ---
 
-### Etapa 1.3: Motor de Prompt (Templates)
+### Etapa 1.3: Motor de Prompt (Templates) - ✅
 
 **Objetivo**: Criar templates de prompt para cada etapa/fase.
 
@@ -648,17 +648,11 @@ Este roadmap estrutura a implementação completa do **Human-AI Cognitive Interf
 
 #### Opções de Arquitetura:
 
-**Opção A: API Embutida no React Router (Recomendada)**
 - API implementada via `loader` e `action` functions nas rotas
 - Server-side rendering com acesso ao banco D1
 - Mais simples, menos latência (não há chamada HTTP entre web e API)
 
-**Opção B: Worker de API Separado**
-- Worker dedicado para API em `apps/api-worker/`
-- Comunicação via fetch entre web app e API
-- Útil se houver múltiplos clientes (web, mobile, etc.)
-
-#### Tarefas (Opção A - Recomendada):
+#### Tarefas:
 
 1. **Setup API no React Router v7**
    - Actions e Loaders em cada rota
@@ -725,24 +719,6 @@ Este roadmap estrutura a implementação completa do **Human-AI Cognitive Interf
    - **D1**: Persistência durável (PostgreSQL-like)
    - **Cache API**: Cache HTTP no edge para respostas imutáveis
    - **KV**: Configurações canônicas (JSONs), templates
-
-#### Tarefas (Opção B - Worker Separado):
-
-1. **Setup Worker de API** (`apps/api-worker/`)
-   - Estrutura similar ao Opção A
-   - Exportar handlers para cada endpoint
-   - Comunicação via fetch do web app
-
-2. **Shared Package**
-   - `api-client`: Cliente HTTP para API (usado por web/mobile)
-   - `api-handlers`: Handlers compartilhados (se necessário)
-
-3. **Autenticação** (futuro)
-   - JWT para API key
-   - OAuth2 para interface web
-
-**Referências**:
-- `docs/04-process-phases.md` (mapeamento de modos)
 
 ---
 
