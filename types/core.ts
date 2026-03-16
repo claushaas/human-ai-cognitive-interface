@@ -23,7 +23,7 @@ export type InitialRoleId =
 	| 'role.document'
 	| 'role.transform';
 
-export type OperationMode =
-	| 'MODE_PREPARATION'
-	| 'MODE_GOVERNANCE'
-	| 'MODE_EXECUTION';
+export type ModeId = 'MODE_PREPARATION' | 'MODE_GOVERNANCE' | 'MODE_EXECUTION';
+
+/** @deprecated Use ModeId instead */
+export type OperationMode = ModeId;

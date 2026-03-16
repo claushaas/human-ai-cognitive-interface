@@ -92,7 +92,6 @@ function getCorrectionReason(
 	target: number,
 ): string {
 	const rulerLabel = getRulerLabel(ruler);
-	const _direction = proposed > current ? 'aumentar' : 'reduzir';
 	return `Ajustar ${rulerLabel} de ${current} para ${proposed} (alvo: ${target})`;
 }
 

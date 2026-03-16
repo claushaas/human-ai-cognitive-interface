@@ -80,82 +80,85 @@ function checkBlockingIssues(
 function buildPayloadSchema(criteria: CriterionId[]): Record<string, unknown> {
 	const schema: Record<string, unknown> = {
 		$schema: 'https://json-schema.org/draft/2020-12/schema',
-		properties: {},
-		required: [],
+		properties: {} as Record<string, unknown>,
+		required: [] as string[],
 		type: 'object',
 	};
+
+	const properties = schema.properties as Record<string, unknown>;
+	const required = schema.required as string[];
 
 	// Mapear critérios para propriedades do schema
 	for (const criterion of criteria) {
 		if (criterion === 'C1') {
-			schema.properties.objective = {
+			properties.objective = {
 				description: 'Objetivo operacional',
 				minLength: 10,
 				type: 'string',
 			};
-			schema.required.push('objective');
+			required.push('objective');
 		} else if (criterion === 'C2') {
-			schema.properties.artifact = {
+			properties.artifact = {
 				description: 'Artefato/resultado esperado',
 				type: 'string',
 			};
 		} else if (criterion === 'C3') {
-			schema.properties.scope = {
+			properties.scope = {
 				description: 'Escopo de atuação',
 				type: 'string',
 			};
 		} else if (criterion === 'C4') {
-			schema.properties.sources = {
+			properties.sources = {
 				description: 'Fontes da verdade',
 				items: { type: 'string' },
 				type: 'array',
 			};
 		} else if (criterion === 'C5') {
-			schema.properties.inferenceLimits = {
+			properties.inferenceLimits = {
 				description: 'Limites de inferência',
 				type: 'string',
 			};
 		} else if (criterion === 'C6') {
-			schema.properties.authority = {
+			properties.authority = {
 				description: 'Autoridade e limites de decisão',
 				type: 'string',
 			};
 		} else if (criterion === 'C8') {
-			schema.properties.allowedTransforms = {
+			properties.allowedTransforms = {
 				description: 'Transformações permitidas',
 				items: { type: 'string' },
 				type: 'array',
 			};
 		} else if (criterion === 'C9') {
-			schema.properties.forbiddenTransforms = {
+			properties.forbiddenTransforms = {
 				description: 'Transformações proibidas',
 				items: { type: 'string' },
 				type: 'array',
 			};
 		} else if (criterion === 'C10') {
-			schema.properties.outputFormat = {
+			properties.outputFormat = {
 				description: 'Formato de saída',
 				type: 'string',
 			};
 		} else if (criterion === 'C11') {
-			schema.properties.successCriteria = {
+			properties.successCriteria = {
 				description: 'Critérios de sucesso',
 				items: { type: 'string' },
 				type: 'array',
 			};
 		} else if (criterion === 'C12') {
-			schema.properties.stoppingConditions = {
+			properties.stoppingConditions = {
 				description: 'Condições de parada/erro',
 				items: { type: 'string' },
 				type: 'array',
 			};
 		} else if (criterion === 'C13') {
-			schema.properties.technicalContext = {
+			properties.technicalContext = {
 				description: 'Dependências e contexto técnico',
 				type: 'string',
 			};
 		} else if (criterion === 'C14') {
-			schema.properties.securityConstraints = {
+			properties.securityConstraints = {
 				description: 'Restrições de segurança/conformidade',
 				items: { type: 'string' },
 				type: 'array',
