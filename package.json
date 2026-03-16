@@ -26,12 +26,14 @@
 	"scripts": {
 		"biome": "biome check --unsafe --write",
 		"build": "react-router build",
+		"cf-typegen": "wrangler types",
 		"clean": "rm -rf .react-router build dist",
 		"deploy": "wrangler deploy",
 		"dev": "react-router dev",
 		"lint": "biome check --unsafe --write .",
+		"postinstall": "npm run cf-typegen",
 		"start": "wrangler dev",
-		"typecheck": "react-router typegen && tsc",
+		"typecheck": "npm run cf-typegen && react-router typegen && tsc -b",
 		"update": "pnpm dlx npm-check-updates -i"
 	},
 	"type": "module"
