@@ -6,21 +6,21 @@
 			"dependsOn": ["^build"],
 			"outputs": ["dist/**", "build/**", "public/build/**"]
 		},
-		"lint": {
-			"dependsOn": ["^lint"]
-		},
 		"check-types": {
 			"dependsOn": ["^check-types"]
+		},
+		"clean": {
+			"cache": false
 		},
 		"dev": {
 			"cache": false,
 			"persistent": true
 		},
+		"lint": {
+			"dependsOn": ["^lint"]
+		},
 		"test": {
 			"dependsOn": ["^build"]
-		},
-		"clean": {
-			"cache": false
 		}
 	}
 }

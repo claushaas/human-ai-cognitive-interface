@@ -1,16 +1,19 @@
-import type { Route } from "./+types/_index";
-import { Link } from "react-router";
+import { Link } from 'react-router';
+import type { Route } from './+types/_index';
 
 export function meta({}: Route.MetaArgs) {
 	return [
-		{ title: "Human-AI Cognitive Interface" },
-		{ name: "description", content: "Medie cognições via contratos explícitos" },
+		{ title: 'Human-AI Cognitive Interface' },
+		{
+			content: 'Medie cognições via contratos explícitos',
+			name: 'description',
+		},
 	];
 }
 
 export default function Index() {
 	return (
-		<div style={{ padding: "2rem", fontFamily: "system-ui, sans-serif" }}>
+		<div style={{ fontFamily: 'system-ui, sans-serif', padding: '2rem' }}>
 			<h1>Human-AI Cognitive Interface</h1>
 			<p>Bem-vindo ao sistema de mediação cognitiva.</p>
 			<nav>

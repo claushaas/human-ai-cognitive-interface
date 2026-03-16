@@ -1,4 +1,4 @@
-import type { CanonicalLevelId, InitialRoleId, RulersVector } from "./core";
+import type { CanonicalLevelId, InitialRoleId, RulersVector } from './core';
 
 export type LevelMatch = {
 	selectedLevel: CanonicalLevelId;
@@ -17,7 +17,7 @@ export type LocalCorrection = {
 export type HardBlock = {
 	id: string;
 	message: string;
-	severity: "BLOCK" | "WARN" | "CONFIRM";
+	severity: 'BLOCK' | 'WARN' | 'CONFIRM';
 };
 
 export type CognitiveContract = {

@@ -1,59 +1,59 @@
 {
-	"version": "1.0.0",
 	"rulers": {
+		"decision": {
+			"constitutionalCap": 3,
+			"label": "Decisão",
+			"labels": {
+				"1": "Nenhuma recomendação/priorização",
+				"2": "Recomendação leve (com justificativa; decisão final humana)",
+				"3": "Governança/bloqueio (autoridade para parar, bloquear e exigir clarificação)"
+			},
+			"scale": [1, 2, 3]
+		},
 		"inference": {
 			"label": "Inferência",
-			"scale": [1, 2, 3, 4, 5],
 			"labels": {
 				"1": "Nenhuma inferência (apenas dados explícitos)",
 				"2": "Inferência mínima (conexões óbvias)",
 				"3": "Inferência moderada (contexto implícito)",
 				"4": "Inferência ampla (padrões e implicações)",
 				"5": "Inferência máxima (leitura entre linhas)"
-			}
-		},
-		"decision": {
-			"label": "Decisão",
-			"scale": [1, 2, 3],
-			"constitutionalCap": 3,
-			"labels": {
-				"1": "Nenhuma recomendação/priorização",
-				"2": "Recomendação leve (com justificativa; decisão final humana)",
-				"3": "Governança/bloqueio (autoridade para parar, bloquear e exigir clarificação)"
-			}
-		},
-		"scope": {
-			"label": "Escopo",
-			"scale": [1, 2, 3, 4, 5],
-			"labels": {
-				"1": "Local (item único)",
-				"2": "Contextual (relacionamentos próximos)",
-				"3": "Departamental/área",
-				"4": "Organizacional/projeto",
-				"5": "Sistêmico/ecossistema"
-			}
-		},
-		"source": {
-			"label": "Fonte",
-			"scale": [1, 2, 3, 4, 5],
-			"labels": {
-				"1": "Fechada (apenas o que foi fornecido)",
-				"2": "Fechada com complementação controlada",
-				"3": "Parcialmente aberta (contexto geral)",
-				"4": "Aberta (pesquisa limitada)",
-				"5": "Totalmente aberta (pesquisa extensiva)"
-			}
+			},
+			"scale": [1, 2, 3, 4, 5]
 		},
 		"meta": {
 			"label": "Função Meta",
-			"scale": [1, 2, 3, 4, 5],
 			"labels": {
 				"1": "Operacional (no conteúdo)",
 				"2": "Tático (processo e conteúdo)",
 				"3": "Estratégico (arquitetura do pensamento)",
 				"4": "Reflexivo (pensamento sobre o pensamento)",
 				"5": "Meta-arquitetural (sistemas de cognição)"
-			}
+			},
+			"scale": [1, 2, 3, 4, 5]
+		},
+		"scope": {
+			"label": "Escopo",
+			"labels": {
+				"1": "Local (item único)",
+				"2": "Contextual (relacionamentos próximos)",
+				"3": "Departamental/área",
+				"4": "Organizacional/projeto",
+				"5": "Sistêmico/ecossistema"
+			},
+			"scale": [1, 2, 3, 4, 5]
+		},
+		"source": {
+			"label": "Fonte",
+			"labels": {
+				"1": "Fechada (apenas o que foi fornecido)",
+				"2": "Fechada com complementação controlada",
+				"3": "Parcialmente aberta (contexto geral)",
+				"4": "Aberta (pesquisa limitada)",
+				"5": "Totalmente aberta (pesquisa extensiva)"
+			},
+			"scale": [1, 2, 3, 4, 5]
 		}
-	}
+	},
+	"version": "1.0.0"
 }

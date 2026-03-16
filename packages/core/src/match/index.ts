@@ -1,11 +1,11 @@
-import type { RulersVector, CanonicalLevelId } from "@haci/types";
+import type { CanonicalLevelId, RulersVector } from '@haci/types';
 
 // Placeholder for match engine
-export function calculateMatch(rulers: RulersVector) {
+export function calculateMatch(_rulers: RulersVector) {
 	// TODO: Implement match algorithm
 	return {
-		selectedLevel: "N1" as CanonicalLevelId,
-		score: 100,
 		candidates: [],
+		score: 100,
+		selectedLevel: 'N1' as CanonicalLevelId,
 	};
 }

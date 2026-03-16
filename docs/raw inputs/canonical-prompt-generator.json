@@ -1,364 +1,120 @@
 {
-	"version": "0.1.0",
-	"namespace": "canonical-prompt-generator",
-	"locale": "pt-BR",
 	"createdAt": "2026-01-24",
-	"stages": {
-		"stage1_initialRole": {
-			"id": "stage1_initialRole",
-			"title": "O que você quer que eu faça?",
-			"description": "Seleção simples de papel inicial. Não impõe restrições finais; apenas dá um prior semântico para o match de níveis.",
-			"options": [
-				{
-					"id": "role.analyze",
-					"label": "Analisar",
-					"userHint": "Quero diagnóstico, lacunas, riscos, inconsistências. Sem executar mudanças.",
-					"aiPrior": { "levelsBoost": ["N2", "N6", "N7"], "weight": 0.15 }
-				},
-				{
-					"id": "role.synthesize",
-					"label": "Organizar / Sintetizar",
-					"userHint": "Quero estruturar, consolidar e dar forma. Sem criar coisas arbitrárias.",
-					"aiPrior": { "levelsBoost": ["N3", "N8"], "weight": 0.15 }
-				},
-				{
-					"id": "role.explore",
-					"label": "Explorar alternativas",
-					"userHint": "Quero opções, abordagens e trade-offs. Sem decidir por mim.",
-					"aiPrior": { "levelsBoost": ["N4", "N5"], "weight": 0.15 }
-				},
-				{
-					"id": "role.decideSupport",
-					"label": "Apoiar decisão",
-					"userHint": "Quero recomendação e priorização com justificativa. A decisão final é minha.",
-					"aiPrior": { "levelsBoost": ["N5"], "weight": 0.15 }
-				},
-				{
-					"id": "role.document",
-					"label": "Documentar / Formalizar",
-					"userHint": "Quero regras, contratos, especificações e documentação normativa.",
-					"aiPrior": { "levelsBoost": ["N8", "N6"], "weight": 0.15 }
-				},
-				{
-					"id": "role.transform",
-					"label": "Transformar conteúdo",
-					"userHint": "Quero aplicar regras explícitas: reformatar, normalizar, extrair, comparar versões.",
-					"aiPrior": { "levelsBoost": ["N1", "N3"], "weight": 0.15 }
-				}
-			],
-			"constraints": {
-				"maxOptions": 8,
-				"noDirectLevelSelection": true
-			}
-		},
-		"stage2_cognitiveRulers": {
-			"id": "stage2_cognitiveRulers",
-			"title": "Réguas cognitivas",
-			"description": "O usuário posiciona a intenção nas 5 dimensões expostas. Escala 1–5.",
-			"rulers": [
-				{
-					"id": "ruler.inference",
-					"label": "Inferência",
-					"tooltip": "Quanto a IA pode deduzir além do que está explícito?",
-					"scale": [
-						{
-							"value": 1,
-							"uiLabel": "Somente explícito",
-							"uiHint": "Sem deduzir intenção; apenas aplicar o que está escrito.",
-							"aiMeaning": "Inferência mínima; evitar suposições e extrapolações."
-						},
-						{
-							"value": 2,
-							"uiLabel": "Baixa",
-							"uiHint": "Deduções simples e locais, sem extrapolar.",
-							"aiMeaning": "Inferência baixa e conservadora."
-						},
-						{
-							"value": 3,
-							"uiLabel": "Média",
-							"uiHint": "Inferir estrutura e relações óbvias.",
-							"aiMeaning": "Inferência moderada (estrutura/organização)."
-						},
-						{
-							"value": 4,
-							"uiLabel": "Alta (controlada)",
-							"uiHint": "Explorar implicações e possibilidades, com cautela.",
-							"aiMeaning": "Inferência alta, mas com rastreabilidade."
-						},
-						{
-							"value": 5,
-							"uiLabel": "Máxima",
-							"uiHint": "A IA pode interpretar intenção e ampliar opções fortemente.",
-							"aiMeaning": "Inferência máxima; alto risco se fonte/escopo não suportarem."
-						}
-					]
-				},
-				{
-					"id": "ruler.decision",
-					"label": "Decisão",
-					"tooltip": "Quanto a IA pode concluir/recomendar?",
-					"scale": [
-						{
-							"value": 1,
-							"uiLabel": "Nenhuma",
-							"uiHint": "Não recomendar; apenas executar/analisar/organizar.",
-							"aiMeaning": "Sem recomendação; sem priorização."
-						},
-						{
-							"value": 2,
-							"uiLabel": "Recomendar (leve)",
-							"uiHint": "Pode sugerir uma opção, com justificativa, sem impor.",
-							"aiMeaning": "Recomendação permitida, sem decisão final."
-						},
-						{
-							"value": 3,
-							"uiLabel": "Governança / Bloqueio",
-							"uiHint": "Pode parar, bloquear e exigir clarificação.",
-							"aiMeaning": "Autoridade para interromper/validar escopo e regras."
-						},
-						{
-							"value": 4,
-							"uiLabel": "Alta (não usar)",
-							"uiHint": "Reservado; não deve ser usado no sistema.",
-							"aiMeaning": "Não permitido (violação constitucional)."
-						},
-						{
-							"value": 5,
-							"uiLabel": "Total (proibido)",
-							"uiHint": "A IA decide por você. Proibido.",
-							"aiMeaning": "Proibido por design."
-						}
-					],
-					"constitutionalCap": 3
-				},
-				{
-					"id": "ruler.scope",
-					"label": "Escopo",
-					"tooltip": "Qual o alcance do impacto do que a IA vai fazer?",
-					"scale": [
-						{
-							"value": 1,
-							"uiLabel": "Local (trecho específico)",
-							"uiHint": "Um trecho, um parágrafo, uma função, uma parte bem delimitada.",
-							"aiMeaning": "Atuar somente em partes explicitamente delimitadas."
-						},
-						{
-							"value": 2,
-							"uiLabel": "Artefato único",
-							"uiHint": "Um documento inteiro, uma página, um arquivo.",
-							"aiMeaning": "Atuar em um único artefato completo."
-						},
-						{
-							"value": 3,
-							"uiLabel": "Multi-artefato",
-							"uiHint": "Consolidar/organizar vários artefatos relacionados.",
-							"aiMeaning": "Agregação e coerência entre múltiplas fontes fornecidas."
-						},
-						{
-							"value": 4,
-							"uiLabel": "Projeto / Sistema",
-							"uiHint": "Afeta estrutura geral, arquitetura ou fluxo completo.",
-							"aiMeaning": "Impacto amplo; exige governança e rastreabilidade."
-						},
-						{
-							"value": 5,
-							"uiLabel": "Sistêmico (constitucional)",
-							"uiHint": "Define regras, contratos e políticas do sistema.",
-							"aiMeaning": "Nível constitucional; foco em normas e invariantes."
-						}
-					]
-				},
-				{
-					"id": "ruler.source",
-					"label": "Fonte de verdade",
-					"tooltip": "De onde a IA pode tirar informação válida?",
-					"scale": [
-						{
-							"value": 1,
-							"uiLabel": "Fechada (somente o que eu fornecer)",
-							"uiHint": "Nada de pesquisa; nada de conhecimento externo como verdade.",
-							"aiMeaning": "Fonte fechada; se faltar dado, parar e pedir."
-						},
-						{
-							"value": 2,
-							"uiLabel": "Semiaberta (conhecimento geral)",
-							"uiHint": "Pode usar conhecimento geral, sem citar pesquisas recentes.",
-							"aiMeaning": "Usar conhecimento estável; evitar fatos voláteis."
-						},
-						{
-							"value": 3,
-							"uiLabel": "Aberta (pesquisa permitida)",
-							"uiHint": "Pode pesquisar e citar fontes quando necessário.",
-							"aiMeaning": "Pesquisa permitida; citar e reconciliar fontes."
-						},
-						{
-							"value": 4,
-							"uiLabel": "Aberta (multi-fonte comparativa)",
-							"uiHint": "Comparar várias fontes e reportar divergências.",
-							"aiMeaning": "Pesquisa + comparação + divergências explícitas."
-						},
-						{
-							"value": 5,
-							"uiLabel": "Total (não recomendado)",
-							"uiHint": "Liberdade total de fonte. Evitar por risco de deriva.",
-							"aiMeaning": "Evitar: risco de irreprodutibilidade e deriva."
-						}
-					]
-				},
-				{
-					"id": "ruler.meta",
-					"label": "Função Meta",
-					"tooltip": "A IA atua só no conteúdo ou também no processo cognitivo?",
-					"scale": [
-						{
-							"value": 1,
-							"uiLabel": "Sem meta",
-							"uiHint": "Foco no resultado, sem discutir o processo.",
-							"aiMeaning": "Sem meta-cognição."
-						},
-						{
-							"value": 2,
-							"uiLabel": "Leve",
-							"uiHint": "Pode sinalizar riscos e limites quando necessário.",
-							"aiMeaning": "Meta leve (avisos e limites)."
-						},
-						{
-							"value": 3,
-							"uiLabel": "Moderada",
-							"uiHint": "Pode explicitar pressupostos e contratos básicos.",
-							"aiMeaning": "Meta moderada (contrato e rastreabilidade)."
-						},
-						{
-							"value": 4,
-							"uiLabel": "Alta",
-							"uiHint": "Pode justificar escolhas e explicar por que certas regras existem.",
-							"aiMeaning": "Meta alta (explicação do processo)."
-						},
-						{
-							"value": 5,
-							"uiLabel": "Máxima (arquitetura)",
-							"uiHint": "A IA atua sobre o sistema: contratos, níveis, governança.",
-							"aiMeaning": "Meta máxima (níveis 7–8 típicos)."
-						}
-					]
-				}
-			],
-			"outputShape": {
-				"rulersVector": {
-					"inference": "1..5",
-					"decision": "1..5",
-					"scope": "1..5",
-					"source": "1..5",
-					"meta": "1..5"
-				}
-			}
-		}
-	},
+	"locale": "pt-BR",
 	"matching": {
 		"canonicalLevels": {
-			"scale": "1..5",
 			"levels": [
 				{
 					"id": "N1",
 					"name": "Execução Estritamente Delimitada",
 					"vector": {
-						"inference": 1,
 						"decision": 1,
+						"inference": 1,
+						"meta": 1,
 						"scope": 1,
-						"source": 1,
-						"meta": 1
+						"source": 1
 					}
 				},
 				{
 					"id": "N2",
 					"name": "Análise Controlada e Diagnóstico",
 					"vector": {
-						"inference": 2,
 						"decision": 1,
+						"inference": 2,
+						"meta": 1,
 						"scope": 2,
-						"source": 1,
-						"meta": 1
+						"source": 1
 					}
 				},
 				{
 					"id": "N3",
 					"name": "Síntese Estruturada e Organização Cognitiva",
 					"vector": {
-						"inference": 3,
 						"decision": 1,
+						"inference": 3,
+						"meta": 1,
 						"scope": 3,
-						"source": 1,
-						"meta": 1
+						"source": 1
 					}
 				},
 				{
 					"id": "N4",
 					"name": "Exploração de Alternativas e Trade-offs",
 					"vector": {
-						"inference": 4,
 						"decision": 1,
+						"inference": 4,
+						"meta": 1,
 						"scope": 4,
-						"source": 2,
-						"meta": 1
+						"source": 2
 					}
 				},
 				{
 					"id": "N5",
 					"name": "Apoio à Decisão Humana",
 					"vector": {
-						"inference": 4,
 						"decision": 2,
+						"inference": 4,
+						"meta": 2,
 						"scope": 4,
-						"source": 2,
-						"meta": 2
+						"source": 2
 					}
 				},
 				{
 					"id": "N6",
 					"name": "Governança, Controle e Segurança Cognitiva",
 					"vector": {
-						"inference": 2,
 						"decision": 3,
+						"inference": 2,
+						"meta": 3,
 						"scope": 5,
-						"source": 1,
-						"meta": 3
+						"source": 1
 					}
 				},
 				{
 					"id": "N7",
 					"name": "Meta-Cognição e Arquitetura de Pensamento",
 					"vector": {
-						"inference": 3,
 						"decision": 1,
+						"inference": 3,
+						"meta": 5,
 						"scope": 4,
-						"source": 2,
-						"meta": 5
+						"source": 2
 					}
 				},
 				{
 					"id": "N8",
 					"name": "Documentação, Contratos e Sistemas de Uso",
 					"vector": {
-						"inference": 2,
 						"decision": 2,
+						"inference": 2,
+						"meta": 5,
 						"scope": 5,
-						"source": 1,
-						"meta": 5
+						"source": 1
 					}
 				}
-			]
+			],
+			"scale": "1..5"
 		},
-		"weights": {
-			"inference": 1.0,
-			"decision": 1.5,
-			"scope": 1.2,
-			"source": 1.5,
-			"meta": 1.3
-		},
-		"priorFromInitialRole": {
+		"corrections": {
+			"applicationPolicy": {
+				"applyOnceThenProceed": true,
+				"noSecondChoiceLoop": true,
+				"recomputeInternallyForFinalLevel": true,
+				"userChoosesOne": true
+			},
+			"deltaPolicy": {
+				"allowNoneOption": true,
+				"maxRulersChanged": 2,
+				"maxStepPerRuler": 1
+			},
 			"enabled": true,
-			"maxContribution": 0.15,
-			"defaultWeight": 0.15
+			"purpose": "Fallback controlado sem loop de recálculo/segunda chamada.",
+			"selectionPolicy": {
+				"maxSuggestions": 3,
+				"neverIntroduceNewBlocks": true,
+				"pickClosestDeltas": true,
+				"preferCriticalAxesFirst": ["decision", "source"]
+			}
 		},
 		"hardBlocks": {
 			"constitutional": {
@@ -366,116 +122,360 @@
 				"forbidTotalAutonomy": true,
 				"forbidUnboundedResponsibilityShift": true
 			},
+			"policy": {
+				"askStyle": "multiple_choice_prefered",
+				"onBlock": "STOP_AND_ASK_MINIMUM"
+			},
 			"rules": [
 				{
+					"action": "BLOCK",
 					"id": "block.decision.totalOrHigh",
 					"name": "Decisão total/alta é proibida",
-					"when": "user.decision >= 4 OR level.vector.decision >= 4",
-					"action": "BLOCK"
+					"when": "user.decision >= 4 OR level.vector.decision >= 4"
 				},
 				{
+					"action": "BLOCK",
 					"id": "block.source.closedButResearch",
 					"name": "Fonte fechada não permite pesquisa/benchmarks",
-					"when": "user.source == 1 AND user.initialRole IN ['role.research','role.explore']",
-					"action": "BLOCK"
+					"when": "user.source == 1 AND user.initialRole IN ['role.research','role.explore']"
 				},
 				{
+					"action": "BLOCK",
 					"id": "block.inferenceHighWithClosedSource",
 					"name": "Inferência alta com fonte fechada é instável",
-					"when": "user.source == 1 AND user.inference >= 4",
-					"action": "BLOCK"
+					"when": "user.source == 1 AND user.inference >= 4"
 				},
 				{
+					"action": "BLOCK_OR_REQUIRE_CONFIRMATION",
 					"id": "block.metaHighAgainstOperational",
 					"name": "Meta alta conflita com objetivo operacional direto",
-					"when": "user.meta >= 4 AND user.initialRole IN ['role.transform','role.execute']",
-					"action": "BLOCK_OR_REQUIRE_CONFIRMATION"
+					"when": "user.meta >= 4 AND user.initialRole IN ['role.transform','role.execute']"
 				},
 				{
+					"action": "BLOCK",
 					"id": "block.scopeSystemicWithoutSystemicIntent",
 					"name": "Escopo sistêmico sem intenção sistêmica",
-					"when": "user.scope <= 2 AND (level.vector.scope >= 4)",
-					"action": "BLOCK"
+					"when": "user.scope <= 2 AND (level.vector.scope >= 4)"
 				},
 				{
+					"action": "BLOCK",
 					"id": "block.governanceRequiresDecision3",
 					"name": "Governança exige decisão=3",
-					"when": "level.id == 'N6' AND user.decision < 3",
-					"action": "BLOCK"
+					"when": "level.id == 'N6' AND user.decision < 3"
 				}
-			],
-			"policy": {
-				"onBlock": "STOP_AND_ASK_MINIMUM",
-				"askStyle": "multiple_choice_prefered"
-			}
-		},
-		"thresholds": {
-			"autoSelectMin": 90,
-			"candidatesMin": 70,
-			"blockBelow": 70,
-			"maxCandidates": 3
-		},
-		"corrections": {
-			"enabled": true,
-			"purpose": "Fallback controlado sem loop de recálculo/segunda chamada.",
-			"deltaPolicy": {
-				"maxRulersChanged": 2,
-				"maxStepPerRuler": 1,
-				"allowNoneOption": true
-			},
-			"selectionPolicy": {
-				"maxSuggestions": 3,
-				"pickClosestDeltas": true,
-				"preferCriticalAxesFirst": ["decision", "source"],
-				"neverIntroduceNewBlocks": true
-			},
-			"applicationPolicy": {
-				"userChoosesOne": true,
-				"noSecondChoiceLoop": true,
-				"applyOnceThenProceed": true,
-				"recomputeInternallyForFinalLevel": true
-			}
+			]
 		},
 		"outputContract": {
 			"shape": {
-				"selectedLevel": "N1..N8 | null",
-				"score": "0..100 | null",
-				"candidates": [
-					{
-						"levelId": "N1..N8",
-						"score": "0..100",
-						"reasons": ["string"]
-					}
-				],
-				"correctionsSuggested": [
-					{
-						"id": "string",
-						"label": "string",
-						"delta": {
-							"inference": -1,
-							"decision": 0,
-							"scope": 0,
-							"source": 0,
-							"meta": 0
-						},
-						"shortRationale": "string"
-					}
-				],
-				"correctionChosen": {
-					"id": "string | null",
-					"delta": {
-						"inference": 0,
-						"decision": 0,
-						"scope": 0,
-						"source": 0,
-						"meta": 0
-					}
-				},
 				"blocked": {
 					"isBlocked": "boolean",
 					"reasons": ["string"]
-				}
+				},
+				"candidates": [
+					{
+						"levelId": "N1..N8",
+						"reasons": ["string"],
+						"score": "0..100"
+					}
+				],
+				"correctionChosen": {
+					"delta": {
+						"decision": 0,
+						"inference": 0,
+						"meta": 0,
+						"scope": 0,
+						"source": 0
+					},
+					"id": "string | null"
+				},
+				"correctionsSuggested": [
+					{
+						"delta": {
+							"decision": 0,
+							"inference": -1,
+							"meta": 0,
+							"scope": 0,
+							"source": 0
+						},
+						"id": "string",
+						"label": "string",
+						"shortRationale": "string"
+					}
+				],
+				"score": "0..100 | null",
+				"selectedLevel": "N1..N8 | null"
 			}
+		},
+		"priorFromInitialRole": {
+			"defaultWeight": 0.15,
+			"enabled": true,
+			"maxContribution": 0.15
+		},
+		"thresholds": {
+			"autoSelectMin": 90,
+			"blockBelow": 70,
+			"candidatesMin": 70,
+			"maxCandidates": 3
+		},
+		"weights": {
+			"decision": 1.5,
+			"inference": 1.0,
+			"meta": 1.3,
+			"scope": 1.2,
+			"source": 1.5
 		}
-	}
+	},
+	"namespace": "canonical-prompt-generator",
+	"stages": {
+		"stage1_initialRole": {
+			"constraints": {
+				"maxOptions": 8,
+				"noDirectLevelSelection": true
+			},
+			"description": "Seleção simples de papel inicial. Não impõe restrições finais; apenas dá um prior semântico para o match de níveis.",
+			"id": "stage1_initialRole",
+			"options": [
+				{
+					"aiPrior": { "levelsBoost": ["N2", "N6", "N7"], "weight": 0.15 },
+					"id": "role.analyze",
+					"label": "Analisar",
+					"userHint": "Quero diagnóstico, lacunas, riscos, inconsistências. Sem executar mudanças."
+				},
+				{
+					"aiPrior": { "levelsBoost": ["N3", "N8"], "weight": 0.15 },
+					"id": "role.synthesize",
+					"label": "Organizar / Sintetizar",
+					"userHint": "Quero estruturar, consolidar e dar forma. Sem criar coisas arbitrárias."
+				},
+				{
+					"aiPrior": { "levelsBoost": ["N4", "N5"], "weight": 0.15 },
+					"id": "role.explore",
+					"label": "Explorar alternativas",
+					"userHint": "Quero opções, abordagens e trade-offs. Sem decidir por mim."
+				},
+				{
+					"aiPrior": { "levelsBoost": ["N5"], "weight": 0.15 },
+					"id": "role.decideSupport",
+					"label": "Apoiar decisão",
+					"userHint": "Quero recomendação e priorização com justificativa. A decisão final é minha."
+				},
+				{
+					"aiPrior": { "levelsBoost": ["N8", "N6"], "weight": 0.15 },
+					"id": "role.document",
+					"label": "Documentar / Formalizar",
+					"userHint": "Quero regras, contratos, especificações e documentação normativa."
+				},
+				{
+					"aiPrior": { "levelsBoost": ["N1", "N3"], "weight": 0.15 },
+					"id": "role.transform",
+					"label": "Transformar conteúdo",
+					"userHint": "Quero aplicar regras explícitas: reformatar, normalizar, extrair, comparar versões."
+				}
+			],
+			"title": "O que você quer que eu faça?"
+		},
+		"stage2_cognitiveRulers": {
+			"description": "O usuário posiciona a intenção nas 5 dimensões expostas. Escala 1–5.",
+			"id": "stage2_cognitiveRulers",
+			"outputShape": {
+				"rulersVector": {
+					"decision": "1..5",
+					"inference": "1..5",
+					"meta": "1..5",
+					"scope": "1..5",
+					"source": "1..5"
+				}
+			},
+			"rulers": [
+				{
+					"id": "ruler.inference",
+					"label": "Inferência",
+					"scale": [
+						{
+							"aiMeaning": "Inferência mínima; evitar suposições e extrapolações.",
+							"uiHint": "Sem deduzir intenção; apenas aplicar o que está escrito.",
+							"uiLabel": "Somente explícito",
+							"value": 1
+						},
+						{
+							"aiMeaning": "Inferência baixa e conservadora.",
+							"uiHint": "Deduções simples e locais, sem extrapolar.",
+							"uiLabel": "Baixa",
+							"value": 2
+						},
+						{
+							"aiMeaning": "Inferência moderada (estrutura/organização).",
+							"uiHint": "Inferir estrutura e relações óbvias.",
+							"uiLabel": "Média",
+							"value": 3
+						},
+						{
+							"aiMeaning": "Inferência alta, mas com rastreabilidade.",
+							"uiHint": "Explorar implicações e possibilidades, com cautela.",
+							"uiLabel": "Alta (controlada)",
+							"value": 4
+						},
+						{
+							"aiMeaning": "Inferência máxima; alto risco se fonte/escopo não suportarem.",
+							"uiHint": "A IA pode interpretar intenção e ampliar opções fortemente.",
+							"uiLabel": "Máxima",
+							"value": 5
+						}
+					],
+					"tooltip": "Quanto a IA pode deduzir além do que está explícito?"
+				},
+				{
+					"constitutionalCap": 3,
+					"id": "ruler.decision",
+					"label": "Decisão",
+					"scale": [
+						{
+							"aiMeaning": "Sem recomendação; sem priorização.",
+							"uiHint": "Não recomendar; apenas executar/analisar/organizar.",
+							"uiLabel": "Nenhuma",
+							"value": 1
+						},
+						{
+							"aiMeaning": "Recomendação permitida, sem decisão final.",
+							"uiHint": "Pode sugerir uma opção, com justificativa, sem impor.",
+							"uiLabel": "Recomendar (leve)",
+							"value": 2
+						},
+						{
+							"aiMeaning": "Autoridade para interromper/validar escopo e regras.",
+							"uiHint": "Pode parar, bloquear e exigir clarificação.",
+							"uiLabel": "Governança / Bloqueio",
+							"value": 3
+						},
+						{
+							"aiMeaning": "Não permitido (violação constitucional).",
+							"uiHint": "Reservado; não deve ser usado no sistema.",
+							"uiLabel": "Alta (não usar)",
+							"value": 4
+						},
+						{
+							"aiMeaning": "Proibido por design.",
+							"uiHint": "A IA decide por você. Proibido.",
+							"uiLabel": "Total (proibido)",
+							"value": 5
+						}
+					],
+					"tooltip": "Quanto a IA pode concluir/recomendar?"
+				},
+				{
+					"id": "ruler.scope",
+					"label": "Escopo",
+					"scale": [
+						{
+							"aiMeaning": "Atuar somente em partes explicitamente delimitadas.",
+							"uiHint": "Um trecho, um parágrafo, uma função, uma parte bem delimitada.",
+							"uiLabel": "Local (trecho específico)",
+							"value": 1
+						},
+						{
+							"aiMeaning": "Atuar em um único artefato completo.",
+							"uiHint": "Um documento inteiro, uma página, um arquivo.",
+							"uiLabel": "Artefato único",
+							"value": 2
+						},
+						{
+							"aiMeaning": "Agregação e coerência entre múltiplas fontes fornecidas.",
+							"uiHint": "Consolidar/organizar vários artefatos relacionados.",
+							"uiLabel": "Multi-artefato",
+							"value": 3
+						},
+						{
+							"aiMeaning": "Impacto amplo; exige governança e rastreabilidade.",
+							"uiHint": "Afeta estrutura geral, arquitetura ou fluxo completo.",
+							"uiLabel": "Projeto / Sistema",
+							"value": 4
+						},
+						{
+							"aiMeaning": "Nível constitucional; foco em normas e invariantes.",
+							"uiHint": "Define regras, contratos e políticas do sistema.",
+							"uiLabel": "Sistêmico (constitucional)",
+							"value": 5
+						}
+					],
+					"tooltip": "Qual o alcance do impacto do que a IA vai fazer?"
+				},
+				{
+					"id": "ruler.source",
+					"label": "Fonte de verdade",
+					"scale": [
+						{
+							"aiMeaning": "Fonte fechada; se faltar dado, parar e pedir.",
+							"uiHint": "Nada de pesquisa; nada de conhecimento externo como verdade.",
+							"uiLabel": "Fechada (somente o que eu fornecer)",
+							"value": 1
+						},
+						{
+							"aiMeaning": "Usar conhecimento estável; evitar fatos voláteis.",
+							"uiHint": "Pode usar conhecimento geral, sem citar pesquisas recentes.",
+							"uiLabel": "Semiaberta (conhecimento geral)",
+							"value": 2
+						},
+						{
+							"aiMeaning": "Pesquisa permitida; citar e reconciliar fontes.",
+							"uiHint": "Pode pesquisar e citar fontes quando necessário.",
+							"uiLabel": "Aberta (pesquisa permitida)",
+							"value": 3
+						},
+						{
+							"aiMeaning": "Pesquisa + comparação + divergências explícitas.",
+							"uiHint": "Comparar várias fontes e reportar divergências.",
+							"uiLabel": "Aberta (multi-fonte comparativa)",
+							"value": 4
+						},
+						{
+							"aiMeaning": "Evitar: risco de irreprodutibilidade e deriva.",
+							"uiHint": "Liberdade total de fonte. Evitar por risco de deriva.",
+							"uiLabel": "Total (não recomendado)",
+							"value": 5
+						}
+					],
+					"tooltip": "De onde a IA pode tirar informação válida?"
+				},
+				{
+					"id": "ruler.meta",
+					"label": "Função Meta",
+					"scale": [
+						{
+							"aiMeaning": "Sem meta-cognição.",
+							"uiHint": "Foco no resultado, sem discutir o processo.",
+							"uiLabel": "Sem meta",
+							"value": 1
+						},
+						{
+							"aiMeaning": "Meta leve (avisos e limites).",
+							"uiHint": "Pode sinalizar riscos e limites quando necessário.",
+							"uiLabel": "Leve",
+							"value": 2
+						},
+						{
+							"aiMeaning": "Meta moderada (contrato e rastreabilidade).",
+							"uiHint": "Pode explicitar pressupostos e contratos básicos.",
+							"uiLabel": "Moderada",
+							"value": 3
+						},
+						{
+							"aiMeaning": "Meta alta (explicação do processo).",
+							"uiHint": "Pode justificar escolhas e explicar por que certas regras existem.",
+							"uiLabel": "Alta",
+							"value": 4
+						},
+						{
+							"aiMeaning": "Meta máxima (níveis 7–8 típicos).",
+							"uiHint": "A IA atua sobre o sistema: contratos, níveis, governança.",
+							"uiLabel": "Máxima (arquitetura)",
+							"value": 5
+						}
+					],
+					"tooltip": "A IA atua só no conteúdo ou também no processo cognitivo?"
+				}
+			],
+			"title": "Réguas cognitivas"
+		}
+	},
+	"version": "0.1.0"
 }

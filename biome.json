@@ -70,9 +70,7 @@
 					}
 				}
 			},
-			"includes": [
-				"**/harada/**/*.json"
-			]
+			"includes": ["**/harada/**/*.json"]
 		}
 	],
 	"vcs": {

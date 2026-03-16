@@ -1,3 +1,4 @@
 // Core canonical engine
-export * from "./match";
-export * from "./derivation";
+
+export * from './derivation';
+export * from './match';
