@@ -642,7 +642,7 @@ Este roadmap estrutura a implementação completa do **Human-AI Cognitive Interf
 
 ## FASE 2: API e Backend
 
-### Etapa 2.1: Estrutura da API (Cloudflare Workers)
+### Etapa 2.1: Estrutura da API (Cloudflare Workers) - ✅
 
 **Objetivo**: Implementar API serverless usando Cloudflare Workers (via React Router v7 actions/loaders).
 
@@ -722,7 +722,7 @@ Este roadmap estrutura a implementação completa do **Human-AI Cognitive Interf
 
 ---
 
-### Etapa 2.2: Actions de Contrato (Etapa 1)
+### Etapa 2.2: Actions de Contrato (Etapa 1) - ✅
 
 **Objetivo**: Implementar actions do React Router para criação e match de contratos cognitivos.
 
