@@ -2,13 +2,26 @@
 
 # dependencies
 /node_modules
+.pnpm-store
+
+# Monorepo
+.turbo
+dist/
+build/
+*.tsbuildinfo
 
 # Raycast specific files
-raycast-env.d.ts
 .raycast-swift-build
 .swiftpm
 compiled_raycast_swift
 compiled_raycast_rust
 
+# Cloudflare
+.wrangler/
+.cloudflare/
+
 # misc
 .DS_Store
+.env
+.env.local
+.env.*.local

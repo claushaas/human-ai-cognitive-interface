@@ -1,0 +1,47 @@
+{
+	"version": "1.0.0",
+	"rules": [
+		{
+			"id": "block.decision.totalOrHigh",
+			"description": "decision >= 4 é proibido",
+			"condition": "rulers.decision >= 4",
+			"action": "BLOCK",
+			"message": "Valores 4 e 5 na régua 'decision' são proibidos constitucionalmente"
+		},
+		{
+			"id": "block.source.closedButResearch",
+			"description": "Fonte fechada bloqueia papéis de pesquisa",
+			"condition": "rulers.source == 1 AND (role == 'role.explore' OR role == 'role.research')",
+			"action": "BLOCK",
+			"message": "Escopo de fonte fechada é incompatível com papéis de exploração/pesquisa"
+		},
+		{
+			"id": "block.inferenceHighWithClosedSource",
+			"description": "Inferência alta com fonte fechada é instável",
+			"condition": "rulers.inference >= 4 AND rulers.source == 1",
+			"action": "WARN",
+			"message": "Alta inferência com fonte fechada pode produzir resultados não verificáveis"
+		},
+		{
+			"id": "block.metaHighAgainstOperational",
+			"description": "Meta alta conflita com objetivo operacional",
+			"condition": "rulers.meta >= 4 AND rulers.scope <= 2",
+			"action": "CONFIRM",
+			"message": "Função meta elevada em escopo local requer confirmação de intenção"
+		},
+		{
+			"id": "block.scopeSystemicWithoutSystemicIntent",
+			"description": "Escopo sistêmico sem intenção sistêmica",
+			"condition": "rulers.scope >= 4 AND role IN ['role.analyze', 'role.document']",
+			"action": "CONFIRM",
+			"message": "Escopo sistêmico requer papel compatível (synthesize, explore, decideSupport)"
+		},
+		{
+			"id": "block.governanceRequiresDecision3",
+			"description": "N6 exige decision = 3",
+			"condition": "levelMatch.selectedLevel == 'N6' AND rulers.decision != 3",
+			"action": "BLOCK",
+			"message": "Nível N6 requer decision = 3 (governança/bloqueio)"
+		}
+	]
+}

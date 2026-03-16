@@ -1,0 +1,45 @@
+{
+	"version": "1.0.0",
+	"levels": [
+		{
+			"id": "N1",
+			"name": "Execução Estritamente Delimitada",
+			"vector": { "inference": 1, "decision": 1, "scope": 1, "source": 1, "meta": 1 }
+		},
+		{
+			"id": "N2",
+			"name": "Análise Controlada e Diagnóstico",
+			"vector": { "inference": 2, "decision": 1, "scope": 2, "source": 1, "meta": 1 }
+		},
+		{
+			"id": "N3",
+			"name": "Síntese Estruturada e Organização Cognitiva",
+			"vector": { "inference": 3, "decision": 1, "scope": 3, "source": 1, "meta": 1 }
+		},
+		{
+			"id": "N4",
+			"name": "Exploração de Alternativas e Trade-offs",
+			"vector": { "inference": 4, "decision": 1, "scope": 4, "source": 2, "meta": 1 }
+		},
+		{
+			"id": "N5",
+			"name": "Apoio à Decisão Humana",
+			"vector": { "inference": 4, "decision": 2, "scope": 4, "source": 2, "meta": 2 }
+		},
+		{
+			"id": "N6",
+			"name": "Governança, Controle e Segurança Cognitiva",
+			"vector": { "inference": 2, "decision": 3, "scope": 5, "source": 1, "meta": 3 }
+		},
+		{
+			"id": "N7",
+			"name": "Meta-Cognição e Arquitetura de Pensamento",
+			"vector": { "inference": 3, "decision": 1, "scope": 4, "source": 2, "meta": 5 }
+		},
+		{
+			"id": "N8",
+			"name": "Documentação, Contratos e Sistemas de Uso",
+			"vector": { "inference": 2, "decision": 2, "scope": 5, "source": 1, "meta": 5 }
+		}
+	]
+}

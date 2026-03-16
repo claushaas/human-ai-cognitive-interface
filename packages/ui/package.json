@@ -1,0 +1,26 @@
+{
+	"name": "@haci/ui",
+	"version": "0.0.1",
+	"private": true,
+	"description": "Shared UI components for Human-AI Cognitive Interface",
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"scripts": {
+		"build": "tsc",
+		"check-types": "tsc --noEmit",
+		"lint": "biome lint .",
+		"clean": "rm -rf dist"
+	},
+	"peerDependencies": {
+		"react": "^19.0.0",
+		"react-dom": "^19.0.0"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.3.13",
+		"@types/react": "^19.2.9",
+		"@types/react-dom": "^19.2.3",
+		"react": "19.2.4",
+		"react-dom": "19.2.4",
+		"typescript": "^5.9.3"
+	}
+}

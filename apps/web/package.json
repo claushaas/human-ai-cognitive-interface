@@ -1,0 +1,38 @@
+{
+	"name": "@haci/web",
+	"private": true,
+	"description": "Human-AI Cognitive Interface - Web App (React Router v7)",
+	"type": "module",
+	"scripts": {
+		"build": "react-router build",
+		"dev": "react-router dev",
+		"start": "wrangler dev",
+		"typecheck": "react-router typegen && tsc",
+		"lint": "biome lint .",
+		"deploy": "wrangler deploy",
+		"clean": "rm -rf .react-router build dist"
+	},
+	"dependencies": {
+		"@haci/core": "workspace:*",
+		"@haci/types": "workspace:*",
+		"@haci/ui": "workspace:*",
+		"@react-router/cloudflare": "^7.0.0",
+		"@react-router/fs-routes": "^7.0.0",
+		"@react-router/node": "^7.0.0",
+		"isbot": "^5.1.17",
+		"react": "^19.0.0",
+		"react-dom": "^19.0.0",
+		"react-router": "^7.0.0"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.3.13",
+		"@cloudflare/workers-types": "^4.20241112.0",
+		"@types/react": "^19.2.9",
+		"@types/react-dom": "^19.2.3",
+		"react-router-dev": "^7.0.0",
+		"typescript": "^5.9.3",
+		"vite": "^6.0.0",
+		"vite-tsconfig-paths": "^5.1.4",
+		"wrangler": "^3.87.2"
+	}
+}

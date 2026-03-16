@@ -1,0 +1,47 @@
+{
+	"version": "1.0.0",
+	"roles": [
+		{
+			"id": "role.analyze",
+			"label": "Analisar",
+			"description": "Entender algo que já existe",
+			"semanticLoad": ["leitura", "interpretação", "diagnóstico"],
+			"blockedBehaviors": ["criação gratuita", "execução", "decisão"]
+		},
+		{
+			"id": "role.synthesize",
+			"label": "Organizar / Sintetizar",
+			"description": "Estruturar conteúdo existente",
+			"semanticLoad": ["estrutura", "clareza", "coerência"],
+			"blockedBehaviors": ["invenção de conteúdo"]
+		},
+		{
+			"id": "role.explore",
+			"label": "Explorar alternativas",
+			"description": "Ver caminhos possíveis sem decidir",
+			"semanticLoad": ["expansão", "comparação", "trade-offs"],
+			"blockedBehaviors": ["resposta única prematura", "tom prescritivo"]
+		},
+		{
+			"id": "role.decideSupport",
+			"label": "Apoiar decisão",
+			"description": "Ajudar a pensar, mas decisão é humana",
+			"semanticLoad": ["recomendação", "justificativa"],
+			"blockedBehaviors": ["decidir por"]
+		},
+		{
+			"id": "role.document",
+			"label": "Documentar / Formalizar",
+			"description": "Transformar em algo oficial e reutilizável",
+			"semanticLoad": ["precisão terminológica", "rastreabilidade"],
+			"blockedBehaviors": ["tom informal", "explicações vagas"]
+		},
+		{
+			"id": "role.transform",
+			"label": "Transformar conteúdo",
+			"description": "Mudar forma, formato ou estrutura",
+			"semanticLoad": ["tradução", "reformatação", "reestruturação"],
+			"blockedBehaviors": ["mudança sem justificativa"]
+		}
+	]
+}
