@@ -1,4 +1,4 @@
-import type { CanonicalLevelId, RulersVector } from '@haci/types';
+import type { CanonicalLevelId, RulersVector } from '~/types';
 
 // Placeholder for match engine
 export function calculateMatch(_rulers: RulersVector) {

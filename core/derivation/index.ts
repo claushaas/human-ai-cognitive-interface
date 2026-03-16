@@ -1,4 +1,4 @@
-import type { CognitiveContract } from '@haci/types';
+import type { CognitiveContract } from '~/types';
 
 // Placeholder for derivation engine
 export function deriveCriteria(_contract: CognitiveContract) {

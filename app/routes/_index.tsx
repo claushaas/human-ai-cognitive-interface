@@ -1,7 +1,6 @@
 import { Link } from 'react-router';
-import type { Route } from './+types/_index';
 
-export function meta({}: Route.MetaArgs) {
+export function meta() {
 	return [
 		{ title: 'Human-AI Cognitive Interface' },
 		{

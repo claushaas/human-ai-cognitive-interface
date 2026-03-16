@@ -64,7 +64,7 @@ Este roadmap estrutura a implementação completa do **Human-AI Cognitive Interf
 
 ---
 
-### Etapa 0.15: Simplificação da Estrutura (Remover Monorepo)
+### Etapa 0.15: Simplificação da Estrutura (Remover Monorepo) - ✅
 
 **Objetivo**: Simplificar a arquitetura removendo o monorepo, mantendo apenas a aplicação web como foco principal.
 

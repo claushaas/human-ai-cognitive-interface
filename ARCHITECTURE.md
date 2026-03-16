@@ -39,28 +39,75 @@ O Human-AI Cognitive Interface é um sistema de mediação cognitiva que transfo
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                           Sistema                                            │
 │                                                                              │
-│  ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐         │
-│  │   apps/web      │    │  packages/core  │    │  packages/types │         │
-│  │                 │    │                 │    │                 │         │
-│  │ React Router v7 │<--->│ Motor Canônico  │<--->│  Tipos TS       │         │
-│  │ Cloudflare      │    │ (Match/Deriv)   │    │                 │         │
-│  │ Workers         │    │                 │    │                 │         │
-│  └────────┬────────┘    └─────────────────┘    └─────────────────┘         │
-│           │                                                                  │
-│           │ usa                                                              │
-│           v                                                                  │
-│  ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐         │
-│  │ packages/config │    │   Cloudflare    │    │  apps/raycast   │         │
-│  │                 │    │                 │    │                 │         │
-│  │ JSONs Canônicos │    │  D1 (SQLite)    │    │ Extensão        │         │
-│  │                 │    │  KV (Cache)     │    │ Raycast         │         │
-│  └─────────────────┘    └─────────────────┘    └─────────────────┘         │
+│  ┌─────────────────────────────────────────────────────────────────────┐   │
+│  │                     React Router v7 App                              │   │
+│  │                                                                      │   │
+│  │  ┌───────────┐    ┌───────────┐    ┌───────────┐    ┌───────────┐  │   │
+│  │  │    app/   │    │   core/   │    │  config/  │    │  types/   │  │   │
+│  │  │           │    │           │    │           │    │           │  │   │
+│  │  │ UI/Routes │<--->│ Motor     │<--->│ JSONs     │<--->│ Tipos TS  │  │   │
+│  │  │ Actions   │    │ Canônico  │    │ Canônicos │    │           │  │   │
+│  │  │ Loaders   │    │           │    │           │    │           │  │   │
+│  │  └─────┬─────┘    └───────────┘    └───────────┘    └───────────┘  │   │
+│  │        │                                                            │   │
+│  │        │ usa                                                        │   │
+│  │        v                                                            │   │
+│  │  ┌─────────────────────────────┐    ┌─────────────────────────────┐ │   │
+│  │  │      Cloudflare D1          │    │      Cloudflare KV          │ │   │
+│  │  │      (SQLite)               │    │      (Cache)                │ │   │
+│  │  └─────────────────────────────┘    └─────────────────────────────┘ │   │
+│  └─────────────────────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────────────────────┘
+```
+
+## Estrutura de Diretórios
+
+```
+/
+├── app/                      # React Router v7 app
+│   ├── root.tsx              # Root component
+│   ├── routes.ts             # Route configuration
+│   ├── routes/               # Route handlers
+│   │   ├── _index.tsx
+│   │   ├── stage-0.tsx
+│   │   ├── stage-1.tsx
+│   │   └── stage-2.tsx
+│   ├── components/           # React components
+│   ├── hooks/                # Custom hooks
+│   └── lib/                  # Utilities
+├── core/                     # Motor canônico
+│   ├── match/                # Algoritmos de match
+│   │   ├── distance.ts
+│   │   ├── weights.ts
+│   │   └── score.ts
+│   ├── derivation/           # Derivação de critérios
+│   │   ├── rules.ts
+│   │   └── implicit.ts
+│   └── prompts/              # Templates de prompt
+├── config/                   # Configurações canônicas
+│   ├── canonical-levels.json
+│   ├── cognitive-rulers.json
+│   ├── initial-roles.json
+│   ├── hard-blocks.json
+│   └── index.ts
+├── types/                    # Tipos TypeScript
+│   ├── core.ts
+│   ├── contract.ts
+│   ├── criteria.ts
+│   └── index.ts
+├── workers/                  # Cloudflare Worker
+│   └── app.ts
+├── db/                       # Database schema
+│   └── schema.sql
+├── public/                   # Assets estáticos
+├── vite.config.ts            # Vite configuration
+├── react-router.config.ts    # React Router configuration
+└── wrangler.toml             # Cloudflare Workers config
 ```
 
 ## Diagrama de Componentes (C4 - Level 3)
 
-### apps/web
+### Aplicação Web (app/)
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -85,7 +132,7 @@ O Human-AI Cognitive Interface é um sistema de mediação cognitiva que transfo
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-### packages/core
+### Motor Canônico (core/)
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐

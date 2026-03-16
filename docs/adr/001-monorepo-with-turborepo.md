@@ -1,10 +1,10 @@
-# ADR 001: Monorepo com Turborepo
+# ADR 001: Monorepo com Turborepo (Reversado)
 
 ## Status
 
-Aceito
+**Reversado** em favor de repositório simples (ver Etapa 0.15)
 
-## Contexto
+## Contexto (Original)
 
 O projeto começou como uma extensão Raycast simples em um repositório único. Conforme o escopo cresceu para incluir:
 - Web app (React Router v7)
@@ -14,61 +14,40 @@ O projeto começou como uma extensão Raycast simples em um repositório único.
 
 A necessidade de compartilhar código entre múltiplas aplicações tornou-se evidente.
 
-## Decisão
+## Decisão (Original)
 
 Adotar um monorepo gerenciado por **Turborepo**.
 
-## Alternativas Consideradas
+## Reversão
 
-### 1. Repositórios Separados (Multi-repo)
+Em março de 2026, após análise mais profunda, decidimos **reverter** para uma estrutura de repositório simples pelos seguintes motivos:
 
-**Prós:**
-- Isolamento completo entre projetos
-- Deploys independentes simples
+### Motivos para Reversão
 
-**Contras:**
-- Dificuldade em compartilhar código (types, core)
-- Versionamento complexo entre packages
-- Overhead de manutenção de múltiplos repos
+1. **Escopo Reduzido**: O projeto terá apenas a versão web como produto principal
+2. **Mobile via API**: Uma versão mobile futura pode consumir a API via loaders/actions do React Router v7
+3. **Simplificação**: Menor complexidade de tooling (sem Turborepo, workspaces, etc.)
+4. **Manutenção**: Mais simples de entender e manter para contribuidores
 
-### 2. Nx
+### Estrutura Resultante
 
-**Prós:**
-- Muito poderoso
-- Excelente para projetos enterprise
-- Computação distribuída
+```
+/
+├── app/              # React Router v7 app
+├── core/             # Motor canônico
+├── config/           # JSONs canônicos
+├── types/            # Tipos TypeScript
+├── workers/          # Cloudflare Workers
+└── package.json      # Single package, no workspaces
+```
 
-**Contras:**
-- Curva de aprendizado mais íngreme
-- Overkill para o tamanho atual do projeto
-- Configuração mais complexa
+## Lições Aprendidas
 
-### 3. Turborepo (Escolhido)
-
-**Prós:**
-- Simples de configurar
-- Caching eficiente de builds
-- Integração nativa com pnpm
-- Bom para projetos de médio porte
-- Documentação clara
-
-**Contras:**
-- Menos features que Nx
-- Ecossistema menor
-
-## Consequências
-
-### Positivas
-- Código compartilhado via `workspace:*`
-- Builds cacheados aceleram CI/CD
-- Comandos unificados via `turbo run`
-- Fácil adicionar novos apps/packages
-
-### Negativas
-- Curva de aprendizado inicial para contribuidores
-- Necessidade de entender o conceito de pipelines
+- Monorepo é valioso quando há múltiplas aplicações com releases independentes
+- Para projetos focados em uma única aplicação web, a complexidade não se justifica
+- O React Router v7 com actions/loaders permite "API embutida" sem necessidade de separação backend/frontend
 
 ## Referências
 
-- [Turborepo Documentation](https://turbo.build/repo/docs)
-- [ROADMAP.md - Etapa 0.1](./ROADMAP.md)
+- [ADR 004: Simplificação para Repositório Único](./004-simplificacao-repo-unico.md) (novo)
+- [ROADMAP.md - Etapa 0.15](./ROADMAP.md)
