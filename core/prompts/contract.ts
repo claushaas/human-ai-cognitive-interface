@@ -141,7 +141,7 @@ export function generateContractPrompt(
 	const { role, levelMatch, rulers, hardBlocks, correction } = contract;
 
 	const roleInfo = ROLE_DESCRIPTIONS[role];
-	const levelName = LEVEL_NAMES[levelMatch.selectedLevel];
+	const levelName = LEVEL_NAMES[levelMatch.selectedLevel ?? 'N1'];
 
 	let prompt = `# Contrato Cognitivo Configurado
 
@@ -257,9 +257,9 @@ Este contrato está em **modo de preparação** — o sistema irá derivar crit�
 export function generateContractSummary(contract: CognitiveContract): string {
 	const { role, levelMatch, rulers } = contract;
 	const roleInfo = ROLE_DESCRIPTIONS[role];
-	const levelName = LEVEL_NAMES[levelMatch.selectedLevel];
+	const levelName = LEVEL_NAMES[levelMatch.selectedLevel ?? 'N1'];
 
-	return `**${roleInfo.label}** em **${levelMatch.selectedLevel}** (${levelName}) — Score: ${Math.round(levelMatch.score)}%
+	return `**${roleInfo.label}** em **${levelMatch.selectedLevel ?? 'N/A'}** (${levelName}) — Score: ${Math.round(levelMatch.score)}%
 
 Réguas: inference=${rulers.inference}, decision=${rulers.decision}, scope=${rulers.scope}, source=${rulers.source}, meta=${rulers.meta}`;
 }

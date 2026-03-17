@@ -22,6 +22,18 @@ export function deriveCriteria(
 ): CollectionProtocol {
 	const { role, levelMatch, rulers } = contract;
 
+	// Se não houver nível selecionado, retornar protocolo vazio com bloqueio
+	if (!levelMatch.selectedLevel) {
+		return {
+			blockingIssue: 'No level selected',
+			collectionPayloadSchema: buildPayloadSchema([]),
+			criteria: [],
+			implicitCriteria: [],
+			protocolVersion: '1.0.0',
+			question: 'A level must be selected before deriving criteria',
+		};
+	}
+
 	// 1. Derivar todos os critérios baseados nas regras R0-R8
 	const rawCriteria = deriveAllCriteria({
 		level: levelMatch.selectedLevel,
