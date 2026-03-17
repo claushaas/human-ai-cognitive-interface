@@ -12,13 +12,15 @@
 	"description": "Human-AI Cognitive Interface - Web Application (React Router v7 + Cloudflare Workers)",
 	"devDependencies": {
 		"@biomejs/biome": "^2.4.7",
-		"@cloudflare/workers-types": "^4.20260316.1",
+		"@cloudflare/vite-plugin": "^1.29.0",
 		"@react-router/dev": "7.13.1",
+		"@tailwindcss/vite": "^4.2.1",
+		"@types/node": "^25.5.0",
 		"@types/react": "^19.2.14",
 		"@types/react-dom": "^19.2.3",
+		"tailwindcss": "^4.2.1",
 		"typescript": "^5.9.3",
 		"vite": "^8.0.0",
-		"vite-tsconfig-paths": "^6.1.1",
 		"wrangler": "^4.74.0"
 	},
 	"name": "human-ai-cognitive-interface",
@@ -34,7 +36,7 @@
 		"postinstall": "pnpm run cf-typegen",
 		"start": "wrangler dev",
 		"typecheck": "pnpm run cf-typegen && react-router typegen && tsc -b",
-		"typecheck:ci": "pnpm tsc -b",
+		"typecheck:ci": "pnpm react-router typegen && tsc -b",
 		"update": "pnpm dlx npm-check-updates -i"
 	},
 	"type": "module"

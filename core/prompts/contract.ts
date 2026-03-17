@@ -153,7 +153,7 @@ export function generateContractPrompt(
 
 ## Nível Canônico
 
-### ${levelMatch.selectedLevel}: ${levelName}
+### ${levelMatch.selectedLevel ?? 'N/A'}: ${levelName}
 
 **Score de match:** ${Math.round(levelMatch.score)}%
 

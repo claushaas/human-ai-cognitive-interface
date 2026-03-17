@@ -7,7 +7,34 @@ import {
 import { deriveCriteria } from '~/core/derivation';
 import type { CollectionPayload } from '~/core/prompts/execution-interface';
 import { createRepositories } from '~/db';
-import type { CognitiveContract, CollectionBlock } from '~/types';
+import type {
+	CognitiveContract,
+	CollectionBlock,
+	CollectionProtocol,
+} from '~/types';
+
+/**
+ * Extrai critérios e blocos do protocolo derivado
+ */
+function extractProtocolData(protocol: CollectionProtocol) {
+	const schema = protocol.collectionPayloadSchema as Record<
+		string,
+		unknown
+	> | null;
+	const criteriaIds = Object.keys(schema?.properties || {});
+
+	const blocksJson = protocol.criteria.map((block: CollectionBlock) => ({
+		avoid: block.avoid,
+		example: block.example,
+		id: block.id,
+		include: block.include,
+		instruction: block.instruction,
+		rationale: block.rationale,
+		title: block.title,
+	}));
+
+	return { blocksJson, criteriaIds };
+}
 
 export async function loader({ params, context }: LoaderFunctionArgs) {
 	const db = context.cloudflare.env.DB;
@@ -35,6 +62,7 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
 	]);
 	if (!modeValidation.valid) {
 		return createValidationErrorResponse(
+			sessionId,
 			modeValidation.error || 'Invalid mode',
 			modeValidation.status,
 		);
@@ -65,22 +93,8 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
 	if (!protocol) {
 		const derivedProtocol = deriveCriteria(contractData);
 
-		// Extrair critérios e blocos para armazenamento
-		const schema = derivedProtocol.collectionPayloadSchema as Record<
-			string,
-			unknown
-		> | null;
-		const criteriaIds = Object.keys(schema?.properties || {});
-
-		const blocksJson = derivedProtocol.criteria.map((block) => ({
-			avoid: block.avoid,
-			example: block.example,
-			id: block.id,
-			include: block.include,
-			instruction: block.instruction,
-			rationale: block.rationale,
-			title: block.title,
-		}));
+		// Extrair critérios e blocos usando helper
+		const { blocksJson, criteriaIds } = extractProtocolData(derivedProtocol);
 
 		const protocolId = crypto.randomUUID();
 		await repos.collectionProtocols.create(
@@ -168,6 +182,7 @@ export async function action({ params, request, context }: ActionFunctionArgs) {
 	]);
 	if (!modeValidation.valid) {
 		return createValidationErrorResponse(
+			sessionId,
 			modeValidation.error || 'Invalid mode',
 			modeValidation.status,
 		);
@@ -216,22 +231,8 @@ async function handleDeriveProtocol(
 	// Derivar protocolo
 	const protocol = deriveCriteria(contractData);
 
-	// Extrair critérios e blocos
-	const schema = protocol.collectionPayloadSchema as Record<
-		string,
-		unknown
-	> | null;
-	const criteriaIds = Object.keys(schema?.properties || {});
-
-	const blocksJson = protocol.criteria.map((block) => ({
-		avoid: block.avoid,
-		example: block.example,
-		id: block.id,
-		include: block.include,
-		instruction: block.instruction,
-		rationale: block.rationale,
-		title: block.title,
-	}));
+	// Extrair critérios e blocos usando helper
+	const { blocksJson, criteriaIds } = extractProtocolData(protocol);
 
 	// Salvar protocolo
 	const protocolId = crypto.randomUUID();

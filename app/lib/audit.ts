@@ -43,11 +43,7 @@ export function auditLog(
 ): void {
 	const entry: AuditLogEntry = {
 		eventType,
-		payload: {
-			...payload,
-			// Sanitização básica - evitar log de dados sensíveis
-			timestamp: new Date().toISOString(),
-		},
+		payload,
 		sessionId,
 		timestamp: new Date().toISOString(),
 	};

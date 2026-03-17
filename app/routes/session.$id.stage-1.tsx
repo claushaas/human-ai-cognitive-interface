@@ -7,7 +7,6 @@ import {
 } from '~/app/lib/audit';
 import {
 	createValidationErrorResponse,
-	validateConstitutionalCap,
 	validateRulersVector,
 	validateSessionMode,
 } from '~/app/lib/validation';
@@ -49,6 +48,7 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
 	]);
 	if (!modeValidation.valid) {
 		return createValidationErrorResponse(
+			sessionId,
 			modeValidation.error ?? 'Invalid mode',
 			modeValidation.status,
 		);
@@ -97,6 +97,7 @@ export async function action({ params, request, context }: ActionFunctionArgs) {
 	]);
 	if (!modeValidation.valid) {
 		return createValidationErrorResponse(
+			sessionId,
 			modeValidation.error ?? 'Invalid mode',
 			modeValidation.status,
 		);
@@ -141,19 +142,11 @@ async function handleCalculateMatch(
 	const rulers = JSON.parse(rulersParam as string) as RulersVector;
 	const role = roleParam as string;
 
-	// Validação do cap constitucional: decision <= 3
-	const capValidation = validateConstitutionalCap(rulers);
-	if (!capValidation.valid) {
-		return createValidationErrorResponse(
-			capValidation.error || 'Constitutional violation',
-			capValidation.status,
-		);
-	}
-
-	// Validação completa das réguas
+	// Validação completa das réguas (inclui cap constitucional)
 	const rulersValidation = validateRulersVector(rulers);
 	if (!rulersValidation.valid) {
 		return createValidationErrorResponse(
+			sessionId,
 			rulersValidation.error || 'Invalid rulers',
 			rulersValidation.status,
 		);
@@ -276,12 +269,13 @@ async function handleApplyCorrection(
 		...delta,
 	};
 
-	// Validar cap constitucional após correção
-	const capValidation = validateConstitutionalCap(correctedRulers);
-	if (!capValidation.valid) {
+	// Validar réguas corrigidas (inclui cap constitucional)
+	const rulersValidation = validateRulersVector(correctedRulers);
+	if (!rulersValidation.valid) {
 		return createValidationErrorResponse(
-			capValidation.error || 'Constitutional violation after correction',
-			capValidation.status,
+			sessionId,
+			rulersValidation.error || 'Constitutional violation after correction',
+			rulersValidation.status,
 		);
 	}
 
@@ -343,12 +337,13 @@ async function handleConfirmContract(
 
 	const rulers = JSON.parse(rulersParam as string) as RulersVector;
 
-	// Validar cap constitucional antes de confirmar
-	const capValidation = validateConstitutionalCap(rulers);
-	if (!capValidation.valid) {
+	// Validação completa das réguas (inclui cap constitucional)
+	const rulersValidation = validateRulersVector(rulers);
+	if (!rulersValidation.valid) {
 		return createValidationErrorResponse(
-			capValidation.error || 'Constitutional violation',
-			capValidation.status,
+			sessionId,
+			rulersValidation.error || 'Constitutional violation',
+			rulersValidation.status,
 		);
 	}
 

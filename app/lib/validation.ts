@@ -1,3 +1,4 @@
+import { logValidationError } from '~/app/lib/audit';
 import type { ModeId, RulersVector } from '~/types';
 
 /**
@@ -73,45 +74,26 @@ export function validateRulersVector(
 		return capValidation;
 	}
 
-	// Validar ranges
-	if (rulers.inference < 1 || rulers.inference > 5) {
-		return {
-			error: 'Invalid range: inference must be between 1 and 5',
-			status: 400,
-			valid: false,
-		};
-	}
+	// Validar ranges usando configuração DRY
+	const rulerValidations: {
+		[key in keyof RulersVector]?: { min: number; max: number };
+	} = {
+		decision: { max: 3, min: 1 },
+		inference: { max: 5, min: 1 },
+		meta: { max: 5, min: 1 },
+		scope: { max: 5, min: 1 },
+		source: { max: 5, min: 1 },
+	};
 
-	if (rulers.decision < 1 || rulers.decision > 3) {
-		return {
-			error: 'Invalid range: decision must be between 1 and 3',
-			status: 400,
-			valid: false,
-		};
-	}
-
-	if (rulers.scope < 1 || rulers.scope > 5) {
-		return {
-			error: 'Invalid range: scope must be between 1 and 5',
-			status: 400,
-			valid: false,
-		};
-	}
-
-	if (rulers.source < 1 || rulers.source > 5) {
-		return {
-			error: 'Invalid range: source must be between 1 and 5',
-			status: 400,
-			valid: false,
-		};
-	}
-
-	if (rulers.meta < 1 || rulers.meta > 5) {
-		return {
-			error: 'Invalid range: meta must be between 1 and 5',
-			status: 400,
-			valid: false,
-		};
+	for (const [ruler, range] of Object.entries(rulerValidations)) {
+		const value = rulers[ruler as keyof RulersVector];
+		if (value < range.min || value > range.max) {
+			return {
+				error: `Invalid range: ${ruler} must be between ${range.min} and ${range.max}`,
+				status: 400,
+				valid: false,
+			};
+		}
 	}
 
 	return { status: 200, valid: true };
@@ -120,23 +102,18 @@ export function validateRulersVector(
 /**
  * Cria uma resposta de erro padronizada para validações
  *
+ * @param sessionId - ID da sessão para auditoria
  * @param error - Mensagem de erro
  * @param status - Código HTTP de status
  * @returns Response HTTP formatada
  */
 export function createValidationErrorResponse(
+	sessionId: string,
 	error: string,
 	status: number,
 ): Response {
-	// Log para auditoria (Cloudflare Workers)
-	console.log(
-		JSON.stringify({
-			error,
-			status,
-			timestamp: new Date().toISOString(),
-			type: 'VALIDATION_ERROR',
-		}),
-	);
+	// Log para auditoria usando sistema centralizado
+	logValidationError(sessionId, error, { status });
 
 	return new Response(JSON.stringify({ error }), {
 		headers: { 'Content-Type': 'application/json' },
