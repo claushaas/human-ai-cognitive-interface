@@ -766,7 +766,9 @@ Este roadmap estrutura a implementação completa do **Human-AI Cognitive Interf
 
 ---
 
-### Etapa 2.3: Actions de Coleta (Etapa 2)
+### Etapa 2.3: Actions de Coleta (Etapa 2) - ✅
+
+✅ **Concluída**: Implementado loader e actions para protocolo de coleta em `app/routes/session.$id.stage-2.tsx`
 
 **Objetivo**: Implementar actions do React Router para derivação e execução do protocolo de coleta.
 
@@ -810,7 +812,7 @@ Este roadmap estrutura a implementação completa do **Human-AI Cognitive Interf
 
 ---
 
-### Etapa 2.4: Validação e Governança
+### Etapa 2.4: Validação e Governança - ✅
 
 **Objetivo**: Implementar validações e bloqueios nas actions do React Router.
 

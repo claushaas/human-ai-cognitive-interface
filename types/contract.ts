@@ -1,7 +1,7 @@
 import type { CanonicalLevelId, InitialRoleId, RulersVector } from './core';
 
 export type LevelMatch = {
-	selectedLevel: CanonicalLevelId;
+	selectedLevel?: CanonicalLevelId;
 	score: number;
 	candidates: Array<{
 		level: CanonicalLevelId;

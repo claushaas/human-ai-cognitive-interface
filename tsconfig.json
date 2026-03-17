@@ -1,40 +1,18 @@
 {
-	"$schema": "https://json.schemastore.org/tsconfig",
 	"compilerOptions": {
-		"baseUrl": ".",
-		"esModuleInterop": true,
-		"forceConsistentCasingInFileNames": true,
-		"isolatedModules": true,
-		"jsx": "react-jsx",
-		"lib": ["ES2022", "DOM", "DOM.Iterable"],
-		"module": "ESNext",
-		"moduleResolution": "bundler",
+		"checkJs": true,
 		"noEmit": true,
-		"noFallthroughCasesInSwitch": true,
-		"noUnusedLocals": true,
-		"noUnusedParameters": true,
-		"paths": {
-			"~/*": ["./*"]
-		},
-		"resolveJsonModule": true,
-		"rootDirs": [".", "./.react-router/types"],
 		"skipLibCheck": true,
 		"strict": true,
-		"target": "ES2022",
-		"types": [
-			"@react-router/cloudflare",
-			"@cloudflare/workers-types",
-			"vite/client"
-		],
 		"verbatimModuleSyntax": true
 	},
-	"exclude": ["node_modules", "build", "dist"],
-	"include": [
-		"app/**/*.ts",
-		"app/**/*.tsx",
-		"core/**/*.ts",
-		"types/**/*.ts",
-		"config/**/*.ts",
-		"workers/**/*.ts"
+	"files": [],
+	"references": [
+		{
+			"path": "./tsconfig.node.json"
+		},
+		{
+			"path": "./tsconfig.cloudflare.json"
+		}
 	]
 }
