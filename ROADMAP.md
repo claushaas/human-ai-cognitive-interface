@@ -812,7 +812,7 @@ Este roadmap estrutura a implementação completa do **Human-AI Cognitive Interf
 
 ---
 
-### Etapa 2.4: Validação e Governança
+### Etapa 2.4: Validação e Governança - ✅
 
 **Objetivo**: Implementar validações e bloqueios nas actions do React Router.
 

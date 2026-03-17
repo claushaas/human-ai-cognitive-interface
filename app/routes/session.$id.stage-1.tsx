@@ -1,4 +1,16 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs } from 'react-router';
+import {
+	logContractConfirmed,
+	logCorrection,
+	logHardBlock,
+	logMatchDecision,
+} from '~/app/lib/audit';
+import {
+	createValidationErrorResponse,
+	validateConstitutionalCap,
+	validateRulersVector,
+	validateSessionMode,
+} from '~/app/lib/validation';
 import { calculateMatch } from '~/core/match';
 import { createRepositories } from '~/db';
 import type {
@@ -30,6 +42,18 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
 		});
 	}
 
+	// Validação de modo: Stage 1 requer MODE_PREPARATION ou MODE_GOVERNANCE
+	const modeValidation = validateSessionMode(session.mode, [
+		'MODE_PREPARATION',
+		'MODE_GOVERNANCE',
+	]);
+	if (!modeValidation.valid) {
+		return createValidationErrorResponse(
+			modeValidation.error ?? 'Invalid mode',
+			modeValidation.status,
+		);
+	}
+
 	const contracts = await repos.contracts.findBySessionId(sessionId);
 	const latestContract = contracts[0];
 
@@ -58,12 +82,32 @@ export async function action({ params, request, context }: ActionFunctionArgs) {
 		});
 	}
 
+	// Buscar sessão para validação de modo
+	const session = await repos.sessions.findById(sessionId);
+	if (!session) {
+		return new Response(JSON.stringify({ error: 'Session not found' }), {
+			headers: { 'Content-Type': 'application/json' },
+			status: 404,
+		});
+	}
+
+	// Validação de modo: Actions de Stage 1 requerem MODE_PREPARATION
+	const modeValidation = validateSessionMode(session.mode, [
+		'MODE_PREPARATION',
+	]);
+	if (!modeValidation.valid) {
+		return createValidationErrorResponse(
+			modeValidation.error ?? 'Invalid mode',
+			modeValidation.status,
+		);
+	}
+
 	const formData = await request.formData();
 	const actionType = formData.get('_action');
 
 	switch (actionType) {
 		case 'calculate-match':
-			return handleCalculateMatch(formData, repos);
+			return handleCalculateMatch(formData, sessionId, repos);
 		case 'apply-correction':
 			return handleApplyCorrection(formData, sessionId, repos);
 		case 'confirm-contract':
@@ -78,6 +122,7 @@ export async function action({ params, request, context }: ActionFunctionArgs) {
 
 async function handleCalculateMatch(
 	formData: FormData,
+	sessionId: string,
 	_repos: ReturnType<typeof createRepositories>,
 ) {
 	const rulersParam = formData.get('rulers');
@@ -96,8 +141,42 @@ async function handleCalculateMatch(
 	const rulers = JSON.parse(rulersParam as string) as RulersVector;
 	const role = roleParam as string;
 
+	// Validação do cap constitucional: decision <= 3
+	const capValidation = validateConstitutionalCap(rulers);
+	if (!capValidation.valid) {
+		return createValidationErrorResponse(
+			capValidation.error || 'Constitutional violation',
+			capValidation.status,
+		);
+	}
+
+	// Validação completa das réguas
+	const rulersValidation = validateRulersVector(rulers);
+	if (!rulersValidation.valid) {
+		return createValidationErrorResponse(
+			rulersValidation.error || 'Invalid rulers',
+			rulersValidation.status,
+		);
+	}
+
 	// Calcular match usando motor canônico
 	const matchResult = calculateMatch(rulers, role as InitialRoleId);
+
+	// Log de auditoria para decisões de match
+	logMatchDecision(sessionId, rulers, {
+		autoSelected: matchResult.autoSelected,
+		hasCorrections: !!matchResult.corrections?.length,
+		hasHardBlocks: !!matchResult.hardBlocks?.length,
+		score: matchResult.score,
+		selectedLevel: matchResult.selectedLevel,
+	});
+
+	// Log de hard blocks se houver
+	if (matchResult.hardBlocks?.length) {
+		for (const block of matchResult.hardBlocks) {
+			logHardBlock(sessionId, block.ruleId, block.message, block.severity);
+		}
+	}
 
 	// Transformar para formato serializável
 	const levelMatch: LevelMatch = {
@@ -135,7 +214,7 @@ async function handleCalculateMatch(
 
 async function handleApplyCorrection(
 	formData: FormData,
-	_sessionId: string,
+	sessionId: string,
 	_repos: ReturnType<typeof createRepositories>,
 ) {
 	const rulersParam = formData.get('rulers');
@@ -197,6 +276,15 @@ async function handleApplyCorrection(
 		...delta,
 	};
 
+	// Validar cap constitucional após correção
+	const capValidation = validateConstitutionalCap(correctedRulers);
+	if (!capValidation.valid) {
+		return createValidationErrorResponse(
+			capValidation.error || 'Constitutional violation after correction',
+			capValidation.status,
+		);
+	}
+
 	const role = formData.get('role') as string;
 
 	// Recalcular match com réguas corrigidas
@@ -215,6 +303,9 @@ async function handleApplyCorrection(
 		reason: 'Local correction applied by user',
 		rulersDelta: delta,
 	};
+
+	// Log de auditoria da correção aplicada
+	logCorrection(sessionId, originalRulers, correctedRulers, delta);
 
 	return new Response(
 		JSON.stringify({
@@ -251,6 +342,16 @@ async function handleConfirmContract(
 	}
 
 	const rulers = JSON.parse(rulersParam as string) as RulersVector;
+
+	// Validar cap constitucional antes de confirmar
+	const capValidation = validateConstitutionalCap(rulers);
+	if (!capValidation.valid) {
+		return createValidationErrorResponse(
+			capValidation.error || 'Constitutional violation',
+			capValidation.status,
+		);
+	}
+
 	const levelMatch = JSON.parse(levelMatchParam as string) as LevelMatch;
 	const hardBlocks = hardBlocksParam
 		? (JSON.parse(hardBlocksParam as string) as HardBlock[])
@@ -278,6 +379,15 @@ async function handleConfirmContract(
 		contract,
 		current_stage: 1,
 	});
+
+	// Log de auditoria da confirmação do contrato
+	logContractConfirmed(
+		sessionId,
+		contractId,
+		role,
+		levelMatch.selectedLevel || 'N/A',
+		rulers,
+	);
 
 	return new Response(
 		JSON.stringify({

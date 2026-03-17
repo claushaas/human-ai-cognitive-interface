@@ -1,4 +1,9 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs } from 'react-router';
+import { logModeTransition, logProtocolDerived } from '~/app/lib/audit';
+import {
+	createValidationErrorResponse,
+	validateSessionMode,
+} from '~/app/lib/validation';
 import { deriveCriteria } from '~/core/derivation';
 import type { CollectionPayload } from '~/core/prompts/execution-interface';
 import { createRepositories } from '~/db';
@@ -22,6 +27,17 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
 			headers: { 'Content-Type': 'application/json' },
 			status: 404,
 		});
+	}
+
+	// Validação de modo: Stage 2 requer MODE_PREPARATION
+	const modeValidation = validateSessionMode(session.mode, [
+		'MODE_PREPARATION',
+	]);
+	if (!modeValidation.valid) {
+		return createValidationErrorResponse(
+			modeValidation.error || 'Invalid mode',
+			modeValidation.status,
+		);
 	}
 
 	const contracts = await repos.contracts.findBySessionId(sessionId);
@@ -80,6 +96,14 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
 			protocol: derivedProtocol as unknown as CollectionPayload,
 		});
 
+		// Log de auditoria da derivação do protocolo
+		logProtocolDerived(
+			sessionId,
+			protocolId,
+			derivedProtocol.criteria.length,
+			derivedProtocol.implicitCriteria,
+		);
+
 		// Recarregar protocolo criado
 		const protocols =
 			await repos.collectionProtocols.findBySessionId(sessionId);
@@ -127,6 +151,26 @@ export async function action({ params, request, context }: ActionFunctionArgs) {
 			headers: { 'Content-Type': 'application/json' },
 			status: 400,
 		});
+	}
+
+	// Buscar sessão para validação de modo
+	const session = await repos.sessions.findById(sessionId);
+	if (!session) {
+		return new Response(JSON.stringify({ error: 'Session not found' }), {
+			headers: { 'Content-Type': 'application/json' },
+			status: 404,
+		});
+	}
+
+	// Validação de modo: Actions de Stage 2 requerem MODE_PREPARATION
+	const modeValidation = validateSessionMode(session.mode, [
+		'MODE_PREPARATION',
+	]);
+	if (!modeValidation.valid) {
+		return createValidationErrorResponse(
+			modeValidation.error || 'Invalid mode',
+			modeValidation.status,
+		);
 	}
 
 	const formData = await request.formData();
@@ -203,6 +247,14 @@ async function handleDeriveProtocol(
 	await repos.sessions.update(sessionId, {
 		protocol: protocol as unknown as CollectionPayload,
 	});
+
+	// Log de auditoria da derivação do protocolo
+	logProtocolDerived(
+		sessionId,
+		protocolId,
+		protocol.criteria.length,
+		protocol.implicitCriteria,
+	);
 
 	return new Response(
 		JSON.stringify({
@@ -354,6 +406,14 @@ async function handleCompleteCollection(
 			current_stage: 2,
 			mode: 'MODE_EXECUTION',
 		});
+
+		// Log de auditoria da transição de modo
+		logModeTransition(
+			sessionId,
+			session.mode,
+			'MODE_EXECUTION',
+			'Collection completed, transitioning to execution',
+		);
 	}
 
 	// Gerar payload final para execução
