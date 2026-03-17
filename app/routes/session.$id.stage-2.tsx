@@ -1,5 +1,6 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs } from 'react-router';
 import { deriveCriteria } from '~/core/derivation';
+import type { CollectionPayload } from '~/core/prompts/execution-interface';
 import { createRepositories } from '~/db';
 import type { CognitiveContract, CollectionBlock } from '~/types';
 
@@ -49,9 +50,11 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
 		const derivedProtocol = deriveCriteria(contractData);
 
 		// Extrair critérios e blocos para armazenamento
-		const criteriaIds = Object.keys(
-			derivedProtocol.collectionPayloadSchema.properties || {},
-		);
+		const schema = derivedProtocol.collectionPayloadSchema as Record<
+			string,
+			unknown
+		> | null;
+		const criteriaIds = Object.keys(schema?.properties || {});
 
 		const blocksJson = derivedProtocol.criteria.map((block) => ({
 			avoid: block.avoid,
@@ -64,7 +67,7 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
 		}));
 
 		const protocolId = crypto.randomUUID();
-		protocol = await repos.collectionProtocols.create(
+		await repos.collectionProtocols.create(
 			protocolId,
 			sessionId,
 			latestContract.id,
@@ -72,10 +75,14 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
 			blocksJson as unknown as string[],
 		);
 
-		// Atualizar sessão com protocolo
+		// Atualizar sessão com protocolo (armazenado como JSON string)
 		await repos.sessions.update(sessionId, {
 			protocol: derivedProtocol as unknown as CollectionPayload,
 		});
+
+		// Recarregar protocolo criado
+		const protocols = await repos.collectionProtocols.findBySessionId(sessionId);
+		protocol = protocols[0];
 	}
 
 	const protocolData = protocol
@@ -165,9 +172,8 @@ async function handleDeriveProtocol(
 	const protocol = deriveCriteria(contractData);
 
 	// Extrair critérios e blocos
-	const criteriaIds = Object.keys(
-		protocol.collectionPayloadSchema.properties || {},
-	);
+	const schema = protocol.collectionPayloadSchema as Record<string, unknown> | null;
+	const criteriaIds = Object.keys(schema?.properties || {});
 
 	const blocksJson = protocol.criteria.map((block) => ({
 		avoid: block.avoid,
@@ -272,7 +278,7 @@ async function handleSubmitResponse(
 	}
 
 	// Atualizar payload no banco
-	const _updatedProtocol = await repos.collectionProtocols.update(protocol.id, {
+	await repos.collectionProtocols.update(protocol.id, {
 		payload: currentResponses as unknown as CollectionPayload,
 		status: 'in_progress',
 	});

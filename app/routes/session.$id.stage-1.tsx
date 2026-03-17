@@ -106,7 +106,7 @@ async function handleCalculateMatch(
 			score: c.score,
 		})),
 		score: matchResult.score,
-		selectedLevel: matchResult.selectedLevel,
+		selectedLevel: matchResult.selectedLevel!,
 	};
 
 	const hardBlocks: HardBlock[] =
@@ -121,9 +121,6 @@ async function handleCalculateMatch(
 			reason: c.reason,
 			rulersDelta: c.rulersDelta,
 		})) || [];
-
-	// Armazenar resultado temporário na sessão (para uso no apply-correction)
-	const _session = await repos.sessions.findById('__temp_match_session__');
 
 	return new Response(
 		JSON.stringify({

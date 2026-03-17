@@ -8,15 +8,13 @@ const requestHandler = createRequestHandler({
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-expect-error: tipo do build gerado dinamicamente
 	build: () => build as unknown,
-	getLoadContext(_request: Request, env: Env) {
-		return { env };
+	getLoadContext: (eventContext) => {
+		return { env: eventContext.env as Env };
 	},
 });
 
 export default {
-	async fetch(request: Request, _env: Env): Promise<Response> {
-		return requestHandler(request);
-	},
+	fetch: requestHandler,
 } satisfies ExportedHandler<Env>;
 
 interface Env {
