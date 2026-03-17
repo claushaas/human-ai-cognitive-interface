@@ -78,7 +78,7 @@ export async function action({ params, request, context }: ActionFunctionArgs) {
 
 async function handleCalculateMatch(
 	formData: FormData,
-	repos: ReturnType<typeof createRepositories>,
+	_repos: ReturnType<typeof createRepositories>,
 ) {
 	const rulersParam = formData.get('rulers');
 	const roleParam = formData.get('role');
@@ -106,7 +106,7 @@ async function handleCalculateMatch(
 			score: c.score,
 		})),
 		score: matchResult.score,
-		selectedLevel: matchResult.selectedLevel!,
+		selectedLevel: matchResult.selectedLevel,
 	};
 
 	const hardBlocks: HardBlock[] =

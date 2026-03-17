@@ -81,7 +81,8 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
 		});
 
 		// Recarregar protocolo criado
-		const protocols = await repos.collectionProtocols.findBySessionId(sessionId);
+		const protocols =
+			await repos.collectionProtocols.findBySessionId(sessionId);
 		protocol = protocols[0];
 	}
 
@@ -172,7 +173,10 @@ async function handleDeriveProtocol(
 	const protocol = deriveCriteria(contractData);
 
 	// Extrair critérios e blocos
-	const schema = protocol.collectionPayloadSchema as Record<string, unknown> | null;
+	const schema = protocol.collectionPayloadSchema as Record<
+		string,
+		unknown
+	> | null;
 	const criteriaIds = Object.keys(schema?.properties || {});
 
 	const blocksJson = protocol.criteria.map((block) => ({
