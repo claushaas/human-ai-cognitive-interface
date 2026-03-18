@@ -1,4 +1,13 @@
+import { useEffect, useState } from 'react';
 import type { ActionFunctionArgs, LoaderFunctionArgs } from 'react-router';
+import { Form, useFetcher, useLoaderData, useNavigate } from 'react-router';
+import {
+	ContractConfirmation,
+	CorrectionsUI,
+	HardBlocksAlert,
+	MatchVisualization,
+	RulersPanel,
+} from '~/components/stages';
 import type { MatchCandidate } from '~/core/match';
 import { calculateMatch } from '~/core/match';
 import { createRepositories } from '~/db';
@@ -14,6 +23,7 @@ import {
 	validateSessionMode,
 } from '~/lib/validation';
 import type {
+	CanonicalLevelId,
 	CognitiveContract,
 	HardBlock,
 	InitialRoleId,
@@ -21,6 +31,15 @@ import type {
 	LocalCorrection,
 	RulersVector,
 } from '~/types';
+
+// Valores padrão das réguas
+const DEFAULT_RULERS: RulersVector = {
+	decision: 1,
+	inference: 3,
+	meta: 1,
+	scope: 2,
+	source: 1,
+};
 
 export async function loader({ params, context }: LoaderFunctionArgs) {
 	const db = context.cloudflare.env.DB;
@@ -401,5 +420,276 @@ async function handleConfirmContract(
 			success: true,
 		}),
 		{ headers: { 'Content-Type': 'application/json' } },
+	);
+}
+
+// Componente UI da página
+export default function Stage1Page() {
+	const loaderData = useLoaderData<typeof loader>();
+	const fetcher = useFetcher();
+	const navigate = useNavigate();
+
+	// Parse session data from loader
+	const sessionData = loaderData ? JSON.parse(String(loaderData)) : null;
+	const session = sessionData?.session as
+		| {
+				id: string;
+				role: InitialRoleId;
+				contract: CognitiveContract | null;
+				mode: string;
+		  }
+		| undefined;
+
+	// Estados locais
+	const [rulers, setRulers] = useState<RulersVector>(
+		session?.contract?.rulers || DEFAULT_RULERS,
+	);
+	const [matchResult, setMatchResult] = useState<{
+		levelMatch: LevelMatch;
+		hardBlocks: HardBlock[];
+		corrections: LocalCorrection[];
+		autoSelected: boolean;
+	} | null>(null);
+	const [selectedLevel, setSelectedLevel] = useState<
+		CanonicalLevelId | undefined
+	>(session?.contract?.levelMatch?.selectedLevel);
+	const [correction, setCorrection] = useState<LocalCorrection | undefined>(
+		session?.contract?.correction,
+	);
+	const [view, setView] = useState<'rulers' | 'match' | 'confirm'>(
+		session?.contract ? 'confirm' : 'rulers',
+	);
+
+	// Processar resposta do fetcher
+	useEffect(() => {
+		if (fetcher.data) {
+			const data = fetcher.data as {
+				levelMatch?: LevelMatch;
+				hardBlocks?: HardBlock[];
+				corrections?: LocalCorrection[];
+				autoSelected?: boolean;
+				correctedRulers?: RulersVector;
+				correction?: LocalCorrection;
+				redirect?: string;
+				success?: boolean;
+				error?: string;
+			};
+
+			if (data.error) {
+				// Tratar erro
+				alert(data.error);
+				return;
+			}
+
+			// Se redirecionamento, navegar
+			if (data.redirect && data.success) {
+				navigate(data.redirect);
+				return;
+			}
+
+			// Se correção aplicada
+			if (data.correctedRulers) {
+				setRulers(data.correctedRulers);
+				setCorrection(data.correction);
+			}
+
+			// Se resultado do match
+			if (data.levelMatch) {
+				setMatchResult({
+					autoSelected: data.autoSelected ?? false,
+					corrections: data.corrections || [],
+					hardBlocks: data.hardBlocks || [],
+					levelMatch: data.levelMatch,
+				});
+				setSelectedLevel(data.levelMatch.selectedLevel);
+				setView('match');
+			}
+		}
+	}, [fetcher.data, navigate]);
+
+	// Handler para calcular match
+	const handleCalculateMatch = () => {
+		if (!session) return;
+		const formData = new FormData();
+		formData.append('_action', 'calculate-match');
+		formData.append('rulers', JSON.stringify(rulers));
+		formData.append('role', session.role);
+
+		fetcher.submit(formData, {
+			action: `/session/${session.id}/stage-1`,
+			method: 'post',
+		});
+	};
+
+	// Handler para aplicar correção
+	const handleApplyCorrection = (delta: Partial<RulersVector>) => {
+		if (!session) return;
+		const formData = new FormData();
+		formData.append('_action', 'apply-correction');
+		formData.append('rulers', JSON.stringify(rulers));
+		formData.append('delta', JSON.stringify(delta));
+		formData.append('role', session.role);
+
+		fetcher.submit(formData, {
+			action: `/session/${session.id}/stage-1`,
+			method: 'post',
+		});
+	};
+
+	// Handler para confirmar contrato
+	const handleConfirmContract = () => {
+		if (!session || !matchResult) return;
+
+		const formData = new FormData();
+		formData.append('_action', 'confirm-contract');
+		formData.append('rulers', JSON.stringify(rulers));
+		formData.append('levelMatch', JSON.stringify(matchResult.levelMatch));
+		formData.append('hardBlocks', JSON.stringify(matchResult.hardBlocks));
+		formData.append('role', session.role);
+		if (correction) {
+			formData.append('correction', JSON.stringify(correction));
+		}
+
+		fetcher.submit(formData, {
+			action: `/session/${session.id}/stage-1`,
+			method: 'post',
+		});
+	};
+
+	const isLoading = fetcher.state === 'submitting';
+
+	return (
+		<div className="min-h-screen bg-bg-secondary">
+			{/* Header */}
+			<header className="border-b border-border-primary bg-bg-primary">
+				<div className="container-page py-6">
+					<div className="flex items-center gap-3">
+						<div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+							<svg
+								aria-hidden="true"
+								className="w-6 h-6 text-text-inverse"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24"
+							>
+								<path
+									d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									strokeWidth={2}
+								/>
+							</svg>
+						</div>
+						<div>
+							<h1 className="text-xl font-semibold text-text-primary">
+								Etapa 1 — Configuração do Contrato
+							</h1>
+							<p className="text-sm text-text-secondary">
+								Ajuste as réguas e confirme o nível canônico
+							</p>
+						</div>
+					</div>
+				</div>
+			</header>
+
+			{/* Main Content */}
+			<main className="container-page py-8">
+				<div className="max-w-4xl mx-auto space-y-6">
+					{/* Tela de Réguas */}
+					{view === 'rulers' && session && (
+						<>
+							<RulersPanel
+								disabled={isLoading}
+								onChange={setRulers}
+								rulers={rulers}
+							/>
+
+							<div className="flex gap-4">
+								<Form action={`/session/${session.id}`} className="flex-1">
+									<button
+										className="w-full py-3 px-4 bg-bg-tertiary text-text-secondary rounded-lg font-medium hover:bg-border-secondary transition-colors"
+										disabled={isLoading}
+										type="submit"
+									>
+										Voltar
+									</button>
+								</Form>
+								<button
+									className="flex-1 py-3 px-4 bg-primary text-text-inverse rounded-lg font-medium hover:bg-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+									disabled={isLoading}
+									onClick={handleCalculateMatch}
+									type="button"
+								>
+									{isLoading ? 'Calculando...' : 'Calcular Match'}
+								</button>
+							</div>
+						</>
+					)}
+
+					{/* Tela de Match */}
+					{view === 'match' && matchResult && (
+						<>
+							<MatchVisualization
+								currentRulers={rulers}
+								levelMatch={matchResult.levelMatch}
+								onSelectLevel={setSelectedLevel}
+								selectedLevel={selectedLevel}
+							/>
+
+							{matchResult.hardBlocks.length > 0 && (
+								<HardBlocksAlert blocks={matchResult.hardBlocks} />
+							)}
+
+							{matchResult.corrections.length > 0 && (
+								<CorrectionsUI
+									corrections={matchResult.corrections}
+									currentRulers={rulers}
+									isLoading={isLoading}
+									onApplyCorrection={handleApplyCorrection}
+									onSkip={() => setView('confirm')}
+								/>
+							)}
+
+							<div className="flex gap-4">
+								<button
+									className="flex-1 py-3 px-4 bg-bg-tertiary text-text-secondary rounded-lg font-medium hover:bg-border-secondary transition-colors"
+									disabled={isLoading}
+									onClick={() => setView('rulers')}
+									type="button"
+								>
+									Voltar
+								</button>
+								{matchResult.corrections.length === 0 && (
+									<button
+										className="flex-1 py-3 px-4 bg-primary text-text-inverse rounded-lg font-medium hover:bg-primary-dark transition-colors"
+										disabled={isLoading}
+										onClick={() => setView('confirm')}
+										type="button"
+									>
+										Continuar
+									</button>
+								)}
+							</div>
+						</>
+					)}
+
+					{/* Tela de Confirmação */}
+					{view === 'confirm' && matchResult && session && (
+						<ContractConfirmation
+							contract={{
+								correction,
+								hardBlocks: matchResult.hardBlocks,
+								levelMatch: matchResult.levelMatch,
+								role: session.role,
+								rulers,
+							}}
+							isLoading={isLoading}
+							onBack={() => setView('match')}
+							onConfirm={handleConfirmContract}
+						/>
+					)}
+				</div>
+			</main>
+		</div>
 	);
 }

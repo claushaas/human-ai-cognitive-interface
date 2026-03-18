@@ -9,6 +9,7 @@
 		"moduleResolution": "bundler",
 		"paths": {
 			"~/*": ["./app/*"],
+			"~/config/*": ["./config/*"],
 			"~/core/*": ["./core/*"],
 			"~/db": ["./db/index.ts"],
 			"~/types": ["./types/index.ts"],

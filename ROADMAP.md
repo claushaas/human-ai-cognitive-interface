@@ -935,7 +935,7 @@ Este roadmap estrutura a implementação completa do **Human-AI Cognitive Interf
 
 ---
 
-### Etapa 3.2: Etapa 0 — Seleção de Papel
+### Etapa 3.2: Etapa 0 — Seleção de Papel - ✅
 
 **Objetivo**: UI para escolha do papel inicial (Stage 1).
 
