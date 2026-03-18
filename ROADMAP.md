@@ -971,7 +971,7 @@ Este roadmap estrutura a implementação completa do **Human-AI Cognitive Interf
 
 ---
 
-### Etapa 3.3: Etapa 1 — Réguas e Match
+### Etapa 3.3: Etapa 1 — Réguas e Match - ✅
 
 **Objetivo**: UI para configuração das 5 réguas cognitivas e visualização do match.
 
@@ -1039,7 +1039,7 @@ Este roadmap estrutura a implementação completa do **Human-AI Cognitive Interf
 
 ---
 
-### Etapa 3.4: Etapa 2 — Protocolo de Coleta
+### Etapa 3.4: Etapa 2 — Protocolo de Coleta - ✅
 
 **Objetivo**: UI para execução do protocolo de coleta de critérios.
 

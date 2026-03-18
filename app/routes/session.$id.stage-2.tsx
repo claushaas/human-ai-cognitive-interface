@@ -1,4 +1,12 @@
+import { useEffect, useState } from 'react';
 import type { ActionFunctionArgs, LoaderFunctionArgs } from 'react-router';
+import { useFetcher, useLoaderData, useNavigate } from 'react-router';
+import {
+	CollectionComplete,
+	CollectionIntro,
+	CollectionReview,
+	CollectionWizard,
+} from '~/components/stages';
 import { deriveCriteria } from '~/core/derivation';
 import type { CollectionPayload } from '~/core/prompts/execution-interface';
 import { createRepositories } from '~/db';
@@ -447,4 +455,204 @@ function identifyNextBlock(
 		}
 	}
 	return null; // Todos os blocos respondidos
+}
+
+// Componente UI da página
+export default function Stage2Page() {
+	const loaderData = useLoaderData<typeof loader>();
+	const fetcher = useFetcher();
+	const navigate = useNavigate();
+
+	const [view, setView] = useState<'intro' | 'wizard' | 'review' | 'complete'>(
+		'intro',
+	);
+	const [currentBlockIndex, setCurrentBlockIndex] = useState(0);
+	const [responses, setResponses] = useState<Record<string, string>>({});
+
+	// Parse session data from loader
+	const sessionData = loaderData ? JSON.parse(String(loaderData)) : null;
+	const { session, protocol, nextBlock, contract } = sessionData || {};
+
+	// Initialize responses from protocol payload
+	useEffect(() => {
+		if (protocol?.payload) {
+			setResponses(protocol.payload as Record<string, string>);
+		}
+	}, [protocol?.payload]);
+
+	// Processar resposta do fetcher
+	useEffect(() => {
+		if (fetcher.data) {
+			const data = fetcher.data as {
+				nextBlock?: CollectionBlock | null;
+				responses?: Record<string, string>;
+				redirect?: string;
+				success?: boolean;
+				finalPayload?: Record<string, unknown>;
+				error?: string;
+			};
+
+			if (data.error) {
+				alert(data.error);
+				return;
+			}
+
+			// Se redirecionamento após completar
+			if (data.redirect && data.success && data.finalPayload) {
+				setView('complete');
+				return;
+			}
+
+			// Atualizar respostas
+			if (data.responses) {
+				setResponses(data.responses);
+			}
+
+			// Se não há mais blocos pendentes, ir para revisão
+			if (data.nextBlock === null && view === 'wizard') {
+				setView('review');
+			}
+		}
+	}, [fetcher.data, view]);
+
+	// Handler para enviar resposta de um bloco
+	const handleSubmitResponse = (blockId: string, response: string) => {
+		if (!session) return;
+		const formData = new FormData();
+		formData.append('_action', 'submit-response');
+		formData.append('blockId', blockId);
+		formData.append('response', response);
+		formData.append('responses', JSON.stringify(responses));
+
+		fetcher.submit(formData, {
+			action: `/session/${session.id}/stage-2`,
+			method: 'post',
+		});
+	};
+
+	// Handler para completar a coleta
+	const handleCompleteCollection = () => {
+		if (!session) return;
+		const formData = new FormData();
+		formData.append('_action', 'complete-collection');
+
+		fetcher.submit(formData, {
+			action: `/session/${session.id}/stage-2`,
+			method: 'post',
+		});
+	};
+
+	// Handler para navegar para nova sessão
+	const handleNewSession = () => {
+		navigate('/');
+	};
+
+	// Extrair blocos do protocolo
+	const blocks: CollectionBlock[] = protocol?.blocks || [];
+	const isLoading = fetcher.state === 'submitting';
+
+	// Construir objeto CollectionProtocol para CollectionIntro
+	const collectionProtocol = protocol
+		? {
+				blockingIssue: sessionData?.protocol?.blockingIssue,
+				criteria: blocks,
+				implicitCriteria: sessionData?.protocol?.implicitCriteria || [],
+			}
+		: { criteria: [], implicitCriteria: [] };
+
+	// Payload final para CollectionComplete (apenas em view complete)
+	const finalPayload =
+		(fetcher.data as { finalPayload?: Record<string, unknown> } | null)
+			?.finalPayload || responses;
+
+	return (
+		<div className="min-h-screen bg-bg-secondary">
+			{/* Header */}
+			<header className="border-b border-border-primary bg-bg-primary">
+				<div className="container-page py-6">
+					<div className="flex items-center gap-3">
+						<div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+							<svg
+								aria-hidden="true"
+								className="w-6 h-6 text-text-inverse"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24"
+							>
+								<path
+									d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									strokeWidth={2}
+								/>
+							</svg>
+						</div>
+						<div>
+							<h1 className="text-xl font-semibold text-text-primary">
+								Etapa 2 — Protocolo de Coleta
+							</h1>
+							<p className="text-sm text-text-secondary">
+								Coleta de Critérios de Qualidade
+							</p>
+						</div>
+					</div>
+				</div>
+			</header>
+
+			{/* Main Content */}
+			<main className="container-page">
+				{view === 'intro' && contract && (
+					<CollectionIntro
+						contract={contract}
+						onStart={() => {
+							// Se há blocos pendentes, ir para o wizard
+							if (nextBlock && blocks.length > 0) {
+								const index = blocks.findIndex(
+									(b: CollectionBlock) => b.id === nextBlock.id,
+								);
+								setCurrentBlockIndex(index >= 0 ? index : 0);
+							}
+							setView('wizard');
+						}}
+						protocol={collectionProtocol}
+					/>
+				)}
+
+				{view === 'wizard' && blocks.length > 0 && (
+					<CollectionWizard
+						blocks={blocks}
+						currentBlockIndex={currentBlockIndex}
+						isSubmitting={isLoading}
+						onComplete={() => setView('review')}
+						onNavigate={setCurrentBlockIndex}
+						onSubmit={handleSubmitResponse}
+						responses={responses}
+					/>
+				)}
+
+				{view === 'review' && blocks.length > 0 && (
+					<CollectionReview
+						blocks={blocks}
+						isSubmitting={isLoading}
+						onComplete={handleCompleteCollection}
+						onEdit={(index) => {
+							setCurrentBlockIndex(index);
+							setView('wizard');
+						}}
+						responses={responses}
+					/>
+				)}
+
+				{view === 'complete' && (
+					<CollectionComplete
+						collectionPrompt={null} // TODO: generate from core/prompts
+						finalPayload={finalPayload}
+						onNewSession={handleNewSession}
+						protocol={collectionProtocol as CollectionProtocol}
+						sessionId={session?.id || ''}
+					/>
+				)}
+			</main>
+		</div>
+	);
 }

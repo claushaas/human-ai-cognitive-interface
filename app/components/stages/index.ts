@@ -1,3 +1,8 @@
+export { CollectionBlockCard } from './CollectionBlockCard';
+export { CollectionComplete } from './CollectionComplete';
+export { CollectionIntro } from './CollectionIntro';
+export { CollectionReview } from './CollectionReview';
+export { CollectionWizard } from './CollectionWizard';
 export { ContractConfirmation } from './ContractConfirmation';
 export { CorrectionsUI } from './CorrectionsUI';
 export { HardBlocksAlert } from './HardBlocksAlert';
