@@ -1,4 +1,4 @@
-import { logValidationError } from '~/app/lib/audit';
+import { logValidationError } from '~/lib/audit';
 import type { ModeId, RulersVector } from '~/types';
 
 /**
@@ -87,6 +87,7 @@ export function validateRulersVector(
 
 	for (const [ruler, range] of Object.entries(rulerValidations)) {
 		const value = rulers[ruler as keyof RulersVector];
+		if (!range) continue;
 		if (value < range.min || value > range.max) {
 			return {
 				error: `Invalid range: ${ruler} must be between ${range.min} and ${range.max}`,

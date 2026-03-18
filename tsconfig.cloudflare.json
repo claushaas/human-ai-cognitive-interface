@@ -8,7 +8,11 @@
 		"module": "ES2022",
 		"moduleResolution": "bundler",
 		"paths": {
-			"~/*": ["./app/*"]
+			"~/*": ["./app/*"],
+			"~/core/*": ["./core/*"],
+			"~/db": ["./db/index.ts"],
+			"~/types": ["./types/index.ts"],
+			"~/types/*": ["./types/*"]
 		},
 		"resolveJsonModule": true,
 		"rootDirs": [".", "./.react-router/types"],
@@ -16,13 +20,16 @@
 		"target": "ES2022",
 		"types": ["vite/client"]
 	},
+	"exclude": ["workers/**/*"],
 	"extends": "./tsconfig.json",
 	"include": [
 		".react-router/types/**/*",
 		"app/**/*",
 		"app/**/.server/**/*",
 		"app/**/.client/**/*",
-		"workers/**/*",
+		"core/**/*",
+		"db/**/*",
+		"types/**/*",
 		"worker-configuration.d.ts"
 	]
 }

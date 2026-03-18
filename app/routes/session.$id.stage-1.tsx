@@ -1,17 +1,18 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs } from 'react-router';
+import type { MatchCandidate } from '~/core/match';
+import { calculateMatch } from '~/core/match';
+import { createRepositories } from '~/db';
 import {
 	logContractConfirmed,
 	logCorrection,
 	logHardBlock,
 	logMatchDecision,
-} from '~/app/lib/audit';
+} from '~/lib/audit';
 import {
 	createValidationErrorResponse,
 	validateRulersVector,
 	validateSessionMode,
-} from '~/app/lib/validation';
-import { calculateMatch } from '~/core/match';
-import { createRepositories } from '~/db';
+} from '~/lib/validation';
 import type {
 	CognitiveContract,
 	HardBlock,
@@ -173,7 +174,7 @@ async function handleCalculateMatch(
 
 	// Transformar para formato serializável
 	const levelMatch: LevelMatch = {
-		candidates: matchResult.candidates.map((c) => ({
+		candidates: matchResult.candidates.map((c: MatchCandidate) => ({
 			level: c.level,
 			score: c.score,
 		})),
@@ -182,17 +183,25 @@ async function handleCalculateMatch(
 	};
 
 	const hardBlocks: HardBlock[] =
-		matchResult.hardBlocks?.map((hb) => ({
-			id: hb.ruleId,
-			message: hb.message,
-			severity: hb.severity,
-		})) || [];
+		matchResult.hardBlocks?.map(
+			(hb: {
+				ruleId: string;
+				message: string;
+				severity: 'BLOCK' | 'WARN' | 'CONFIRM';
+			}) => ({
+				id: hb.ruleId,
+				message: hb.message,
+				severity: hb.severity,
+			}),
+		) || [];
 
 	const corrections: LocalCorrection[] =
-		matchResult.corrections?.map((c) => ({
-			reason: c.reason,
-			rulersDelta: c.rulersDelta,
-		})) || [];
+		matchResult.corrections?.map(
+			(c: { reason: string; rulersDelta: Partial<RulersVector> }) => ({
+				reason: c.reason,
+				rulersDelta: c.rulersDelta,
+			}),
+		) || [];
 
 	return new Response(
 		JSON.stringify({
@@ -285,7 +294,7 @@ async function handleApplyCorrection(
 	const matchResult = calculateMatch(correctedRulers, role as InitialRoleId);
 
 	const levelMatch: LevelMatch = {
-		candidates: matchResult.candidates.map((c) => ({
+		candidates: matchResult.candidates.map((c: MatchCandidate) => ({
 			level: c.level,
 			score: c.score,
 		})),

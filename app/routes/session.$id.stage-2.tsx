@@ -1,12 +1,12 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs } from 'react-router';
-import { logModeTransition, logProtocolDerived } from '~/app/lib/audit';
-import {
-	createValidationErrorResponse,
-	validateSessionMode,
-} from '~/app/lib/validation';
 import { deriveCriteria } from '~/core/derivation';
 import type { CollectionPayload } from '~/core/prompts/execution-interface';
 import { createRepositories } from '~/db';
+import { logModeTransition, logProtocolDerived } from '~/lib/audit';
+import {
+	createValidationErrorResponse,
+	validateSessionMode,
+} from '~/lib/validation';
 import type {
 	CognitiveContract,
 	CollectionBlock,
