@@ -353,7 +353,7 @@ export class ContractRepository {
 
 	async create(
 		id: string,
-		sessionId: string,
+		session: SessionRecord,
 		contract: CognitiveContract,
 	): Promise<ContractRecord | null> {
 		await this.db
@@ -363,7 +363,7 @@ export class ContractRepository {
 			)
 			.bind(
 				id,
-				sessionId,
+				session.id,
 				contract.role,
 				JSON.stringify(contract.levelMatch),
 				JSON.stringify(contract.rulers),

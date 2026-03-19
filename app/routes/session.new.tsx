@@ -1,5 +1,5 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs } from 'react-router';
-import { redirect } from 'react-router';
+import { data, redirect } from 'react-router';
 import { RoleSelection } from '~/components/ui';
 import { createRepositories } from '~/db';
 
@@ -57,13 +57,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
 	const role = formData.get('role') as string;
 
 	if (!role) {
-		return new Response(
-			JSON.stringify({ error: 'Missing required field: role' }),
-			{
-				headers: { 'Content-Type': 'application/json' },
-				status: 400,
-			},
-		);
+		return data({ error: 'Missing required field: role' }, { status: 400 });
 	}
 
 	// Criar sessão com papel inicial
@@ -81,9 +75,7 @@ export async function loader({ context }: LoaderFunctionArgs) {
 		.prepare('SELECT * FROM sessions ORDER BY created_at DESC LIMIT 10')
 		.all();
 
-	return new Response(JSON.stringify({ sessions: results || [] }), {
-		headers: { 'Content-Type': 'application/json' },
-	});
+	return { sessions: results || [] };
 }
 
 export function meta() {

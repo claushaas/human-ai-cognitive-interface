@@ -1,3 +1,4 @@
+import { data } from 'react-router';
 import { logValidationError } from '~/lib/audit';
 import type { ModeId, RulersVector } from '~/types';
 
@@ -112,12 +113,9 @@ export function createValidationErrorResponse(
 	sessionId: string,
 	error: string,
 	status: number,
-): Response {
+) {
 	// Log para auditoria usando sistema centralizado
 	logValidationError(sessionId, error, { status });
 
-	return new Response(JSON.stringify({ error }), {
-		headers: { 'Content-Type': 'application/json' },
-		status,
-	});
+	return data({ error, sessionId }, { status });
 }

@@ -1,5 +1,5 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs } from 'react-router';
-import { redirect, useLoaderData, useNavigate } from 'react-router';
+import { data, redirect, useLoaderData, useNavigate } from 'react-router';
 import { SessionDetailView } from '~/components/stages';
 import { Header } from '~/components/ui';
 import { createRepositories } from '~/db';
@@ -84,12 +84,7 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
 		updatedAt: session.updated_at,
 	};
 
-	return new Response(
-		JSON.stringify({ session: sessionDetail } as LoaderData),
-		{
-			headers: { 'Content-Type': 'application/json' },
-		},
-	);
+	return { session: sessionDetail };
 }
 
 export async function action({ params, request, context }: ActionFunctionArgs) {
@@ -98,10 +93,7 @@ export async function action({ params, request, context }: ActionFunctionArgs) {
 
 	const sessionId = params.id;
 	if (!sessionId) {
-		return new Response(JSON.stringify({ error: 'Session ID required' }), {
-			headers: { 'Content-Type': 'application/json' },
-			status: 400,
-		});
+		return data({ error: 'Session ID required' }, { status: 400 });
 	}
 
 	const formData = await request.formData();
@@ -112,10 +104,7 @@ export async function action({ params, request, context }: ActionFunctionArgs) {
 		if (success) {
 			return redirect('/sessions');
 		}
-		return new Response(JSON.stringify({ error: 'Failed to delete session' }), {
-			headers: { 'Content-Type': 'application/json' },
-			status: 500,
-		});
+		return data({ error: 'Failed to delete session' }, { status: 500 });
 	}
 
 	if (intent === 'export') {
@@ -124,10 +113,7 @@ export async function action({ params, request, context }: ActionFunctionArgs) {
 		// Get full session data
 		const session = await repos.sessions.findById(sessionId);
 		if (!session) {
-			return new Response(JSON.stringify({ error: 'Session not found' }), {
-				headers: { 'Content-Type': 'application/json' },
-				status: 404,
-			});
+			return data({ error: 'Session not found' }, { status: 404 });
 		}
 
 		if (format === 'json') {
@@ -191,10 +177,7 @@ export async function action({ params, request, context }: ActionFunctionArgs) {
 		}
 	}
 
-	return new Response(JSON.stringify({ error: 'Invalid intent' }), {
-		headers: { 'Content-Type': 'application/json' },
-		status: 400,
-	});
+	return data({ error: 'Invalid intent' }, { status: 400 });
 }
 
 export function meta({ data }: { data: unknown }) {

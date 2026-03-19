@@ -1,5 +1,5 @@
 import type { LoaderFunctionArgs } from 'react-router';
-import { Outlet } from 'react-router';
+import { data, Outlet } from 'react-router';
 import { generateCollectionPrompt } from '~/core/prompts/collection';
 import { generateContractPrompt } from '~/core/prompts/contract';
 import { createRepositories } from '~/db';
@@ -11,19 +11,13 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
 
 	const sessionId = params.id;
 	if (!sessionId) {
-		return new Response(JSON.stringify({ error: 'Session ID required' }), {
-			headers: { 'Content-Type': 'application/json' },
-			status: 400,
-		});
+		return data({ error: 'Session ID required' }, { status: 400 });
 	}
 
 	// Buscar sessão
 	const session = await repos.sessions.findById(sessionId);
 	if (!session) {
-		return new Response(JSON.stringify({ error: 'Session not found' }), {
-			headers: { 'Content-Type': 'application/json' },
-			status: 404,
-		});
+		return data({ error: 'Session not found' }, { status: 404 });
 	}
 
 	// Buscar contrato mais recente
@@ -47,21 +41,18 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
 		? generateCollectionPrompt(protocolData)
 		: null;
 
-	return new Response(
-		JSON.stringify({
+	return {
+		contract: contractData,
+		prompts: {
+			collection: collectionPrompt,
+			contract: contractPrompt,
+		},
+		session: {
+			...session,
 			contract: contractData,
-			prompts: {
-				collection: collectionPrompt,
-				contract: contractPrompt,
-			},
-			session: {
-				...session,
-				contract: contractData,
-				protocol: protocolData,
-			},
-		}),
-		{ headers: { 'Content-Type': 'application/json' } },
-	);
+			protocol: protocolData,
+		},
+	};
 }
 
 export default function SessionLayout() {

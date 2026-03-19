@@ -1,3 +1,4 @@
+import type { SessionRecord } from 'db/client';
 import type { InitialRoleId, ModeId, RulersVector } from '~/types';
 
 /**
@@ -37,10 +38,11 @@ export interface AuditLogEntry {
  * @param payload - Dados adicionais do evento
  */
 export function auditLog(
-	sessionId: string,
+	session: string | SessionRecord,
 	eventType: AuditEventType,
 	payload: Record<string, unknown> = {},
 ): void {
+	const sessionId = typeof session === 'string' ? session : session.id;
 	const entry: AuditLogEntry = {
 		eventType,
 		payload,
@@ -60,7 +62,7 @@ export function auditLog(
  * @param result - Resultado do match
  */
 export function logMatchDecision(
-	sessionId: string,
+	session: string | SessionRecord,
 	rulers: RulersVector,
 	result: {
 		selectedLevel?: string;
@@ -76,7 +78,7 @@ export function logMatchDecision(
 			? 'MATCH_BLOCKED'
 			: 'MATCH_AMBIGUOUS';
 
-	auditLog(sessionId, eventType, {
+	auditLog(session, eventType, {
 		autoSelected: result.autoSelected,
 		hasCorrections: result.hasCorrections,
 		hasHardBlocks: result.hasHardBlocks,
@@ -95,12 +97,12 @@ export function logMatchDecision(
  * @param severity - Severidade do bloqueio
  */
 export function logHardBlock(
-	sessionId: string,
+	session: string | SessionRecord,
 	blockId: string,
 	message: string,
 	severity: 'BLOCK' | 'WARN' | 'CONFIRM',
 ): void {
-	auditLog(sessionId, 'HARD_BLOCK_TRIGGERED', {
+	auditLog(session, 'HARD_BLOCK_TRIGGERED', {
 		blockId,
 		message,
 		severity,
@@ -116,12 +118,12 @@ export function logHardBlock(
  * @param delta - Delta aplicado
  */
 export function logCorrection(
-	sessionId: string,
+	session: string | SessionRecord,
 	originalRulers: RulersVector,
 	correctedRulers: RulersVector,
 	delta: Partial<RulersVector>,
 ): void {
-	auditLog(sessionId, 'CORRECTION_APPLIED', {
+	auditLog(session, 'CORRECTION_APPLIED', {
 		correctedRulers,
 		delta,
 		modifiedRulers: Object.keys(delta),
@@ -139,13 +141,13 @@ export function logCorrection(
  * @param rulers - Réguas configuradas
  */
 export function logContractConfirmed(
-	sessionId: string,
+	session: string | SessionRecord,
 	contractId: string,
 	role: InitialRoleId,
 	level: string,
 	rulers: RulersVector,
 ): void {
-	auditLog(sessionId, 'CONTRACT_CONFIRMED', {
+	auditLog(session, 'CONTRACT_CONFIRMED', {
 		contractId,
 		level,
 		role,
@@ -162,12 +164,12 @@ export function logContractConfirmed(
  * @param implicitCriteria - Critérios implícitos identificados
  */
 export function logProtocolDerived(
-	sessionId: string,
+	session: string | SessionRecord,
 	protocolId: string,
 	criteriaCount: number,
 	implicitCriteria: string[],
 ): void {
-	auditLog(sessionId, 'PROTOCOL_DERIVED', {
+	auditLog(session, 'PROTOCOL_DERIVED', {
 		criteriaCount,
 		implicitCriteria,
 		protocolId,
@@ -183,12 +185,12 @@ export function logProtocolDerived(
  * @param reason - Razão da transição
  */
 export function logModeTransition(
-	sessionId: string,
+	session: string | SessionRecord,
 	fromMode: ModeId,
 	toMode: ModeId,
 	reason: string,
 ): void {
-	auditLog(sessionId, 'MODE_TRANSITION', {
+	auditLog(session, 'MODE_TRANSITION', {
 		fromMode,
 		reason,
 		toMode,
@@ -203,11 +205,11 @@ export function logModeTransition(
  * @param context - Contexto adicional
  */
 export function logValidationError(
-	sessionId: string,
+	session: string | SessionRecord,
 	error: string,
 	context: Record<string, unknown> = {},
 ): void {
-	auditLog(sessionId, 'VALIDATION_ERROR', {
+	auditLog(session, 'VALIDATION_ERROR', {
 		error,
 		...context,
 	});

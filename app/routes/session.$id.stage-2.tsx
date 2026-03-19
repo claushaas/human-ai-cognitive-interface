@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { ActionFunctionArgs, LoaderFunctionArgs } from 'react-router';
-import { useFetcher, useLoaderData, useNavigate } from 'react-router';
+import { data, useFetcher, useLoaderData, useNavigate } from 'react-router';
 import {
 	CollectionComplete,
 	CollectionIntro,
@@ -50,18 +50,12 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
 
 	const sessionId = params.id;
 	if (!sessionId) {
-		return new Response(JSON.stringify({ error: 'Session ID required' }), {
-			headers: { 'Content-Type': 'application/json' },
-			status: 400,
-		});
+		return data({ error: 'Session ID required' }, { status: 400 });
 	}
 
 	const session = await repos.sessions.findById(sessionId);
 	if (!session) {
-		return new Response(JSON.stringify({ error: 'Session not found' }), {
-			headers: { 'Content-Type': 'application/json' },
-			status: 404,
-		});
+		return data({ error: 'Session not found' }, { status: 404 });
 	}
 
 	// Validação de modo: Stage 2 requer MODE_PREPARATION
@@ -80,13 +74,7 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
 	const latestContract = contracts[0];
 
 	if (!latestContract?.contract_data) {
-		return new Response(
-			JSON.stringify({ error: 'No contract found for session' }),
-			{
-				headers: { 'Content-Type': 'application/json' },
-				status: 404,
-			},
-		);
+		return data({ error: 'No contract found for session' }, { status: 404 });
 	}
 
 	const contractData = JSON.parse(
@@ -148,19 +136,16 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
 		protocolData?.payload,
 	);
 
-	return new Response(
-		JSON.stringify({
+	return {
+		contract: contractData,
+		nextBlock,
+		protocol: protocolData,
+		session: {
+			...session,
 			contract: contractData,
-			nextBlock,
-			protocol: protocolData,
-			session: {
-				...session,
-				contract: contractData,
-			},
-			totalBlocks: protocolData?.blocks?.length ?? 0,
-		}),
-		{ headers: { 'Content-Type': 'application/json' } },
-	);
+		},
+		totalBlocks: protocolData?.blocks?.length ?? 0,
+	};
 }
 
 export async function action({ params, request, context }: ActionFunctionArgs) {
@@ -169,19 +154,13 @@ export async function action({ params, request, context }: ActionFunctionArgs) {
 
 	const sessionId = params.id;
 	if (!sessionId) {
-		return new Response(JSON.stringify({ error: 'Session ID required' }), {
-			headers: { 'Content-Type': 'application/json' },
-			status: 400,
-		});
+		return data({ error: 'Session ID required' }, { status: 400 });
 	}
 
 	// Buscar sessão para validação de modo
 	const session = await repos.sessions.findById(sessionId);
 	if (!session) {
-		return new Response(JSON.stringify({ error: 'Session not found' }), {
-			headers: { 'Content-Type': 'application/json' },
-			status: 404,
-		});
+		return data({ error: 'Session not found' }, { status: 404 });
 	}
 
 	// Validação de modo: Actions de Stage 2 requerem MODE_PREPARATION
@@ -207,10 +186,7 @@ export async function action({ params, request, context }: ActionFunctionArgs) {
 		case 'complete-collection':
 			return handleCompleteCollection(sessionId, repos);
 		default:
-			return new Response(JSON.stringify({ error: 'Unknown action type' }), {
-				headers: { 'Content-Type': 'application/json' },
-				status: 400,
-			});
+			return data({ error: 'Unknown action type' }, { status: 400 });
 	}
 }
 
@@ -223,13 +199,7 @@ async function handleDeriveProtocol(
 	const latestContract = contracts[0];
 
 	if (!latestContract?.contract_data) {
-		return new Response(
-			JSON.stringify({ error: 'No contract found for session' }),
-			{
-				headers: { 'Content-Type': 'application/json' },
-				status: 404,
-			},
-		);
+		return data({ error: 'No contract found for session' }, { status: 404 });
 	}
 
 	const contractData = JSON.parse(
@@ -265,17 +235,14 @@ async function handleDeriveProtocol(
 		protocol.implicitCriteria,
 	);
 
-	return new Response(
-		JSON.stringify({
-			protocol: {
-				blocks: blocksJson,
-				criteria: criteriaIds,
-				id: protocolId,
-			},
-			success: true,
-		}),
-		{ headers: { 'Content-Type': 'application/json' } },
-	);
+	return {
+		protocol: {
+			blocks: blocksJson,
+			criteria: criteriaIds,
+			id: protocolId,
+		},
+		success: true,
+	};
 }
 
 async function handleSubmitResponse(
@@ -288,12 +255,9 @@ async function handleSubmitResponse(
 	const responsesParam = formData.get('responses');
 
 	if (!blockId || response === null) {
-		return new Response(
-			JSON.stringify({ error: 'Missing required fields: blockId, response' }),
-			{
-				headers: { 'Content-Type': 'application/json' },
-				status: 400,
-			},
+		return data(
+			{ error: 'Missing required fields: blockId, response' },
+			{ status: 400 },
 		);
 	}
 
@@ -302,13 +266,7 @@ async function handleSubmitResponse(
 	const protocol = protocols[0];
 
 	if (!protocol) {
-		return new Response(
-			JSON.stringify({ error: 'Protocol not found for session' }),
-			{
-				headers: { 'Content-Type': 'application/json' },
-				status: 404,
-			},
-		);
+		return data({ error: 'Protocol not found for session' }, { status: 404 });
 	}
 
 	// Parse respostas existentes ou criar novo objeto
@@ -328,18 +286,12 @@ async function handleSubmitResponse(
 	const currentBlock = blocks.find((b) => b.id === blockId);
 
 	if (!currentBlock) {
-		return new Response(JSON.stringify({ error: 'Block not found' }), {
-			headers: { 'Content-Type': 'application/json' },
-			status: 404,
-		});
+		return data({ error: 'Block not found' }, { status: 404 });
 	}
 
 	// Validação básica (pode ser expandida conforme schema)
 	if (typeof response !== 'string' || response.trim().length === 0) {
-		return new Response(JSON.stringify({ error: 'Response cannot be empty' }), {
-			headers: { 'Content-Type': 'application/json' },
-			status: 400,
-		});
+		return data({ error: 'Response cannot be empty' }, { status: 400 });
 	}
 
 	// Atualizar payload no banco
@@ -351,15 +303,12 @@ async function handleSubmitResponse(
 	// Identificar próximo bloco
 	const nextBlock = identifyNextBlock(blocks, currentResponses);
 
-	return new Response(
-		JSON.stringify({
-			nextBlock,
-			responses: currentResponses,
-			success: true,
-			totalBlocks: blocks.length,
-		}),
-		{ headers: { 'Content-Type': 'application/json' } },
-	);
+	return {
+		nextBlock,
+		responses: currentResponses,
+		success: true,
+		totalBlocks: blocks.length,
+	};
 }
 
 async function handleCompleteCollection(
@@ -371,13 +320,7 @@ async function handleCompleteCollection(
 	const protocol = protocols[0];
 
 	if (!protocol) {
-		return new Response(
-			JSON.stringify({ error: 'Protocol not found for session' }),
-			{
-				headers: { 'Content-Type': 'application/json' },
-				status: 404,
-			},
-		);
+		return data({ error: 'Protocol not found for session' }, { status: 404 });
 	}
 
 	const blocks: CollectionBlock[] = protocol.blocks
@@ -391,15 +334,12 @@ async function handleCompleteCollection(
 	);
 
 	if (pendingBlocks.length > 0) {
-		return new Response(
-			JSON.stringify({
+		return data(
+			{
 				error: 'Pending blocks',
 				pendingBlocks: pendingBlocks.map((b) => b.id),
-			}),
-			{
-				headers: { 'Content-Type': 'application/json' },
-				status: 400,
 			},
+			{ status: 400 },
 		);
 	}
 
@@ -432,14 +372,11 @@ async function handleCompleteCollection(
 		status: 'complete',
 	};
 
-	return new Response(
-		JSON.stringify({
-			finalPayload,
-			redirect: `/session/${sessionId}/complete`,
-			success: true,
-		}),
-		{ headers: { 'Content-Type': 'application/json' } },
-	);
+	return {
+		finalPayload,
+		redirect: `/session/${sessionId}/complete`,
+		success: true,
+	};
 }
 
 /**

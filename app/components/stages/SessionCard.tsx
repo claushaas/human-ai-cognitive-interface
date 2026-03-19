@@ -78,9 +78,10 @@ export function SessionCard({ session, onClick }: SessionCardProps) {
 			: 0;
 
 	return (
-		<div
-			className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
+		<button
+			className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer text-left w-full"
 			onClick={onClick}
+			type="button"
 		>
 			{/* Header: Status dot + Date */}
 			<div className="flex items-center justify-between mb-3">
@@ -134,6 +135,6 @@ export function SessionCard({ session, onClick }: SessionCardProps) {
 					</div>
 				</div>
 			)}
-		</div>
+		</button>
 	);
 }

@@ -69,7 +69,7 @@ export function RoleSelection({ roles }: RoleSelectionProps) {
 						<h2 className="text-2xl md:text-3xl font-bold text-text-primary mb-3">
 							Escolha o Papel Inicial
 						</h2>
-						<p className="text-text-secondary max-w-2xl mx-auto leading-relaxed">
+						<p className="text-text-secondary mx-auto leading-relaxed">
 							O papel define o modo como a IA vai interagir com você. Cada papel
 							tem comportamentos permitidos e bloqueados específicos.
 						</p>
@@ -136,12 +136,7 @@ export function RoleSelection({ roles }: RoleSelectionProps) {
 					<Form className="flex flex-col items-center gap-4" method="post">
 						<input name="role" type="hidden" value={selectedRole || ''} />
 
-						<Button
-							className="max-w-md"
-							disabled={!selectedRole}
-							fullWidth
-							size="lg"
-						>
+						<Button disabled={!selectedRole} fullWidth size="lg">
 							{selectedRole ? (
 								<>
 									<svg

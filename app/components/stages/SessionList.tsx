@@ -26,10 +26,11 @@ export function SessionList({
 	if (isLoading) {
 		return (
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-				{[...Array(6)].map((_, i) => (
+				{[...Array(6)].map((_, index) => (
 					<div
 						className="bg-gray-100 border border-gray-200 rounded-lg p-4 animate-pulse"
-						key={i}
+						// biome-ignore lint/suspicious/noArrayIndexKey: skeleton placeholder uses index as key
+						key={`skeleton-${index}`}
 					>
 						<div className="h-4 bg-gray-200 rounded w-1/3 mb-3" />
 						<div className="h-6 bg-gray-200 rounded w-1/2 mb-3" />
@@ -51,6 +52,7 @@ export function SessionList({
 						stroke="currentColor"
 						viewBox="0 0 24 24"
 					>
+						<title>Ícone de documento</title>
 						<path
 							d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
 							strokeLinecap="round"

@@ -3,11 +3,6 @@ import { Link, useLoaderData } from 'react-router';
 import { SessionCard } from '~/components/stages';
 import { Button, Card, CardContent, Header } from '~/components/ui';
 import { createRepositories } from '~/db';
-import type { PaginatedSessions } from '~/types/dashboard';
-
-interface LoaderData {
-	recentSessions: PaginatedSessions;
-}
 
 export async function loader({ context }: LoaderFunctionArgs) {
 	const db = context.cloudflare.env.DB;
@@ -15,12 +10,9 @@ export async function loader({ context }: LoaderFunctionArgs) {
 
 	const result = await repos.sessions.list({ limit: 6 });
 
-	return new Response(
-		JSON.stringify({ recentSessions: result } as LoaderData),
-		{
-			headers: { 'Content-Type': 'application/json' },
-		},
-	);
+	return {
+		recentSessions: result,
+	};
 }
 
 export function meta() {
@@ -34,10 +26,7 @@ export function meta() {
 }
 
 export default function Index() {
-	const loaderData = useLoaderData<typeof loader>();
-	const data = loaderData
-		? (JSON.parse(String(loaderData)) as LoaderData)
-		: null;
+	const data = useLoaderData<typeof loader>();
 	const recentSessions = data?.recentSessions?.sessions || [];
 
 	return (
@@ -67,7 +56,7 @@ export default function Index() {
 						<h1 className="text-4xl md:text-5xl font-bold text-text-primary mb-4">
 							Human-AI Cognitive Interface
 						</h1>
-						<p className="text-lg md:text-xl text-text-secondary max-w-2xl mx-auto mb-8">
+						<p className="text-lg md:text-xl text-text-secondary mx-auto mb-8">
 							Sistema de mediação cognitiva para interações humano-IA.
 							Estabeleça contratos explícitos de cognição antes de executar
 							tarefas.

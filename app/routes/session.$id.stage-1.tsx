@@ -1,6 +1,12 @@
 import { useEffect, useState } from 'react';
 import type { ActionFunctionArgs, LoaderFunctionArgs } from 'react-router';
-import { Form, useFetcher, useLoaderData, useNavigate } from 'react-router';
+import {
+	data,
+	Form,
+	useFetcher,
+	useLoaderData,
+	useNavigate,
+} from 'react-router';
 import {
 	ContractConfirmation,
 	CorrectionsUI,
@@ -10,7 +16,7 @@ import {
 } from '~/components/stages';
 import type { MatchCandidate } from '~/core/match';
 import { calculateMatch } from '~/core/match';
-import { createRepositories } from '~/db';
+import { createRepositories, type SessionRecord } from '~/db';
 import {
 	logContractConfirmed,
 	logCorrection,
@@ -29,6 +35,7 @@ import type {
 	InitialRoleId,
 	LevelMatch,
 	LocalCorrection,
+	ModeId,
 	RulersVector,
 } from '~/types';
 
@@ -47,18 +54,18 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
 
 	const sessionId = params.id;
 	if (!sessionId) {
-		return new Response(JSON.stringify({ error: 'Session ID required' }), {
-			headers: { 'Content-Type': 'application/json' },
-			status: 400,
-		});
+		return data(
+			{ error: 'Session ID required', session: undefined },
+			{ status: 404 },
+		);
 	}
 
 	const session = await repos.sessions.findById(sessionId);
 	if (!session) {
-		return new Response(JSON.stringify({ error: 'Session not found' }), {
-			headers: { 'Content-Type': 'application/json' },
-			status: 404,
-		});
+		return data(
+			{ error: 'Session not found', session: undefined },
+			{ status: 404 },
+		);
 	}
 
 	// Validação de modo: Stage 1 requer MODE_PREPARATION ou MODE_GOVERNANCE
@@ -77,17 +84,14 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
 	const contracts = await repos.contracts.findBySessionId(sessionId);
 	const latestContract = contracts[0];
 
-	return new Response(
-		JSON.stringify({
-			session: {
-				...session,
-				contract: latestContract?.contract_data
-					? JSON.parse(latestContract.contract_data)
-					: null,
-			},
-		}),
-		{ headers: { 'Content-Type': 'application/json' } },
-	);
+	return {
+		session: {
+			...session,
+			contract: latestContract?.contract_data
+				? JSON.parse(latestContract.contract_data)
+				: null,
+		},
+	};
 }
 
 export async function action({ params, request, context }: ActionFunctionArgs) {
@@ -96,19 +100,13 @@ export async function action({ params, request, context }: ActionFunctionArgs) {
 
 	const sessionId = params.id;
 	if (!sessionId) {
-		return new Response(JSON.stringify({ error: 'Session ID required' }), {
-			headers: { 'Content-Type': 'application/json' },
-			status: 400,
-		});
+		return data({ error: 'Session ID required' }, { status: 400 });
 	}
 
 	// Buscar sessão para validação de modo
 	const session = await repos.sessions.findById(sessionId);
 	if (!session) {
-		return new Response(JSON.stringify({ error: 'Session not found' }), {
-			headers: { 'Content-Type': 'application/json' },
-			status: 404,
-		});
+		return data({ error: 'Session not found' }, { status: 404 });
 	}
 
 	// Validação de modo: Actions de Stage 1 requerem MODE_PREPARATION
@@ -128,34 +126,28 @@ export async function action({ params, request, context }: ActionFunctionArgs) {
 
 	switch (actionType) {
 		case 'calculate-match':
-			return handleCalculateMatch(formData, sessionId, repos);
+			return handleCalculateMatch(formData, session, repos);
 		case 'apply-correction':
-			return handleApplyCorrection(formData, sessionId, repos);
+			return handleApplyCorrection(formData, session, repos);
 		case 'confirm-contract':
-			return handleConfirmContract(formData, sessionId, repos);
+			return handleConfirmContract(formData, session, repos);
 		default:
-			return new Response(JSON.stringify({ error: 'Unknown action type' }), {
-				headers: { 'Content-Type': 'application/json' },
-				status: 400,
-			});
+			return data({ error: 'Unknown action type' }, { status: 400 });
 	}
 }
 
 async function handleCalculateMatch(
 	formData: FormData,
-	sessionId: string,
+	session: SessionRecord,
 	_repos: ReturnType<typeof createRepositories>,
 ) {
 	const rulersParam = formData.get('rulers');
 	const roleParam = formData.get('role');
 
 	if (!rulersParam || !roleParam) {
-		return new Response(
-			JSON.stringify({ error: 'Missing required fields: rulers, role' }),
-			{
-				headers: { 'Content-Type': 'application/json' },
-				status: 400,
-			},
+		return data(
+			{ error: 'Missing required fields: rulers, role' },
+			{ status: 400 },
 		);
 	}
 
@@ -166,7 +158,7 @@ async function handleCalculateMatch(
 	const rulersValidation = validateRulersVector(rulers);
 	if (!rulersValidation.valid) {
 		return createValidationErrorResponse(
-			sessionId,
+			session.id,
 			rulersValidation.error || 'Invalid rulers',
 			rulersValidation.status,
 		);
@@ -176,7 +168,7 @@ async function handleCalculateMatch(
 	const matchResult = calculateMatch(rulers, role as InitialRoleId);
 
 	// Log de auditoria para decisões de match
-	logMatchDecision(sessionId, rulers, {
+	logMatchDecision(session, rulers, {
 		autoSelected: matchResult.autoSelected,
 		hasCorrections: !!matchResult.corrections?.length,
 		hasHardBlocks: !!matchResult.hardBlocks?.length,
@@ -187,7 +179,7 @@ async function handleCalculateMatch(
 	// Log de hard blocks se houver
 	if (matchResult.hardBlocks?.length) {
 		for (const block of matchResult.hardBlocks) {
-			logHardBlock(sessionId, block.ruleId, block.message, block.severity);
+			logHardBlock(session, block.ruleId, block.message, block.severity);
 		}
 	}
 
@@ -222,34 +214,26 @@ async function handleCalculateMatch(
 			}),
 		) || [];
 
-	return new Response(
-		JSON.stringify({
-			autoSelected: matchResult.autoSelected,
-			corrections,
-			hardBlocks,
-			levelMatch,
-		}),
-		{ headers: { 'Content-Type': 'application/json' } },
-	);
+	return {
+		autoSelected: matchResult.autoSelected,
+		corrections,
+		hardBlocks,
+		levelMatch,
+	};
 }
 
 async function handleApplyCorrection(
 	formData: FormData,
-	sessionId: string,
+	session: SessionRecord,
 	_repos: ReturnType<typeof createRepositories>,
 ) {
 	const rulersParam = formData.get('rulers');
 	const deltaParam = formData.get('delta');
 
 	if (!rulersParam || !deltaParam) {
-		return new Response(
-			JSON.stringify({
-				error: 'Missing required fields: rulers, delta',
-			}),
-			{
-				headers: { 'Content-Type': 'application/json' },
-				status: 400,
-			},
+		return data(
+			{ error: 'Missing required fields: rulers, delta' },
+			{ status: 400 },
 		);
 	}
 
@@ -263,14 +247,9 @@ async function handleApplyCorrection(
 			originalRulers[k as keyof RulersVector],
 	);
 	if (modifiedRulers.length > 2) {
-		return new Response(
-			JSON.stringify({
-				error: 'Correction limited to maximum 2 rulers',
-			}),
-			{
-				headers: { 'Content-Type': 'application/json' },
-				status: 400,
-			},
+		return data(
+			{ error: 'Correction limited to maximum 2 rulers' },
+			{ status: 400 },
 		);
 	}
 
@@ -279,14 +258,9 @@ async function handleApplyCorrection(
 		const original = originalRulers[ruler as keyof RulersVector];
 		const corrected = delta[ruler as keyof RulersVector];
 		if (corrected !== undefined && Math.abs(corrected - original) > 1) {
-			return new Response(
-				JSON.stringify({
-					error: `Correction magnitude exceeded for ruler ${ruler}: max ±1`,
-				}),
-				{
-					headers: { 'Content-Type': 'application/json' },
-					status: 400,
-				},
+			return data(
+				{ error: `Correction magnitude exceeded for ruler ${ruler}: max ±1` },
+				{ status: 400 },
 			);
 		}
 	}
@@ -301,7 +275,7 @@ async function handleApplyCorrection(
 	const rulersValidation = validateRulersVector(correctedRulers);
 	if (!rulersValidation.valid) {
 		return createValidationErrorResponse(
-			sessionId,
+			session.id,
 			rulersValidation.error || 'Constitutional violation after correction',
 			rulersValidation.status,
 		);
@@ -327,22 +301,19 @@ async function handleApplyCorrection(
 	};
 
 	// Log de auditoria da correção aplicada
-	logCorrection(sessionId, originalRulers, correctedRulers, delta);
+	logCorrection(session, originalRulers, correctedRulers, delta);
 
-	return new Response(
-		JSON.stringify({
-			autoSelected: matchResult.autoSelected,
-			correctedRulers,
-			correction,
-			levelMatch,
-		}),
-		{ headers: { 'Content-Type': 'application/json' } },
-	);
+	return {
+		autoSelected: matchResult.autoSelected,
+		correctedRulers,
+		correction,
+		levelMatch,
+	};
 }
 
 async function handleConfirmContract(
 	formData: FormData,
-	sessionId: string,
+	session: SessionRecord,
 	repos: ReturnType<typeof createRepositories>,
 ) {
 	const rulersParam = formData.get('rulers');
@@ -352,14 +323,9 @@ async function handleConfirmContract(
 	const correctionParam = formData.get('correction');
 
 	if (!rulersParam || !levelMatchParam || !roleParam) {
-		return new Response(
-			JSON.stringify({
-				error: 'Missing required fields: rulers, levelMatch, role',
-			}),
-			{
-				headers: { 'Content-Type': 'application/json' },
-				status: 400,
-			},
+		return data(
+			{ error: 'Missing required fields: rulers, levelMatch, role' },
+			{ status: 400 },
 		);
 	}
 
@@ -369,7 +335,7 @@ async function handleConfirmContract(
 	const rulersValidation = validateRulersVector(rulers);
 	if (!rulersValidation.valid) {
 		return createValidationErrorResponse(
-			sessionId,
+			session.id,
 			rulersValidation.error || 'Constitutional violation',
 			rulersValidation.status,
 		);
@@ -395,50 +361,52 @@ async function handleConfirmContract(
 
 	// Salvar contrato no D1
 	const contractId = crypto.randomUUID();
-	await repos.contracts.create(contractId, sessionId, contract);
+	await repos.contracts.create(contractId, session, contract);
 
 	// Atualizar sessão com contrato e transitar para próxima etapa
-	await repos.sessions.update(sessionId, {
+	await repos.sessions.update(session.id, {
 		contract,
 		current_stage: 1,
 	});
 
 	// Log de auditoria da confirmação do contrato
 	logContractConfirmed(
-		sessionId,
+		session,
 		contractId,
 		role,
 		levelMatch.selectedLevel || 'N/A',
 		rulers,
 	);
 
-	return new Response(
-		JSON.stringify({
-			contractId,
-			redirect: `/session/${sessionId}/stage-2`,
-			sessionId,
-			success: true,
-		}),
-		{ headers: { 'Content-Type': 'application/json' } },
-	);
+	return {
+		contractId,
+		redirect: `/session/${session.id}/stage-2`,
+		session,
+		success: true,
+	};
 }
 
 // Componente UI da página
 export default function Stage1Page() {
-	const loaderData = useLoaderData<typeof loader>();
+	const sessionData = useLoaderData<typeof loader>();
 	const fetcher = useFetcher();
 	const navigate = useNavigate();
 
 	// Parse session data from loader
-	const sessionData = loaderData ? JSON.parse(String(loaderData)) : null;
-	const session = sessionData?.session as
-		| {
-				id: string;
-				role: InitialRoleId;
-				contract: CognitiveContract | null;
-				mode: string;
-		  }
-		| undefined;
+	const session =
+		(
+			sessionData as {
+				session: {
+					contract: CognitiveContract | null;
+					id: string;
+					mode: ModeId;
+					current_stage: number;
+					protocol: string | null;
+					created_at: string;
+					updated_at: string;
+				};
+			}
+		).session || undefined;
 
 	// Estados locais
 	const [rulers, setRulers] = useState<RulersVector>(
@@ -513,7 +481,7 @@ export default function Stage1Page() {
 		const formData = new FormData();
 		formData.append('_action', 'calculate-match');
 		formData.append('rulers', JSON.stringify(rulers));
-		formData.append('role', session.role);
+		formData.append('role', session.mode);
 
 		fetcher.submit(formData, {
 			action: `/session/${session.id}/stage-1`,
@@ -528,7 +496,7 @@ export default function Stage1Page() {
 		formData.append('_action', 'apply-correction');
 		formData.append('rulers', JSON.stringify(rulers));
 		formData.append('delta', JSON.stringify(delta));
-		formData.append('role', session.role);
+		formData.append('role', session.mode);
 
 		fetcher.submit(formData, {
 			action: `/session/${session.id}/stage-1`,
@@ -545,7 +513,7 @@ export default function Stage1Page() {
 		formData.append('rulers', JSON.stringify(rulers));
 		formData.append('levelMatch', JSON.stringify(matchResult.levelMatch));
 		formData.append('hardBlocks', JSON.stringify(matchResult.hardBlocks));
-		formData.append('role', session.role);
+		formData.append('role', session.mode);
 		if (correction) {
 			formData.append('correction', JSON.stringify(correction));
 		}
@@ -680,7 +648,8 @@ export default function Stage1Page() {
 								correction,
 								hardBlocks: matchResult.hardBlocks,
 								levelMatch: matchResult.levelMatch,
-								role: session.role,
+								role:
+									session.contract?.role || ('role.analyze' as InitialRoleId),
 								rulers,
 							}}
 							isLoading={isLoading}

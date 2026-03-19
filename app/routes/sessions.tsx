@@ -51,15 +51,10 @@ export async function loader({ request, context }: LoaderFunctionArgs) {
 		status: status as SessionFiltersType['status'],
 	};
 
-	return new Response(
-		JSON.stringify({
-			filters,
-			sessions: result,
-		} as LoaderData),
-		{
-			headers: { 'Content-Type': 'application/json' },
-		},
-	);
+	return {
+		filters,
+		sessions: result,
+	};
 }
 
 export function meta() {
@@ -136,6 +131,7 @@ export default function SessionsPage() {
 								stroke="currentColor"
 								viewBox="0 0 24 24"
 							>
+								<title>Ícone de adicionar</title>
 								<path
 									d="M12 4v16m8-8H4"
 									strokeLinecap="round"

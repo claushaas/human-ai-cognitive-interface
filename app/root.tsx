@@ -51,7 +51,7 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
 
 	return (
 		<main className="container-page py-12">
-			<div className="max-w-2xl mx-auto text-center">
+			<div className="mx-auto text-center">
 				<h1 className="text-4xl font-bold text-text-primary mb-4">{message}</h1>
 				<p className="text-lg text-text-secondary mb-8">{details}</p>
 				{stack && (
