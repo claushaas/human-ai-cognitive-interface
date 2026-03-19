@@ -49,6 +49,12 @@ export function Header({ title, subtitle }: HeaderProps) {
 					)}
 
 					<div className="flex items-center gap-4">
+						<Link
+							className="text-text-secondary hover:text-text-primary transition-colors text-sm font-medium"
+							to="/sessions"
+						>
+							Histórico
+						</Link>
 						<a
 							className="text-text-secondary hover:text-text-primary transition-colors"
 							href="https://github.com/claushaas/human-ai-cognitive-interface"

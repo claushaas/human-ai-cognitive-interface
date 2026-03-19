@@ -1,5 +1,27 @@
-import { Link } from 'react-router';
+import type { LoaderFunctionArgs } from 'react-router';
+import { Link, useLoaderData } from 'react-router';
+import { SessionCard } from '~/components/stages';
 import { Button, Card, CardContent, Header } from '~/components/ui';
+import { createRepositories } from '~/db';
+import type { PaginatedSessions } from '~/types/dashboard';
+
+interface LoaderData {
+	recentSessions: PaginatedSessions;
+}
+
+export async function loader({ context }: LoaderFunctionArgs) {
+	const db = context.cloudflare.env.DB;
+	const repos = createRepositories({ DB: db });
+
+	const result = await repos.sessions.list({ limit: 6 });
+
+	return new Response(
+		JSON.stringify({ recentSessions: result } as LoaderData),
+		{
+			headers: { 'Content-Type': 'application/json' },
+		},
+	);
+}
 
 export function meta() {
 	return [
@@ -12,6 +34,12 @@ export function meta() {
 }
 
 export default function Index() {
+	const loaderData = useLoaderData<typeof loader>();
+	const data = loaderData
+		? (JSON.parse(String(loaderData)) as LoaderData)
+		: null;
+	const recentSessions = data?.recentSessions?.sessions || [];
+
 	return (
 		<div className="min-h-screen bg-bg-secondary">
 			<Header />
@@ -64,6 +92,34 @@ export default function Index() {
 							</Button>
 						</Link>
 					</div>
+
+					{/* Recent Sessions Section */}
+					{recentSessions.length > 0 && (
+						<div className="mb-12">
+							<div className="flex items-center justify-between mb-6">
+								<h2 className="text-2xl font-bold text-text-primary">
+									Sessões Recentes
+								</h2>
+								<Link
+									className="text-primary hover:text-primary-dark text-sm font-medium"
+									to="/sessions"
+								>
+									Ver todas →
+								</Link>
+							</div>
+							<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+								{recentSessions.map((session) => (
+									<SessionCard
+										key={session.id}
+										onClick={() => {
+											window.location.href = `/sessions/${session.id}`;
+										}}
+										session={session}
+									/>
+								))}
+							</div>
+						</div>
+					)}
 
 					{/* Features Grid */}
 					<div className="grid md:grid-cols-3 gap-6 mb-12">
