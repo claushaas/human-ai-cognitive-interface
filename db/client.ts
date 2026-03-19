@@ -24,7 +24,6 @@ export interface ContractRecord {
 	rulers: string; // JSON stringified RulersVector
 	hard_blocks: string | null; // JSON stringified HardBlock[]
 	correction: string | null; // JSON stringified LocalCorrection
-	contract_data: string | null; // JSON stringified CognitiveContract completo
 	created_at: string;
 }
 
@@ -36,6 +35,8 @@ export interface CollectionProtocolRecord {
 	blocks: string; // JSON stringified array
 	payload: string | null; // JSON stringified CollectionPayload
 	status: 'pending' | 'in_progress' | 'completed';
+	created_at: string;
+	updated_at: string;
 }
 
 export interface DatabaseEnv {
@@ -358,8 +359,8 @@ export class ContractRepository {
 	): Promise<ContractRecord | null> {
 		await this.db
 			.prepare(
-				`INSERT INTO contracts (id, session_id, role, level_match, rulers, hard_blocks, correction, contract_data, created_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+				`INSERT INTO contracts (id, session_id, role, level_match, rulers, hard_blocks, correction, created_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
 			)
 			.bind(
 				id,
@@ -369,7 +370,6 @@ export class ContractRepository {
 				JSON.stringify(contract.rulers),
 				contract.hardBlocks ? JSON.stringify(contract.hardBlocks) : null,
 				contract.correction ? JSON.stringify(contract.correction) : null,
-				JSON.stringify(contract),
 				new Date().toISOString(),
 			)
 			.run();
@@ -452,6 +452,9 @@ export class CollectionProtocolRepository {
 			fields.push('payload = ?');
 			values.push(JSON.stringify(updates.payload));
 		}
+
+		// Always update updated_at
+		fields.push('updated_at = CURRENT_TIMESTAMP');
 
 		values.push(id);
 

@@ -25,8 +25,18 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
 	const contract = contracts[0];
 
 	// Parse contrato e protocolo de coleção
-	const contractData = contract?.contract_data
-		? (JSON.parse(contract.contract_data) as CognitiveContract)
+	const contractData: CognitiveContract | null = contract
+		? {
+				correction: contract.correction
+					? JSON.parse(contract.correction)
+					: undefined,
+				hardBlocks: contract.hard_blocks
+					? JSON.parse(contract.hard_blocks)
+					: undefined,
+				levelMatch: JSON.parse(contract.level_match),
+				role: contract.role,
+				rulers: JSON.parse(contract.rulers),
+			}
 		: null;
 	const protocolData = session.protocol
 		? (JSON.parse(session.protocol) as CollectionProtocol)

@@ -73,13 +73,22 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
 	const contracts = await repos.contracts.findBySessionId(sessionId);
 	const latestContract = contracts[0];
 
-	if (!latestContract?.contract_data) {
+	if (!latestContract) {
 		return data({ error: 'No contract found for session' }, { status: 404 });
 	}
 
-	const contractData = JSON.parse(
-		latestContract.contract_data,
-	) as CognitiveContract;
+	// Reconstruct CognitiveContract from individual fields
+	const contractData: CognitiveContract = {
+		correction: latestContract.correction
+			? JSON.parse(latestContract.correction)
+			: undefined,
+		hardBlocks: latestContract.hard_blocks
+			? JSON.parse(latestContract.hard_blocks)
+			: undefined,
+		levelMatch: JSON.parse(latestContract.level_match),
+		role: latestContract.role,
+		rulers: JSON.parse(latestContract.rulers),
+	};
 
 	// Buscar protocolo de coleta existente
 	const protocols = await repos.collectionProtocols.findBySessionId(sessionId);
@@ -198,13 +207,22 @@ async function handleDeriveProtocol(
 	const contracts = await repos.contracts.findBySessionId(sessionId);
 	const latestContract = contracts[0];
 
-	if (!latestContract?.contract_data) {
+	if (!latestContract) {
 		return data({ error: 'No contract found for session' }, { status: 404 });
 	}
 
-	const contractData = JSON.parse(
-		latestContract.contract_data,
-	) as CognitiveContract;
+	// Reconstruct CognitiveContract from individual fields
+	const contractData: CognitiveContract = {
+		role: latestContract.role,
+		levelMatch: JSON.parse(latestContract.level_match),
+		rulers: JSON.parse(latestContract.rulers),
+		hardBlocks: latestContract.hard_blocks
+			? JSON.parse(latestContract.hard_blocks)
+			: undefined,
+		correction: latestContract.correction
+			? JSON.parse(latestContract.correction)
+			: undefined,
+	};
 
 	// Derivar protocolo
 	const protocol = deriveCriteria(contractData);

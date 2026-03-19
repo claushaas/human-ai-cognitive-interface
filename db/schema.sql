@@ -31,7 +31,9 @@ CREATE TABLE collection_protocols (
     criteria TEXT NOT NULL,
     blocks TEXT NOT NULL,
     payload TEXT,
-    status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'in_progress', 'completed'))
+    status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'in_progress', 'completed')),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Indexes for performance

@@ -28,10 +28,20 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
 
 	// Get contract
 	const contracts = await repos.contracts.findBySessionId(sessionId);
-	const contract =
-		contracts.length > 0
-			? (JSON.parse(contracts[0].contract_data || '{}') as CognitiveContract)
-			: null;
+	const contractRaw = contracts.length > 0 ? contracts[0] : null;
+	const contract: CognitiveContract | null = contractRaw
+		? {
+				correction: contractRaw.correction
+					? JSON.parse(contractRaw.correction)
+					: undefined,
+				hardBlocks: contractRaw.hard_blocks
+					? JSON.parse(contractRaw.hard_blocks)
+					: undefined,
+				levelMatch: JSON.parse(contractRaw.level_match),
+				role: contractRaw.role,
+				rulers: JSON.parse(contractRaw.rulers),
+			}
+		: null;
 
 	// Get protocol/payload
 	const protocols = await repos.collectionProtocols.findBySessionId(sessionId);

@@ -84,12 +84,25 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
 	const contracts = await repos.contracts.findBySessionId(sessionId);
 	const latestContract = contracts[0];
 
+	// Reconstruct CognitiveContract from individual fields
+	const contract: CognitiveContract | null = latestContract
+		? {
+				correction: latestContract.correction
+					? JSON.parse(latestContract.correction)
+					: undefined,
+				hardBlocks: latestContract.hard_blocks
+					? JSON.parse(latestContract.hard_blocks)
+					: undefined,
+				levelMatch: JSON.parse(latestContract.level_match),
+				role: latestContract.role,
+				rulers: JSON.parse(latestContract.rulers),
+			}
+		: null;
+
 	return {
 		session: {
 			...session,
-			contract: latestContract?.contract_data
-				? JSON.parse(latestContract.contract_data)
-				: null,
+			contract,
 		},
 	};
 }
