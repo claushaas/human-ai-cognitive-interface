@@ -29,19 +29,33 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
 	// Get contract
 	const contracts = await repos.contracts.findBySessionId(sessionId);
 	const contractRaw = contracts.length > 0 ? contracts[0] : null;
-	const contract: CognitiveContract | null = contractRaw
-		? {
-				correction: contractRaw.correction
-					? JSON.parse(contractRaw.correction)
-					: undefined,
-				hardBlocks: contractRaw.hard_blocks
-					? JSON.parse(contractRaw.hard_blocks)
-					: undefined,
-				levelMatch: JSON.parse(contractRaw.level_match),
-				role: contractRaw.role,
-				rulers: JSON.parse(contractRaw.rulers),
+	let contract: CognitiveContract | null = null;
+	if (contractRaw) {
+		try {
+			const levelMatch = contractRaw.level_match
+				? JSON.parse(contractRaw.level_match)
+				: null;
+			const rulers = contractRaw.rulers ? JSON.parse(contractRaw.rulers) : null;
+
+			// Validar dados mínimos necessários
+			if (contractRaw.role && levelMatch && rulers) {
+				contract = {
+					correction: contractRaw.correction
+						? JSON.parse(contractRaw.correction)
+						: undefined,
+					hardBlocks: contractRaw.hard_blocks
+						? JSON.parse(contractRaw.hard_blocks)
+						: undefined,
+					levelMatch,
+					role: contractRaw.role,
+					rulers,
+				};
 			}
-		: null;
+		} catch (e) {
+			console.error('Failed to parse contract data:', e);
+			contract = null;
+		}
+	}
 
 	// Get protocol/payload
 	const protocols = await repos.collectionProtocols.findBySessionId(sessionId);

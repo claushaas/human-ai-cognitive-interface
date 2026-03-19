@@ -84,20 +84,36 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
 	const contracts = await repos.contracts.findBySessionId(sessionId);
 	const latestContract = contracts[0];
 
-	// Reconstruct CognitiveContract from individual fields
-	const contract: CognitiveContract | null = latestContract
-		? {
-				correction: latestContract.correction
-					? JSON.parse(latestContract.correction)
-					: undefined,
-				hardBlocks: latestContract.hard_blocks
-					? JSON.parse(latestContract.hard_blocks)
-					: undefined,
-				levelMatch: JSON.parse(latestContract.level_match),
-				role: latestContract.role,
-				rulers: JSON.parse(latestContract.rulers),
+	// Reconstruct CognitiveContract from individual fields with error handling
+	let contract: CognitiveContract | null = null;
+	if (latestContract) {
+		try {
+			const levelMatch = latestContract.level_match
+				? JSON.parse(latestContract.level_match)
+				: null;
+			const rulers = latestContract.rulers
+				? JSON.parse(latestContract.rulers)
+				: null;
+
+			// Validar dados mínimos necessários
+			if (latestContract.role && levelMatch && rulers) {
+				contract = {
+					correction: latestContract.correction
+						? JSON.parse(latestContract.correction)
+						: undefined,
+					hardBlocks: latestContract.hard_blocks
+						? JSON.parse(latestContract.hard_blocks)
+						: undefined,
+					levelMatch,
+					role: latestContract.role,
+					rulers,
+				};
 			}
-		: null;
+		} catch (e) {
+			console.error('Failed to parse contract data:', e);
+			contract = null;
+		}
+	}
 
 	return {
 		session: {

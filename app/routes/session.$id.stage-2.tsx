@@ -77,18 +77,38 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
 		return data({ error: 'No contract found for session' }, { status: 404 });
 	}
 
-	// Reconstruct CognitiveContract from individual fields
-	const contractData: CognitiveContract = {
-		correction: latestContract.correction
-			? JSON.parse(latestContract.correction)
-			: undefined,
-		hardBlocks: latestContract.hard_blocks
-			? JSON.parse(latestContract.hard_blocks)
-			: undefined,
-		levelMatch: JSON.parse(latestContract.level_match),
-		role: latestContract.role,
-		rulers: JSON.parse(latestContract.rulers),
-	};
+	// Reconstruct CognitiveContract from individual fields with error handling
+	let contractData: CognitiveContract | null = null;
+	try {
+		const levelMatch = latestContract.level_match
+			? JSON.parse(latestContract.level_match)
+			: null;
+		const rulers = latestContract.rulers ? JSON.parse(latestContract.rulers) : null;
+
+		// Validar dados mínimos necessários
+		if (latestContract.role && levelMatch && rulers) {
+			contractData = {
+				correction: latestContract.correction
+					? JSON.parse(latestContract.correction)
+					: undefined,
+				hardBlocks: latestContract.hard_blocks
+					? JSON.parse(latestContract.hard_blocks)
+					: undefined,
+				levelMatch,
+				role: latestContract.role,
+				rulers,
+			};
+		}
+	} catch (e) {
+		console.error('Failed to parse contract data:', e);
+	}
+
+	if (!contractData) {
+		return data(
+			{ error: 'Invalid contract data in session' },
+			{ status: 500 },
+		);
+	}
 
 	// Buscar protocolo de coleta existente
 	const protocols = await repos.collectionProtocols.findBySessionId(sessionId);
@@ -211,18 +231,35 @@ async function handleDeriveProtocol(
 		return data({ error: 'No contract found for session' }, { status: 404 });
 	}
 
-	// Reconstruct CognitiveContract from individual fields
-	const contractData: CognitiveContract = {
-		role: latestContract.role,
-		levelMatch: JSON.parse(latestContract.level_match),
-		rulers: JSON.parse(latestContract.rulers),
-		hardBlocks: latestContract.hard_blocks
-			? JSON.parse(latestContract.hard_blocks)
-			: undefined,
-		correction: latestContract.correction
-			? JSON.parse(latestContract.correction)
-			: undefined,
-	};
+	// Reconstruct CognitiveContract from individual fields with error handling
+	let contractData: CognitiveContract | null = null;
+	try {
+		const levelMatch = latestContract.level_match
+			? JSON.parse(latestContract.level_match)
+			: null;
+		const rulers = latestContract.rulers ? JSON.parse(latestContract.rulers) : null;
+
+		// Validar dados mínimos necessários
+		if (latestContract.role && levelMatch && rulers) {
+			contractData = {
+				correction: latestContract.correction
+					? JSON.parse(latestContract.correction)
+					: undefined,
+				hardBlocks: latestContract.hard_blocks
+					? JSON.parse(latestContract.hard_blocks)
+					: undefined,
+				levelMatch,
+				role: latestContract.role,
+				rulers,
+			};
+		}
+	} catch (e) {
+		console.error('Failed to parse contract data:', e);
+	}
+
+	if (!contractData) {
+		return data({ error: 'Invalid contract data' }, { status: 500 });
+	}
 
 	// Derivar protocolo
 	const protocol = deriveCriteria(contractData);

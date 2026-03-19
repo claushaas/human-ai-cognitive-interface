@@ -141,7 +141,20 @@ export function generateContractPrompt(
 	const { role, levelMatch, rulers, hardBlocks, correction } = contract;
 
 	const roleInfo = ROLE_DESCRIPTIONS[role];
-	const levelName = LEVEL_NAMES[levelMatch.selectedLevel ?? 'N1'];
+	if (!roleInfo) {
+		return `# Contrato Cognitivo Configurado
+
+## Papel Selecionado
+
+**${role || 'Desconhecido'}** — Papel não reconhecido
+
+---
+
+Por favor, reconfigure o contrato cognitivo.
+`;
+	}
+
+	const levelName = LEVEL_NAMES[levelMatch?.selectedLevel ?? 'N1'];
 
 	let prompt = `# Contrato Cognitivo Configurado
 
