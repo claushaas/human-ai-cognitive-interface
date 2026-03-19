@@ -1,22 +1,23 @@
-import { createRequestHandler } from '@react-router/cloudflare';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-expect-error: build/server é gerado dinamicamente pelo React Router
-import * as build from '../build/server';
+import { createRequestHandler } from 'react-router';
 
-interface Env {
-	DB: D1Database;
-	CACHE: KVNamespace;
+declare module 'react-router' {
+	export interface AppLoadContext {
+		cloudflare: {
+			env: Env;
+			ctx: ExecutionContext;
+		};
+	}
 }
 
-const requestHandler = createRequestHandler<Env>({
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-expect-error: tipo do build gerado dinamicamente
-	build: () => build as unknown,
-	getLoadContext: ({ context }) => {
-		return { env: context.cloudflare.env };
-	},
-});
+const requestHandler = createRequestHandler(
+	() => import('virtual:react-router/server-build'),
+	import.meta.env.MODE,
+);
 
 export default {
-	fetch: requestHandler,
-};
+	async fetch(request, env, ctx) {
+		return requestHandler(request, {
+			cloudflare: { ctx, env },
+		});
+	},
+} satisfies ExportedHandler<Env>;

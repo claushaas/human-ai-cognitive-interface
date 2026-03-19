@@ -5,9 +5,9 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
 	plugins: [
+		cloudflare({ viteEnvironment: { name: 'ssr' } }),
 		reactRouter(),
 		tailwindcss(),
-		cloudflare({ viteEnvironment: { name: 'ssr' } }),
 	],
 	resolve: {
 		tsconfigPaths: true,
