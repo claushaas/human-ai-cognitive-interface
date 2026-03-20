@@ -83,7 +83,9 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
 		const levelMatch = latestContract.level_match
 			? JSON.parse(latestContract.level_match)
 			: null;
-		const rulers = latestContract.rulers ? JSON.parse(latestContract.rulers) : null;
+		const rulers = latestContract.rulers
+			? JSON.parse(latestContract.rulers)
+			: null;
 
 		// Validar dados mínimos necessários
 		if (latestContract.role && levelMatch && rulers) {
@@ -104,10 +106,7 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
 	}
 
 	if (!contractData) {
-		return data(
-			{ error: 'Invalid contract data in session' },
-			{ status: 500 },
-		);
+		return data({ error: 'Invalid contract data in session' }, { status: 500 });
 	}
 
 	// Buscar protocolo de coleta existente
@@ -237,7 +236,9 @@ async function handleDeriveProtocol(
 		const levelMatch = latestContract.level_match
 			? JSON.parse(latestContract.level_match)
 			: null;
-		const rulers = latestContract.rulers ? JSON.parse(latestContract.rulers) : null;
+		const rulers = latestContract.rulers
+			? JSON.parse(latestContract.rulers)
+			: null;
 
 		// Validar dados mínimos necessários
 		if (latestContract.role && levelMatch && rulers) {

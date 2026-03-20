@@ -12,17 +12,18 @@ Princípios operacionais desta documentação (conforme a Fonte de Verdade):
 
 1. `13-system-flow-diagram.md` (visão geral “slide”)
 2. `12-constitution.md` (regras constitucionais e precedência)
-3. `02-system-overview.md`
-4. `03-terminology-and-naming.md`
-5. `04-process-phases.md`
-6. `05-initial-roles.md`
-7. `06-axes-and-rulers.md`
-8. `07-level-matching.md`
-9. `08-criteria-and-collection-protocol.md`
-10. `09-open-issues-and-gaps.md` (decisões consolidadas)
-11. `10-spec-outline.md`
-12. `11-roadmap-draft.md`
-13. `01-source-of-truth.md` (apêndice: cópia integral do conteúdo em `info/`)
+3. `14-engineering-blueprint.md` (fluxo completo e fronteiras de chamada à IA)
+4. `02-system-overview.md`
+5. `03-terminology-and-naming.md`
+6. `04-process-phases.md`
+7. `05-initial-roles.md`
+8. `06-axes-and-rulers.md`
+9. `07-level-matching.md`
+10. `08-criteria-and-collection-protocol.md`
+11. `09-open-issues-and-gaps.md` (decisões consolidadas)
+12. `10-spec-outline.md`
+13. `11-roadmap-draft.md`
+14. `01-source-of-truth.md` (apêndice: cópia integral do conteúdo em `info/`)
 
 ## Mapa rápido (de onde cada coisa vem)
 
@@ -33,3 +34,4 @@ Princípios operacionais desta documentação (conforme a Fonte de Verdade):
 - Critérios de coleta e protocolo (Etapa 2): `info/criterios-canonicos-de-coleta.md`, `info/criteria-derivation-algorithm.md`, `info/criteria-collection-protocol-prompt.md`
 - Regras constitucionais e precedência (consolidadas): `12-constitution.md`
 - Diagrama do fluxo (apresentação/onboarding): `13-system-flow-diagram.md`
+- Planta baixa de engenharia do fluxo completo: `14-engineering-blueprint.md`
