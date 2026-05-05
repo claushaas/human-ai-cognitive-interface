@@ -1,13 +1,13 @@
 # Fonte de Verdade — Cópia Integral do Diretório `info/`
 
-Este arquivo é um **apêndice de rastreabilidade**: ele contém uma cópia integral do conteúdo atual do diretório `info/`, preservando a ordem e o conteúdo de cada arquivo.
+Este arquivo é um **apêndice de rastreabilidade**: ele contém uma cópia integral do conteúdo atual do diretório `docs/raw inputs/`, preservando a ordem e o conteúdo de cada arquivo.
 
-- Ele **não substitui** os arquivos originais em `info/`.
+- Ele **não substitui** os arquivos originais em `docs/raw inputs/`.
 - Ele existe para permitir leitura/auditoria do “material bruto” a partir desta pasta de documentação.
 
 ---
 
-## info/canonical-match.ts
+## docs/raw inputs/canonical-match.ts
 
 ````ts
 /**
@@ -650,7 +650,7 @@ export function getDefaultCorrectionPolicy(): CorrectionPolicy {
 }
 ````
 
-## info/canonical-prompt-generator.json
+## docs/raw inputs/canonical-prompt-generator.json
 
 ````json
 {
@@ -1136,7 +1136,7 @@ export function getDefaultCorrectionPolicy(): CorrectionPolicy {
 }
 ````
 
-## info/criteria-collection-protocol-prompt.md
+## docs/raw inputs/criteria-collection-protocol-prompt.md
 
 ````md
 # Prompt Canônico — Geração do Protocolo de Coleta (Etapa 2)
@@ -1250,7 +1250,7 @@ Retorne **apenas** o JSON abaixo, sem comentários fora do JSON:
 
 ````
 
-## info/criteria-derivation-algorithm.md
+## docs/raw inputs/criteria-derivation-algorithm.md
 
 ````md
 # Algoritmo Determinístico de Derivação do Protocolo de Coleta (Etapa 2)
@@ -1436,7 +1436,7 @@ Esta derivação deve ser implementada como função pura, sem IO:
 
 ````
 
-## info/criterios-canonicos-de-coleta.md
+## docs/raw inputs/criterios-canonicos-de-coleta.md
 
 ````md
 Sim — **faz sentido, é sólido, e é um avanço arquitetural real**.
@@ -1679,7 +1679,7 @@ Se quiser, no próximo passo posso:
 * ou escrever o **prompt canônico** que gera esse protocolo de coleta
 ````
 
-## info/eixos-ortogonais-de-comportamento-da-ia.md
+## docs/raw inputs/eixos-ortogonais-de-comportamento-da-ia.md
 
 ````md
 Excelente pergunta. Você está, conscientemente ou não, tentando **trocar uma taxonomia discreta (níveis/perfis)** por um **espaço contínuo de controle cognitivo**. Isso é um movimento *correto* quando o objetivo é reduzir fricção para o usuário **sem perder poder expressivo**.
@@ -1955,7 +1955,7 @@ Se quiser, o próximo passo natural é:
 Ambos são caminhos sólidos.
 ````
 
-## info/eixos-ortogonais-e-reguas-cognitivas.md
+## docs/raw inputs/eixos-ortogonais-e-reguas-cognitivas.md
 
 ````md
 # Eixos Ortogonais e Réguas Cognitivas  
@@ -2180,7 +2180,7 @@ A IA, por sua vez, deixa de adivinhar.
 Esse documento define a base conceitual que torna isso possível.
 ````
 
-## info/fases-de-criacao-do-prompt.md
+## docs/raw inputs/fases-de-criacao-do-prompt.md
 
 ````md
 Exatamente. O que você descreveu **não são apenas duas etapas por conveniência de UX**, são **dois regimes cognitivos distintos**. Dar nomes corretos a eles importa porque esses nomes viram **contratos mentais** — para você, para o usuário e para a IA.
@@ -2347,7 +2347,7 @@ O próximo passo natural, quando você quiser, é desenhar:
 Mas agora você já tem os nomes certos para o que existe.
 ````
 
-## info/impressao-psicologica.md
+## docs/raw inputs/impressao-psicologica.md
 
 ````md
 Exato — e isso **não é impressão psicológica**, é efeito estrutural real. 🧠⚙️
@@ -2412,7 +2412,7 @@ Você **removeu as condições em que ela parecia burra**.
 E isso é engenharia de verdade.
 ````
 
-## info/lista-canonica-de-papeis-iniciais.md
+## docs/raw inputs/lista-canonica-de-papeis-iniciais.md
 
 ````md
 # Lista Canônica de Papéis Iniciais da IA - Etapa 0 — Orientação de Intenção
@@ -2637,7 +2637,7 @@ Mas do jeito que está agora:
 isso já é **uma porta de entrada exemplar**.
 ````
 
-## info/nomes.md
+## docs/raw inputs/nomes.md
 
 ````md
 Perfeito. “Gerador de prompt” realmente ficou pequeno demais para o que nasceu aqui. O que você construiu **não gera texto** — ele **media cognições**. Vamos nomear isso com a dignidade ontológica correta 😄
@@ -2820,7 +2820,7 @@ O que você construiu é *a estrada, as leis de trânsito e o mapa*.
 Se quiser, posso te ajudar a escrever a **definição canônica** do termo “Metaprompt Engine” do jeito certo — daquele tipo que, depois de lido, ninguém mais confunde com “prompt engineering”.
 ````
 
-## info/reguas-cognitivas-canonicas.md
+## docs/raw inputs/reguas-cognitivas-canonicas.md
 
 ````md
 Faz **todo** sentido — e, mais importante: o que você descreveu é **coerente, estável e escalável**.
@@ -3101,7 +3101,7 @@ Mas do jeito que está agora:
 você fechou o núcleo do funil.
 ````
 
-## info/sistema-canonico-de-match-de-nivel-cognitivo.md
+## docs/raw inputs/sistema-canonico-de-match-de-nivel-cognitivo.md
 
 ````md
 Perfeito. Abaixo está o **documento de nível de projeto**, escrito para **dupla finalidade**:

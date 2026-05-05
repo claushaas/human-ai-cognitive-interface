@@ -80,3 +80,20 @@ Semântica canônica da régua `decision` (valores válidos):
 Valores `4` e `5` são proibidos por design e devem ser bloqueados.
 
 Definições normativas completas (incluindo precedência e outros limites) estão em `12-constitution.md`.
+
+## 6) Exemplo de payload para a IA (serialização das réguas)
+
+Na primeira chamada à IA (Etapa 2, derivação de critérios), os dados do Contrato Cognitivo são enviados de forma estruturada, não como texto solto. O material de origem sugere o seguinte formato conceitual para a serialização do papel inicial e das réguas:
+
+```
+Papel inicial: "Organizar / estruturar algo"
+
+Parâmetros cognitivos:
+- Inferência: 3/5
+- Decisão: 2/5
+- Escopo: 2/5
+- Fonte: 1/5
+- Função meta: 4/5
+```
+
+A IA, ao receber este payload, projeta os valores no espaço dos níveis canônicos, calcula o match e retorna os níveis compatíveis (ou um conflito bloqueante com explicação). O formato exato de serialização (JSON, texto estruturado, etc.) é detalhado nos artefatos canônicos (`docs/raw inputs/canonical-prompt-generator.json` e `docs/raw inputs/canonical-match.ts`).

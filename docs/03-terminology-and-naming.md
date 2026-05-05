@@ -56,11 +56,42 @@ Enquadra como formalização de linguagem operacional:
 
 ### 1.6 Recomendações registradas
 
-Há uma recomendação explícita de nome “que aguenta produto + paper + GitHub + palestra”:
+Há uma recomendação explícita de nome "que aguenta produto + paper + GitHub + palestra":
 
 - **Human–AI Cognitive Interface**
 
-E há uma discussão sobre **Metaprompt Engine** como nome técnico/interno (“motor”), com a observação de que “prompt” pode limitar a percepção pública do escopo.
+Além dessa, o material de origem lista outras 5 "combinações canônicas" de nomes consideradas fortes o suficiente para múltiplos contextos:
+
+- **Intent Compiler**
+- **Cognitive Contract Engine**
+- **Intent Resolution Interface**
+- **Metacognitive Prompt Architecture**
+- **Cognitive Alignment Interface**
+
+### 1.7 Metaprompt Engine (nome interno)
+
+Há uma discussão específica sobre **Metaprompt Engine** como nome técnico/interno:
+
+O que ele acerta:
+
+- **"Meta"**: comunica claramente que o sistema atua *antes* do prompt — no nível de estrutura, intenção e controle.
+- **"Engine"**: indica mecanismo, não UI; algo determinístico, operacional, sério.
+- **Alinhamento técnico**: faz sentido para quem já vive em LLMs, agentes, pipelines.
+
+Onde ele limita:
+
+- **Redução semântica**: "prompt" ainda puxa o imaginário para texto/LLM. O sistema é maior: contrato cognitivo, governança, thresholds, bloqueios.
+- **Público**: para não-técnicos (ou decisores), "Metaprompt" soa esotérico ou redundante ("prompt do prompt?").
+- **Evolução futura**: se amanhã isso vira mediação humano–agente, ou multi-IA, o termo "prompt" pode ficar estreito.
+
+Posicionamento recomendado:
+
+- **Nome do sistema (externo/público)**: Human–AI Cognitive Interface
+- **Nome do núcleo (interno/técnico)**: Metaprompt Engine
+
+Ou, alternativamente: Cognitive Contract Engine (powered by the Metaprompt Engine).
+
+Veredito: **Metaprompt Engine** descreve bem *o motor*, mas não representa tudo o que o sistema é — a estrada, as leis de trânsito e o mapa.
 
 ## 2) Definições canônicas (termos)
 

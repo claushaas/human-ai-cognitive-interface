@@ -40,7 +40,7 @@ Tabela canônica (derivada do JSON canônico; consistente com a implementação)
 | N7 | Meta-Cognição e Arquitetura de Pensamento | (3, 1, 4, 2, 5) |
 | N8 | Documentação, Contratos e Sistemas de Uso | (2, 2, 5, 1, 5) |
 
-## 3) Distância e score (visão técnica)
+## 4) Distância e score (visão técnica)
 
 O cálculo descrito/implementado usa:
 
@@ -55,7 +55,7 @@ Pesos canônicos aparecem em artefatos (`canonical-prompt-generator.json` / `can
 - fonte: 1.5
 - meta: 1.3
 
-## 4) Prior do papel inicial (viés suave)
+## 5) Prior do papel inicial (viés suave)
 
 Existe um prior opcional que:
 
@@ -64,7 +64,7 @@ Existe um prior opcional que:
 
 Lista de boosts aparece em `info/canonical-prompt-generator.json` e `info/canonical-match.ts`.
 
-## 5) Bloqueios semânticos (hard blocks)
+## 6) Bloqueios semânticos (hard blocks)
 
 Há a noção de bloqueios duros com precedência sobre score.
 
@@ -82,7 +82,7 @@ Lista canônica (ids do JSON):
 5. `block.scopeSystemicWithoutSystemicIntent` — escopo sistêmico sem intenção sistêmica (user scope ≤ 2 vs nível scope ≥ 4).
 6. `block.governanceRequiresDecision3` — N6 exige decisão = 3.
 
-## 6) Thresholds e resultados
+## 7) Thresholds e resultados
 
 Thresholds canônicos aparecem em artefatos de configuração:
 
@@ -97,7 +97,7 @@ Comportamentos registrados:
 - match ambíguo: retorna candidatos e sugere correções;
 - match fraco: bloqueia e solicita revisão (sem execução).
 
-## 7) Correções locais (fallback controlado, sem loop)
+## 8) Correções locais (fallback controlado, sem loop)
 
 Existe um mecanismo registrado para evitar loops e múltiplas chamadas:
 
@@ -112,7 +112,7 @@ Configurações e implementação aparecem em:
 - `info/canonical-prompt-generator.json` (`matching.corrections`)
 - `info/canonical-match.ts` (`suggestCorrectionsSafe`, `generateLocalDeltas`, `applyDelta`)
 
-## 8) Separação entre níveis operacionais e meta/constitucionais
+## 9) Separação entre níveis operacionais e meta/constitucionais
 
 Definição normativa (ver `12-constitution.md`):
 

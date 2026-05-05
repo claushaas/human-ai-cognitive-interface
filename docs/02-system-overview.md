@@ -8,6 +8,14 @@ O que está sendo descrito neste repositório não é apenas um “gerador de pr
 - **media cognições** ao transformar intenção humana difusa em **contratos explícitos** e **especificações operacionais**;
 - reduz a necessidade de “adivinhação” do modelo por meio de **delimitações comportamentais** e **bloqueios semânticos**.
 
+## Posicionamento conceitual
+
+O material de origem posiciona este sistema em duas formulações complementares:
+
+- **Interface Humano–IA de segunda ordem**: não é tooling nem gerador de prompts; é uma arquitetura de interação cognitiva que atua sobre o *modo de pensar* da IA antes da execução. O sistema compete com copilotos rígidos, agentes opacos e UXs que pressupõem intenção correta do usuário — não com geradores de prompt tradicionais.
+
+- **Protocolo de negociação de intenção entre humano e modelo**: o fluxo (intenção → contrato → critérios → coleta → execução) estabelece um processo explícito de alinhamento onde a IA revela, ajusta e valida o próprio modo de operação antes de responder, eliminando as condições em que a IA pareceria "burra" por adivinhar intenção.
+
 ## Tese estrutural (modelo mental de engenharia)
 
 Uma tese central explicitada é:
