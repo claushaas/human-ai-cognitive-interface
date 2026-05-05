@@ -6,14 +6,9 @@
 		"strict": true,
 		"verbatimModuleSyntax": true
 	},
-	"exclude": ["workers/**/*"],
 	"files": [],
 	"references": [
-		{
-			"path": "./tsconfig.node.json"
-		},
-		{
-			"path": "./tsconfig.cloudflare.json"
-		}
+		{ "path": "./tsconfig.node.json" },
+		{ "path": "./tsconfig.cloudflare.json" }
 	]
 }

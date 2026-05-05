@@ -1,6 +1,5 @@
 {
 	"compilerOptions": {
-		"baseUrl": ".",
 		"composite": true,
 		"esModuleInterop": true,
 		"jsx": "react-jsx",
@@ -8,12 +7,7 @@
 		"module": "ES2022",
 		"moduleResolution": "bundler",
 		"paths": {
-			"~/*": ["./app/*"],
-			"~/config/*": ["./config/*"],
-			"~/core/*": ["./core/*"],
-			"~/db": ["./db/index.ts"],
-			"~/types": ["./types/index.ts"],
-			"~/types/*": ["./types/*"]
+			"~/*": ["./app/*"]
 		},
 		"resolveJsonModule": true,
 		"rootDirs": [".", "./.react-router/types"],
@@ -21,16 +15,13 @@
 		"target": "ES2022",
 		"types": ["vite/client"]
 	},
-	"exclude": ["workers/**/*"],
 	"extends": "./tsconfig.json",
 	"include": [
 		".react-router/types/**/*",
 		"app/**/*",
 		"app/**/.server/**/*",
 		"app/**/.client/**/*",
-		"core/**/*",
-		"db/**/*",
-		"types/**/*",
+		"workers/**/*",
 		"worker-configuration.d.ts"
 	]
 }

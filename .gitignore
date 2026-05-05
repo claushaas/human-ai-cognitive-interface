@@ -1,22 +1,15 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# dependencies
-/node_modules
-.pnpm-store
-
-# Build outputs
-.react-router/
-dist/
-build/
-*.tsbuildinfo
-
-# Cloudflare
-.wrangler/
-.cloudflare/
-worker-configuration.d.ts
-
-# misc
 .DS_Store
 .env
-.env.local
-.env.*.local
+/node_modules/
+*.tsbuildinfo
+
+# React Router
+/.react-router/
+/build/
+
+# Cloudflare
+.mf
+.wrangler
+.dev.vars*
+worker-configuration.d.ts
+

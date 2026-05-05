@@ -6,21 +6,33 @@ import {
 	Scripts,
 	ScrollRestoration,
 } from 'react-router';
-import type { Route } from './+types/root';
 
-import './styles.css';
+import type { Route } from './+types/root';
+import './app.css';
+
+export const links: Route.LinksFunction = () => [
+	{ href: 'https://fonts.googleapis.com', rel: 'preconnect' },
+	{
+		crossOrigin: 'anonymous',
+		href: 'https://fonts.gstatic.com',
+		rel: 'preconnect',
+	},
+	{
+		href: 'https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap',
+		rel: 'stylesheet',
+	},
+];
 
 export function Layout({ children }: { children: React.ReactNode }) {
 	return (
-		<html lang="pt-BR">
+		<html lang="en">
 			<head>
 				<meta charSet="utf-8" />
 				<meta content="width=device-width, initial-scale=1" name="viewport" />
-				<meta content="#3b82f6" name="theme-color" />
 				<Meta />
 				<Links />
 			</head>
-			<body className="min-h-screen bg-bg-secondary text-text-primary antialiased">
+			<body>
 				{children}
 				<ScrollRestoration />
 				<Scripts />
@@ -50,22 +62,14 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
 	}
 
 	return (
-		<main className="container-page py-12">
-			<div className="mx-auto text-center">
-				<h1 className="text-4xl font-bold text-text-primary mb-4">{message}</h1>
-				<p className="text-lg text-text-secondary mb-8">{details}</p>
-				{stack && (
-					<pre className="bg-bg-tertiary border border-border-primary rounded-lg p-4 overflow-auto text-left text-sm font-mono text-text-secondary">
-						<code>{stack}</code>
-					</pre>
-				)}
-				<a
-					className="inline-flex items-center justify-center px-6 py-3 bg-primary text-text-inverse font-medium rounded-lg hover:bg-primary-dark transition-colors"
-					href="/"
-				>
-					Voltar para a página inicial
-				</a>
-			</div>
+		<main className="pt-16 p-4 container mx-auto">
+			<h1>{message}</h1>
+			<p>{details}</p>
+			{stack && (
+				<pre className="w-full p-4 overflow-x-auto">
+					<code>{stack}</code>
+				</pre>
+			)}
 		</main>
 	);
 }
