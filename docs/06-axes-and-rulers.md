@@ -85,7 +85,7 @@ Definições normativas completas (incluindo precedência e outros limites) est�
 
 Na primeira chamada à IA (Etapa 2, derivação de critérios), os dados do Contrato Cognitivo são enviados de forma estruturada, não como texto solto. O material de origem sugere o seguinte formato conceitual para a serialização do papel inicial e das réguas:
 
-```
+```text
 Papel inicial: "Organizar / estruturar algo"
 
 Parâmetros cognitivos:
