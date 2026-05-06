@@ -318,7 +318,7 @@ Criar a fundação SSR do web app HACI, com rotas, shell, loaders/actions mínim
 - D1 ainda pode ser mockado/ausente; loaders devem degradar para estado local controlado.
 - Evitar criar API separada; usar loaders/actions como boundary canônico.
 
-## 8. Fase 2 — Design system e shell da interface
+## 8. Fase 2 — Design system e shell da interface ✅
 
 ### Objetivo
 

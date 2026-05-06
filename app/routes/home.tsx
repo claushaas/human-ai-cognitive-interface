@@ -1,3 +1,4 @@
+import { Button } from '~/components/ui/Button';
 import { getPublicEnv } from '~/lib/env/public';
 
 export function meta() {
@@ -14,13 +15,15 @@ export default function Home() {
 	const env = getPublicEnv();
 
 	return (
-		<section className="flex flex-1 flex-col items-center justify-center gap-8 text-center">
-			<header className="space-y-4">
-				<h1 className="font-bold text-5xl tracking-tight text-neutral-900">
+		<section className="flex flex-1 flex-col items-center justify-center gap-10 text-center px-4">
+			<header className="space-y-5 max-w-lg">
+				<h1 className="font-serif text-6xl font-bold tracking-tight text-haci-text md:text-7xl">
 					HACI
 				</h1>
-				<p className="text-neutral-500 text-xl">Human-AI Cognitive Interface</p>
-				<p className="max-w-lg text-neutral-600 text-lg leading-relaxed">
+				<p className="text-haci-text-muted text-xl md:text-2xl">
+					Human-AI Cognitive Interface
+				</p>
+				<p className="text-haci-text text-lg leading-relaxed">
 					Inicie conversas mais assertivas com uma IA.{' '}
 					<span className="font-medium">
 						Ferramenta para estruturar um prompt inicial antes de abrir um chat
@@ -30,22 +33,19 @@ export default function Home() {
 			</header>
 
 			<nav className="flex flex-col items-center gap-4">
-				<a
-					className="inline-flex items-center justify-center rounded-lg bg-neutral-900 px-8 py-3 font-medium text-sm text-white no-underline transition hover:bg-neutral-800"
-					href="/app/new"
-				>
-					Criar novo prompt
+				<a href="/app/new">
+					<Button size="lg">Criar novo prompt</Button>
 				</a>
 
 				<a
-					className="text-neutral-600 text-sm no-underline hover:text-neutral-900"
+					className="text-haci-text-muted text-sm no-underline transition-colors duration-150 hover:text-haci-text"
 					href="/app/history"
 				>
 					Ver histórico
 				</a>
 			</nav>
 
-			<p className="text-neutral-400 text-xs">
+			<p className="text-haci-text-subtle text-xs">
 				Ambiente: {env.APP_ENV} | v1.0.0
 			</p>
 		</section>

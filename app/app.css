@@ -1,16 +1,122 @@
-@import "tailwindcss" source(".");
+@import "tailwindcss" source('.');
 
 @theme {
 	--font-sans:
-		"Inter", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
-		"Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+		"Spectral", ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+	--font-serif:
+		"Averia Serif Libre", ui-serif, Georgia, Cambria, "Times New Roman", Times,
+		serif;
+	--font-mono:
+		"Spectral", ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+
+	--color-haci-bg: var(--haci-bg);
+	--color-haci-surface: var(--haci-surface);
+	--color-haci-surface-subtle: var(--haci-surface-subtle);
+	--color-haci-text: var(--haci-text);
+	--color-haci-text-muted: var(--haci-text-muted);
+	--color-haci-text-subtle: var(--haci-text-subtle);
+	--color-haci-border: var(--haci-border);
+	--color-haci-border-strong: var(--haci-border-strong);
+	--color-haci-accent: var(--haci-accent);
+	--color-haci-accent-soft: var(--haci-accent-soft);
+	--color-haci-accent-ink: var(--haci-accent-ink);
+	--color-haci-accent-contrast: var(--haci-accent-contrast);
+	--color-haci-warning: var(--haci-warning);
+	--color-haci-warning-surface: var(--haci-warning-surface);
+	--color-haci-danger: var(--haci-danger);
+	--color-haci-danger-surface: var(--haci-danger-surface);
+	--color-haci-success: var(--haci-success);
+	--color-haci-success-surface: var(--haci-success-surface);
+	--color-haci-focus: var(--haci-focus);
+	--color-haci-shadow: var(--haci-shadow);
 }
 
-html,
-body {
-	@apply bg-white dark:bg-gray-950;
+html {
+	font-family:
+		"Spectral", ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+	color: var(--haci-text);
+	background-color: var(--haci-bg);
+}
 
-	@media (prefers-color-scheme: dark) {
-		color-scheme: dark;
+body {
+	min-height: 100vh;
+	font-family:
+		"Spectral", ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	color: var(--haci-text);
+	background-color: var(--haci-bg);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	font-family:
+		"Averia Serif Libre", ui-serif, Georgia, Cambria, "Times New Roman", Times,
+		serif;
+	font-weight: 700;
+	line-height: 1.2;
+	color: var(--haci-text);
+}
+
+a {
+	color: var(--haci-accent);
+	text-decoration: underline;
+	text-underline-offset: 0.15em;
+	transition: color 150ms ease;
+}
+
+a:hover {
+	color: var(--haci-accent-ink);
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+[tabindex]:focus-visible {
+	outline: 2px solid var(--haci-focus);
+	outline-offset: 2px;
+	border-radius: 0.25rem;
+}
+
+::selection {
+	color: var(--haci-accent-ink);
+	background-color: var(--haci-accent-soft);
+}
+
+code,
+pre,
+kbd {
+	font-family:
+		"Spectral", ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+	font-size: 0.925em;
+}
+
+code {
+	padding: 0.125rem 0.375rem;
+	background-color: var(--haci-surface-subtle);
+	border-radius: 0.25rem;
+}
+
+pre {
+	padding: 1rem;
+	overflow-x: auto;
+	background-color: var(--haci-surface);
+	border: 1px solid var(--haci-border);
+	border-radius: 0.5rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		transition-duration: 0.01ms;
+		animation-duration: 0.01ms;
+		animation-iteration-count: 1;
 	}
 }
