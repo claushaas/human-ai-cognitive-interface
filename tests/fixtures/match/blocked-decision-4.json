@@ -1,0 +1,20 @@
+{
+	"description": "Decision=4 should be blocked constitutionally",
+	"expected": {
+		"blocked": true,
+		"blockReasonIncludes": "cap constitucional",
+		"score": null,
+		"selectedLevel": null,
+		"track": "operational"
+	},
+	"input": {
+		"initialRole": "role.analyze",
+		"rulers": {
+			"decision": 4,
+			"inference": 2,
+			"meta": 1,
+			"scope": 2,
+			"source": 1
+		}
+	}
+}

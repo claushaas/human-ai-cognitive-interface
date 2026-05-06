@@ -1,0 +1,20 @@
+{
+	"description": "Perfect match for N1: all rulers at minimum values",
+	"expected": {
+		"blocked": false,
+		"candidatesCount": 1,
+		"score": 1.0,
+		"selectedLevel": "N1",
+		"track": "operational"
+	},
+	"input": {
+		"initialRole": "role.transform",
+		"rulers": {
+			"decision": 1,
+			"inference": 1,
+			"meta": 1,
+			"scope": 1,
+			"source": 1
+		}
+	}
+}

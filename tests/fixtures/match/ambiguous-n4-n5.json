@@ -1,0 +1,21 @@
+{
+	"description": "Ambiguous match between N4 and N5",
+	"expected": {
+		"blocked": false,
+		"hasCorrections": true,
+		"score": null,
+		"selectedLevel": null,
+		"topCandidate": "N4",
+		"track": "operational"
+	},
+	"input": {
+		"initialRole": "role.explore",
+		"rulers": {
+			"decision": 1,
+			"inference": 4,
+			"meta": 1,
+			"scope": 4,
+			"source": 2
+		}
+	}
+}

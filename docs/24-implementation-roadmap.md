@@ -453,7 +453,7 @@ Definir contratos v1 como fonte de verdade de validação, derivando tipos TypeS
 - Campos JSON versionados são aceitáveis no MVP.
 - Manter `RulersVector` interno compatível com escala 1-5, mas UI não deve permitir decisão 4/5.
 
-## 10. Fase 4 — Engine determinístico de réguas, níveis e bloqueios
+## 10. Fase 4 — Engine determinístico de réguas, níveis e bloqueios ✅
 
 ### Objetivo
 

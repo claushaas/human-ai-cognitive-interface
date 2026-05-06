@@ -1,0 +1,20 @@
+{
+	"description": "N6 requires decision=3",
+	"expected": {
+		"blocked": true,
+		"blockReasonIncludes": "N6",
+		"score": null,
+		"selectedLevel": null,
+		"track": "operational"
+	},
+	"input": {
+		"initialRole": "role.document",
+		"rulers": {
+			"decision": 2,
+			"inference": 2,
+			"meta": 3,
+			"scope": 5,
+			"source": 1
+		}
+	}
+}

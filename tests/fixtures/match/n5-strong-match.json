@@ -1,0 +1,20 @@
+{
+	"description": "Strong match for N5 with role.explore (boosted)",
+	"expected": {
+		"blocked": false,
+		"candidatesCount": 1,
+		"score": 1.0,
+		"selectedLevel": "N5",
+		"track": "operational"
+	},
+	"input": {
+		"initialRole": "role.explore",
+		"rulers": {
+			"decision": 2,
+			"inference": 4,
+			"meta": 2,
+			"scope": 4,
+			"source": 2
+		}
+	}
+}
