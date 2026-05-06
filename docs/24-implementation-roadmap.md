@@ -182,7 +182,7 @@ drizzle/
 
 Motivo: manter domínio e runtime próximos ao app React Router atual, reutilizar alias `~/*`, evitar introduzir `src/` sem necessidade e preservar boundary puro via convenção de imports.
 
-## 6. Fase 0 — Saneamento, setup e baseline técnico
+## 6. Fase 0 — Saneamento, setup e baseline técnico ✅
 
 ### Objetivo
 
