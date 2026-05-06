@@ -250,7 +250,7 @@ Transformar o scaffold genérico em baseline HACI sem implementar o produto, cor
 - Não configurar D1 real antes de decidir nomes de bancos e bindings por ambiente.
 - Se `@clhaas/palette-kit` não estiver publicamente resolvível, registrar decisão pendente e usar tokens OKLCH estáticos temporariamente.
 
-## 7. Fase 1 — Runtime web e fundação da aplicação
+## 7. Fase 1 — Runtime web e fundação da aplicação ✅
 
 ### Objetivo
 

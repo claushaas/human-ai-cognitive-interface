@@ -62,7 +62,7 @@
 	},
 	"overrides": [
 		{
-			"includes": ["app/root.tsx", "app/routes/home.tsx", "app/welcome/*.tsx"],
+			"includes": ["app/root.tsx", "app/routes/*.tsx", "app/routes/*.ts"],
 			"linter": {
 				"rules": {
 					"a11y": {
