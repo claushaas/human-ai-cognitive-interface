@@ -1,0 +1,22 @@
+{
+	"description": "Ambiguous match between N4 and N5",
+	"expected": {
+		"canAdvance": true,
+		"hasCorrections": true,
+		"status": "ambiguous"
+	},
+	"input": {
+		"intent": {
+			"locale": "pt-BR",
+			"text": "Quero explorar diferentes formas de organizar meu código"
+		},
+		"role": "role.explore",
+		"rulers": {
+			"decision": 1,
+			"inference": 4,
+			"meta": 1,
+			"scope": 4,
+			"source": 2
+		}
+	}
+}

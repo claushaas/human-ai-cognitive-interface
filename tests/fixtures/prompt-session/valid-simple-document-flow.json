@@ -1,0 +1,30 @@
+{
+	"description": "Simple document flow: user wants to document a process",
+	"expected": {
+		"hasPromptResult": true,
+		"status": "completed",
+		"stepsCompleted": [
+			"intent",
+			"role",
+			"rulers",
+			"match",
+			"collection",
+			"review",
+			"result"
+		]
+	},
+	"input": {
+		"intent": {
+			"locale": "pt-BR",
+			"text": "Quero documentar o processo de onboarding da minha equipe"
+		},
+		"role": "role.document",
+		"rulers": {
+			"decision": 1,
+			"inference": 2,
+			"meta": 2,
+			"scope": 3,
+			"source": 1
+		}
+	}
+}

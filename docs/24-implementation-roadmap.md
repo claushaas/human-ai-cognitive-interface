@@ -528,7 +528,7 @@ Implementar o core puro de papéis, réguas, níveis, distância, hard blocks, t
 
 - A documentação chama derivação de critérios de função pura em alguns pontos, mas `14-engineering-blueprint.md` e `21-llm-integration.md` tratam a geração do protocolo como chamada LLM obrigatória. Resolver assim: engine define critérios candidatos/validações determinísticas; LLM compõe protocolo textual estruturado dentro desses limites.
 
-## 11. Fase 5 — Fluxo UX completo sem LLM real
+## 11. Fase 5 — Fluxo UX completo sem LLM real ✅
 
 ### Objetivo
 

@@ -1,0 +1,22 @@
+{
+	"description": "Flow blocked by decision=4 (constitutional cap)",
+	"expected": {
+		"blockedAtStep": "match",
+		"canAdvance": false,
+		"status": "blocked"
+	},
+	"input": {
+		"intent": {
+			"locale": "pt-BR",
+			"text": "Quero que a IA tome decisões por mim"
+		},
+		"role": "role.decideSupport",
+		"rulers": {
+			"decision": 4,
+			"inference": 3,
+			"meta": 1,
+			"scope": 2,
+			"source": 2
+		}
+	}
+}

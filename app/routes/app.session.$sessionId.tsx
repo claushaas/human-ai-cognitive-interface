@@ -1,8 +1,7 @@
-import { useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import { AppShell } from '~/components/shell/AppShell';
+import { Button } from '~/components/ui/Button';
 import { Callout } from '~/components/ui/Callout';
-import { DebugPanel } from '~/components/ui/DebugPanel';
-import { ReviewPanel } from '~/components/ui/ReviewPanel';
 
 export function meta({ params }: { params: { sessionId?: string } }) {
 	return [
@@ -16,6 +15,7 @@ export function meta({ params }: { params: { sessionId?: string } }) {
 
 export default function AppSession() {
 	const { sessionId } = useParams();
+	const navigate = useNavigate();
 
 	return (
 		<AppShell>
@@ -32,42 +32,17 @@ export default function AppSession() {
 					</p>
 				</div>
 
-				<Callout tone="warning">
-					Esta tela reserva o ponto de visualização e edição de uma sessão HACI
-					existente. A funcionalidade completa será implementada na{' '}
-					<strong>Fase 6</strong>, após a persistência em D1 e a engine de
-					match.
+				<Callout tone="info">
+					<p>
+						A retomada de sessões será implementada na <strong>Fase 6</strong>,
+						quando a persistência em D1 estiver disponível.
+					</p>
+					<p className="mt-2 text-sm">
+						Por enquanto, você pode criar um novo prompt a qualquer momento.
+					</p>
 				</Callout>
 
-				<ReviewPanel
-					items={[
-						{ label: 'Intenção', value: '[não implementado]' },
-						{ label: 'Papel', value: '[não implementado]' },
-						{ label: 'Ajustes', value: '[não implementado]' },
-						{ label: 'Detalhes', value: '[não implementado]' },
-						{ label: 'Idioma', value: 'pt-BR' },
-						{ label: 'Formato', value: 'Markdown' },
-					]}
-				/>
-
-				<DebugPanel
-					data={{
-						contract: null,
-						levelMatch: null,
-						rulersVector: null,
-						version: 'v1 (placeholder)',
-						warnings: [
-							'Esta sessão é um placeholder. Nenhum dado real existe.',
-						],
-					}}
-				/>
-
-				<p className="text-haci-text-subtle text-sm">
-					<em>
-						Nenhuma sessão real é carregada. O ID acima é apenas uma referência
-						de rota.
-					</em>
-				</p>
+				<Button onClick={() => navigate('/app/new')}>Criar novo prompt</Button>
 			</div>
 		</AppShell>
 	);

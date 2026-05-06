@@ -1,0 +1,30 @@
+{
+	"description": "Completed flow with mock prompt result",
+	"expected": {
+		"hasPromptResult": true,
+		"promptIncludesIntent": true,
+		"status": "completed"
+	},
+	"input": {
+		"collectionAnswers": [
+			{
+				"answeredAt": "2026-01-01T00:00:00Z",
+				"questionId": "format",
+				"value": "Markdown estruturado"
+			}
+		],
+		"intent": {
+			"desiredOutcome": "Um relatório de análise estática",
+			"locale": "pt-BR",
+			"text": "Quero analisar a qualidade do meu código"
+		},
+		"role": "role.analyze",
+		"rulers": {
+			"decision": 1,
+			"inference": 3,
+			"meta": 2,
+			"scope": 3,
+			"source": 1
+		}
+	}
+}
