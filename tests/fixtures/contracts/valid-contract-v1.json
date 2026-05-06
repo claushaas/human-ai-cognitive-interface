@@ -1,0 +1,33 @@
+{
+	"createdAt": "2026-05-05T00:00:00.000Z",
+	"id": "contract_demo_01",
+	"initialRole": "role.document",
+	"levelMatch": {
+		"candidates": [],
+		"correctionSuggestions": [],
+		"hardBlocks": [],
+		"selected": {
+			"confidence": "high",
+			"distance": 1.2,
+			"id": "N8",
+			"reasons": ["Alto match com documentação e formalização"],
+			"score": 0.92
+		},
+		"status": "matched"
+	},
+	"locale": "pt-BR",
+	"rawIntent": {
+		"desiredOutcome": "Obter uma resposta técnica clara com opções e trade-offs",
+		"locale": "pt-BR",
+		"text": "Quero criar um prompt para pedir ajuda na arquitetura de um app financeiro.",
+		"version": "v1"
+	},
+	"rulers": {
+		"decision": 2,
+		"inference": 3,
+		"meta": 5,
+		"scope": 4,
+		"source": 1
+	},
+	"version": "v1"
+}

@@ -1,0 +1,18 @@
+{
+	"createdAt": "2026-05-05T00:00:00.000Z",
+	"initialRole": "role.analyze",
+	"levelMatch": {
+		"candidates": [],
+		"hardBlocks": [],
+		"status": "matched"
+	},
+	"locale": "pt-BR",
+	"rulers": {
+		"decision": 2,
+		"inference": 3,
+		"meta": 1,
+		"scope": 2,
+		"source": 1
+	},
+	"version": "v1"
+}

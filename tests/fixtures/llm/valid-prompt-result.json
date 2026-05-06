@@ -1,0 +1,13 @@
+{
+	"contractId": "contract_demo_01",
+	"generatedAt": "2026-05-05T00:00:00.000Z",
+	"model": "DeepSeek-V4-Flash",
+	"prompt": "Você é um arquiteto técnico especializado em aplicações financeiras. O usuário precisa de ajuda para estruturar a arquitetura de um app financeiro usando Cloudflare Workers, React Router 7 e D1.\n\nContexto:\n- App financeiro com requisitos de segurança e compliance\n- Stack: Cloudflare Workers, React Router 7, D1, Tailwind\n- Necessidade de SSR e autenticação\n\nEntregáveis esperados:\n1. Opções de arquitetura com trade-offs\n2. Considerações de segurança\n3. Estrutura de dados recomendada\n4. Pontos de atenção para compliance",
+	"usage": {
+		"inputTokens": 1200,
+		"outputTokens": 900,
+		"totalTokens": 2100
+	},
+	"version": "v1",
+	"warnings": []
+}

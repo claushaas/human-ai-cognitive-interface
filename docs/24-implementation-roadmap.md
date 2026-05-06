@@ -389,7 +389,7 @@ Implementar a linguagem visual HACI, tokens OKLCH, fontes canônicas e component
 - Spectral para código não é monospace por decisão estética; debug JSON precisa preservar legibilidade mesmo assim.
 - Dark mode não é obrigatório, mas tokens devem permitir extensão futura.
 
-## 9. Fase 3 — Contratos de dados e schemas Zod
+## 9. Fase 3 — Contratos de dados e schemas Zod ✅
 
 ### Objetivo
 

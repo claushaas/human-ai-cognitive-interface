@@ -1,0 +1,24 @@
+{
+	"createdAt": "2026-05-05T00:00:00.000Z",
+	"id": "contract_locale_01",
+	"initialRole": "role.analyze",
+	"levelMatch": {
+		"candidates": [],
+		"hardBlocks": [],
+		"status": "matched"
+	},
+	"locale": "fr-FR",
+	"rawIntent": {
+		"locale": "fr-FR",
+		"text": "Texte en français.",
+		"version": "v1"
+	},
+	"rulers": {
+		"decision": 1,
+		"inference": 2,
+		"meta": 1,
+		"scope": 2,
+		"source": 1
+	},
+	"version": "v1"
+}

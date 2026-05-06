@@ -1,0 +1,13 @@
+{
+	"contractId": "contract_demo_01",
+	"generatedAt": "2026-05-05T00:00:00.000Z",
+	"model": "DeepSeek-V4-Flash",
+	"prompt": "",
+	"usage": {
+		"inputTokens": 1200,
+		"outputTokens": 0,
+		"totalTokens": 1200
+	},
+	"version": "v1",
+	"warnings": ["Resposta vazia do modelo"]
+}

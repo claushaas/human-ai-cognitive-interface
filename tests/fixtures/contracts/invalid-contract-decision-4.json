@@ -1,0 +1,30 @@
+{
+	"createdAt": "2026-05-05T00:00:00.000Z",
+	"id": "contract_invalid_01",
+	"initialRole": "role.analyze",
+	"levelMatch": {
+		"candidates": [],
+		"hardBlocks": [
+			{
+				"code": "block.decision.totalOrHigh",
+				"message": "Decisão total/alta é proibida (cap constitucional).",
+				"severity": "blocking"
+			}
+		],
+		"status": "blocked"
+	},
+	"locale": "pt-BR",
+	"rawIntent": {
+		"locale": "pt-BR",
+		"text": "Teste com decision inválida.",
+		"version": "v1"
+	},
+	"rulers": {
+		"decision": 4,
+		"inference": 3,
+		"meta": 1,
+		"scope": 2,
+		"source": 1
+	},
+	"version": "v1"
+}
