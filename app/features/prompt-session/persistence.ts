@@ -106,6 +106,37 @@ export async function saveContract(
 	}
 }
 
+export async function generatePrompt(sessionId: string): Promise<{
+	success: boolean;
+	promptResult?: PromptGenerationResult;
+	error?: string;
+	errorCode?: string;
+	rateLimited?: boolean;
+}> {
+	const formData = new FormData();
+	formData.append('_action', 'generatePrompt');
+
+	const response = await fetch(`/app/session/${sessionId}`, {
+		body: formData,
+		method: 'POST',
+	});
+
+	if (!response.ok) {
+		return {
+			error: `Failed to generate prompt: ${response.status}`,
+			success: false,
+		};
+	}
+
+	return response.json() as Promise<{
+		success: boolean;
+		promptResult?: PromptGenerationResult;
+		error?: string;
+		errorCode?: string;
+		rateLimited?: boolean;
+	}>;
+}
+
 export async function savePromptResult(
 	sessionId: string,
 	promptResult: PromptGenerationResult,

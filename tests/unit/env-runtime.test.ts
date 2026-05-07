@@ -7,7 +7,7 @@ describe('getRuntimeEnv', () => {
 		expect(env.APP_ENV).toBe('local');
 		expect(env.LLM_ENABLED).toBe(false);
 		expect(env.LLM_MODEL).toBe('deepseek-v4-flash');
-		expect(env.LLM_TEMPERATURE).toBe('0.3');
+		expect(env.LLM_TEMPERATURE).toBe('0.2');
 		expect(env.LLM_TIMEOUT_MS).toBe('30000');
 		expect(env.LLM_MAX_RETRIES).toBe('1');
 		expect(env.PROMPT_DAILY_LIMIT).toBe('20');

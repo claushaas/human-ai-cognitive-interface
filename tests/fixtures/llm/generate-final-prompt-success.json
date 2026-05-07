@@ -1,0 +1,13 @@
+{
+	"contractId": "test-contract-456",
+	"generatedAt": "2025-01-15T10:30:00.000Z",
+	"model": "deepseek-v4-flash",
+	"prompt": "Você está atuando como assistente de Análise.\n\nO usuário deseja: Analisar os principais riscos de um projeto de migração de banco de dados.\n\n# Diretrizes\n- Nível de profundidade: Análise controlada — diagnóstico estruturado\n- Idioma: Português (Brasil)\n\n# Critérios e restrições\n- Formato: Markdown estruturado\n- Contexto: Migração de PostgreSQL para MongoDB\n\n# Instrução final\nGere uma resposta que atenda ao resultado desejado, respeitando as diretrizes e critérios acima.",
+	"usage": {
+		"inputTokens": 120,
+		"outputTokens": 80,
+		"totalTokens": 200
+	},
+	"version": "v1",
+	"warnings": []
+}

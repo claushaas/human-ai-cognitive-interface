@@ -1,0 +1,13 @@
+{
+	"contractId": "test-contract-789",
+	"questions": [
+		{
+			"answerType": "text",
+			"id": "fixed-q1",
+			"label": "Pergunta reparada",
+			"required": true
+		}
+	],
+	"status": "ready",
+	"version": "v1"
+}

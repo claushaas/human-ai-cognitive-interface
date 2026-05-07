@@ -3,11 +3,14 @@ import type { AppEnvironment, PublicEnv } from './public';
 export interface RuntimeEnv {
 	APP_ENV: AppEnvironment;
 	DEV_AUTH_EMAIL?: string;
+	DEEPSEEK_API_KEY?: string;
+	DEEPSEEK_BASE_URL?: string;
 	LLM_ENABLED: boolean;
+	LLM_MAX_RETRIES: string;
 	LLM_MODEL: string;
+	LLM_PROVIDER: string;
 	LLM_TEMPERATURE: string;
 	LLM_TIMEOUT_MS: string;
-	LLM_MAX_RETRIES: string;
 	PROMPT_DAILY_LIMIT: string;
 	PUBLIC_BASE_URL: string;
 	USE_MOCK_LLM: boolean;
@@ -15,10 +18,12 @@ export interface RuntimeEnv {
 
 const defaults: RuntimeEnv = {
 	APP_ENV: 'local',
+	DEEPSEEK_BASE_URL: 'https://api.deepseek.com',
 	LLM_ENABLED: false,
 	LLM_MAX_RETRIES: '1',
 	LLM_MODEL: 'deepseek-v4-flash',
-	LLM_TEMPERATURE: '0.3',
+	LLM_PROVIDER: 'deepseek',
+	LLM_TEMPERATURE: '0.2',
 	LLM_TIMEOUT_MS: '30000',
 	PROMPT_DAILY_LIMIT: '20',
 	PUBLIC_BASE_URL: 'http://localhost:5173',
@@ -32,10 +37,13 @@ export function getRuntimeEnv(
 
 	return {
 		APP_ENV: asAppEnv(raw.APP_ENV),
+		DEEPSEEK_API_KEY: raw.DEEPSEEK_API_KEY,
+		DEEPSEEK_BASE_URL: raw.DEEPSEEK_BASE_URL ?? defaults.DEEPSEEK_BASE_URL,
 		DEV_AUTH_EMAIL: raw.DEV_AUTH_EMAIL,
 		LLM_ENABLED: raw.LLM_ENABLED === 'true',
 		LLM_MAX_RETRIES: raw.LLM_MAX_RETRIES ?? defaults.LLM_MAX_RETRIES,
 		LLM_MODEL: raw.LLM_MODEL ?? defaults.LLM_MODEL,
+		LLM_PROVIDER: raw.LLM_PROVIDER ?? defaults.LLM_PROVIDER,
 		LLM_TEMPERATURE: raw.LLM_TEMPERATURE ?? defaults.LLM_TEMPERATURE,
 		LLM_TIMEOUT_MS: raw.LLM_TIMEOUT_MS ?? defaults.LLM_TIMEOUT_MS,
 		PROMPT_DAILY_LIMIT: raw.PROMPT_DAILY_LIMIT ?? defaults.PROMPT_DAILY_LIMIT,

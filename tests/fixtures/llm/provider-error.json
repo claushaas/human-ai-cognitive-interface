@@ -1,0 +1,5 @@
+{
+	"code": 500,
+	"error": "provider_error",
+	"message": "Internal server error"
+}

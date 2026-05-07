@@ -1,0 +1,30 @@
+{
+	"contractId": "test-contract-123",
+	"questions": [
+		{
+			"answerType": "enum",
+			"examples": ["Texto corrido"],
+			"id": "format",
+			"label": "Qual formato você espera na resposta?",
+			"options": [
+				"Texto corrido",
+				"Lista com marcadores",
+				"Tabela",
+				"Markdown estruturado",
+				"JSON"
+			],
+			"rationale": "O formato afeta como a IA organiza a saída.",
+			"required": true,
+			"validation": {}
+		},
+		{
+			"answerType": "text",
+			"id": "context",
+			"label": "Existe algum contexto obrigatório que a IA precisa considerar?",
+			"rationale": "Contexto adicional melhora a precisão do prompt.",
+			"required": false
+		}
+	],
+	"status": "ready",
+	"version": "v1"
+}

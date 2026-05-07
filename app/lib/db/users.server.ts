@@ -76,6 +76,6 @@ export async function ensureDevUser(
 		id: devUser.id,
 		name: devUser.name,
 		provider: devUser.provider,
-		providerSubject: devUser.providerSubject,
+		providerSubject: devUser.providerSubject ?? devUser.email,
 	});
 }

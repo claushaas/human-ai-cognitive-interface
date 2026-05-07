@@ -28,15 +28,15 @@ import {
 	getDefaultThresholds,
 	matchLevels,
 } from '~/domain/matching';
-import { generateMockPromptResult } from '~/domain/prompt/mock-generate-prompt';
+
 import type { InternalRoleId } from '~/domain/roles';
 import { DEFAULT_WEIGHTS } from '~/domain/rulers';
 import { DebugContractPanel } from '~/features/debug/DebugContractPanel';
 import {
+	generatePrompt,
 	saveContract,
 	saveIntent,
 	saveMatch,
-	savePromptResult,
 } from './persistence';
 import { createInitialPromptSessionState, promptSessionReducer } from './state';
 import { CollectionStep } from './steps/CollectionStep';
@@ -341,39 +341,50 @@ export default function PromptSessionFlow({
 	);
 
 	const handleGenerate = useCallback(async () => {
-		if (!state.contract) return;
+		if (!state.contract || !_sessionId) {
+			dispatch({
+				payload: 'Não foi possível iniciar a geração. Tente novamente.',
+				type: 'SET_ERROR',
+			});
+			return;
+		}
 
 		dispatch({ type: 'START_GENERATING' });
 
 		try {
-			const result = generateMockPromptResult({
-				answers: state.collectionAnswers,
-				collectionProtocol: state.collectionProtocol,
-				contract: state.contract,
-				version: CONTRACT_VERSION,
-			});
+			const response = await generatePrompt(_sessionId);
 
-			dispatch({ payload: result, type: 'FINISH_GENERATING' });
-			if (_sessionId) {
-				try {
-					await savePromptResult(_sessionId, result);
-				} catch {
-					// Silently fail
+			if (!response.success) {
+				if (response.rateLimited) {
+					dispatch({
+						payload: response.error ?? 'Limite diário atingido.',
+						type: 'SET_ERROR',
+					});
+				} else {
+					dispatch({
+						payload: response.error ?? 'Erro ao gerar prompt.',
+						type: 'SET_ERROR',
+					});
 				}
+				return;
 			}
-			dispatch({ type: 'ADVANCE_STEP' });
+
+			if (response.promptResult) {
+				dispatch({ payload: response.promptResult, type: 'FINISH_GENERATING' });
+				dispatch({ type: 'ADVANCE_STEP' });
+			} else {
+				dispatch({
+					payload: 'Resposta vazia do gerador.',
+					type: 'SET_ERROR',
+				});
+			}
 		} catch (err) {
 			dispatch({
 				payload: err instanceof Error ? err.message : 'Erro ao gerar prompt',
 				type: 'SET_ERROR',
 			});
 		}
-	}, [
-		state.contract,
-		state.collectionAnswers,
-		state.collectionProtocol,
-		_sessionId,
-	]);
+	}, [state.contract, _sessionId]);
 
 	const handleNewPrompt = useCallback(() => {
 		dispatch({ type: 'RESET' });

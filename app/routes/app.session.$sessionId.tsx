@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router';
 import { AppShell } from '~/components/shell/AppShell';
 import { Button } from '~/components/ui/Button';
 import { Callout } from '~/components/ui/Callout';
+import type { PromptGenerationRequest } from '~/domain/contracts';
 import {
 	CognitiveContractSchema,
 	CollectionProtocolSchema,
@@ -10,6 +11,7 @@ import {
 	RawIntentSchema,
 	RulersVectorSchema,
 } from '~/domain/contracts';
+import { generateFinalPrompt } from '~/domain/prompt/generate-final-prompt.server';
 import PromptSessionFlow from '~/features/prompt-session/PromptSessionFlow';
 import { requireUser } from '~/lib/auth/require-user.server';
 import { createDbClient, getD1FromEnv } from '~/lib/db/client.server';
@@ -24,6 +26,8 @@ import {
 	updateSessionRoleAndRulers,
 } from '~/lib/db/sessions.server';
 import { getRuntimeEnv } from '~/lib/env/runtime.server';
+import { getLlmClient, getLlmRuntimeConfig } from '~/lib/llm/client.server';
+import { toSafeLlmError } from '~/lib/llm/errors';
 import {
 	consumePromptDailyLimit,
 	RateLimitExceededError,
@@ -142,6 +146,85 @@ export async function action({ context, params, request }: Route.ActionArgs) {
 				userId: user.id,
 			});
 			return { success: true };
+		}
+
+		case 'generatePrompt': {
+			const env = getRuntimeEnv(
+				context.cloudflare.env as unknown as Record<string, string | undefined>,
+			);
+
+			// 1. Rate limit
+			try {
+				await consumePromptDailyLimit(db, user.id, env);
+			} catch (err) {
+				if (err instanceof RateLimitExceededError) {
+					return { error: err.message, rateLimited: true };
+				}
+				throw err;
+			}
+
+			// 2. Load session
+			const session = await getSessionForUser(db, params.sessionId, user.id);
+			if (!session) {
+				return { error: 'Sessão não encontrada.' };
+			}
+			if (!session.contractJson) {
+				return { error: 'Contrato não encontrado na sessão.' };
+			}
+
+			// 3. Parse contract
+			let contract: import('~/domain/contracts').CognitiveContract;
+			try {
+				contract = CognitiveContractSchema.parse(
+					JSON.parse(session.contractJson),
+				);
+			} catch {
+				return { error: 'Contrato inválido na sessão.' };
+			}
+
+			// 4. Build request
+			const request: PromptGenerationRequest = {
+				contract,
+				version: contract.version,
+			};
+
+			// 5. Get LLM client
+			let llmClient: import('~/lib/llm/types').LlmClient;
+			try {
+				llmClient = getLlmClient(env);
+			} catch (err) {
+				const safe = toSafeLlmError(err);
+				return { error: safe.message, errorCode: safe.code };
+			}
+
+			// 6. Generate
+			try {
+				const llmConfig = getLlmRuntimeConfig(env);
+				const result = await generateFinalPrompt({
+					llmClient,
+					llmConfig,
+					request,
+					useMockFallback: env.USE_MOCK_LLM || env.APP_ENV === 'test',
+				});
+
+				// 7. Persist
+				await updateSessionPromptResult(db, {
+					model: result.model ?? llmConfig.model,
+					promptResult: result,
+					sessionId: params.sessionId,
+					userId: user.id,
+				});
+
+				return { promptResult: result, success: true };
+			} catch (err) {
+				const safe = toSafeLlmError(err);
+				await markSessionFailed(db, {
+					error: safe.message,
+					sessionId: params.sessionId,
+					userId: user.id,
+				});
+				return { error: safe.message, errorCode: safe.code };
+			}
 		}
 
 		case 'savePromptResult': {

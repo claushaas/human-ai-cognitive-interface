@@ -1,0 +1,12 @@
+{
+	"contractId": "test-contract-missing",
+	"generatedAt": "2025-01-15T10:30:00.000Z",
+	"model": "deepseek-v4-flash",
+	"usage": {
+		"inputTokens": 100,
+		"outputTokens": 50,
+		"totalTokens": 150
+	},
+	"version": "v1",
+	"warnings": ["missing prompt field"]
+}

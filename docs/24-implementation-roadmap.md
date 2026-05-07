@@ -737,7 +737,7 @@ Proteger o MVP privado com Cloudflare Access, extrair identidade do usuário e a
 - Não construir auth custom para MVP.
 - Cloudflare Access precisa ser configurado fora do código em staging/production.
 
-## 14. Fase 8 — Integração LLM e geração final de prompt
+## 14. Fase 8 — Integração LLM e geração final de prompt ✅
 
 ### Objetivo
 
