@@ -1,0 +1,80 @@
+{
+	"answers": [],
+	"contract": {
+		"collectedCriteria": {},
+		"createdAt": "2026-05-01T10:05:00.000Z",
+		"id": "contract-001",
+		"initialRole": "role.analyze",
+		"levelMatch": {
+			"candidates": [],
+			"correctionSuggestions": [],
+			"hardBlocks": [],
+			"selected": {
+				"confidence": "high",
+				"id": "N2",
+				"score": 0.85
+			},
+			"status": "matched"
+		},
+		"locale": "pt-BR",
+		"rawIntent": {
+			"locale": "pt-BR",
+			"text": "Quero aprender Python do zero",
+			"version": "v1"
+		},
+		"rulers": {
+			"decision": 2,
+			"inference": 2,
+			"meta": 4,
+			"scope": 3,
+			"source": 1
+		},
+		"version": "v1"
+	},
+	"createdAt": "2026-05-01T10:00:00.000Z",
+	"feedback": {
+		"createdAt": "2026-05-01T10:15:00.000Z",
+		"id": "fb-001",
+		"sessionId": "sess-export-feedback-001",
+		"updatedAt": "2026-05-01T10:15:00.000Z",
+		"userId": "user-test-local",
+		"value": "positive"
+	},
+	"id": "sess-export-feedback-001",
+	"initialRole": "role.analyze",
+	"inputText": "Quero aprender Python do zero",
+	"levelMatch": {
+		"candidates": [],
+		"correctionSuggestions": [],
+		"hardBlocks": [],
+		"selected": {
+			"confidence": "high",
+			"id": "N2",
+			"score": 0.85
+		},
+		"status": "matched"
+	},
+	"locale": "pt-BR",
+	"model": null,
+	"promptResult": {
+		"contractId": "contract-001",
+		"generatedAt": "2026-05-01T10:10:00.000Z",
+		"prompt": "Você é um mentor...",
+		"version": "v1"
+	},
+	"rawIntent": {
+		"locale": "pt-BR",
+		"text": "Quero aprender Python do zero",
+		"version": "v1"
+	},
+	"rulers": {
+		"decision": 2,
+		"inference": 2,
+		"meta": 4,
+		"scope": 3,
+		"source": 1
+	},
+	"status": "completed",
+	"title": "Aprender Python",
+	"updatedAt": "2026-05-01T10:10:00.000Z"
+}

@@ -1,0 +1,106 @@
+{
+	"answers": [
+		{
+			"answeredAt": "2026-05-01T10:06:00.000Z",
+			"questionId": "q1",
+			"value": "Iniciante completo"
+		}
+	],
+	"contract": {
+		"collectedCriteria": {
+			"q1": "Iniciante completo"
+		},
+		"createdAt": "2026-05-01T10:05:00.000Z",
+		"id": "contract-001",
+		"initialRole": "role.analyze",
+		"levelMatch": {
+			"candidates": [
+				{
+					"confidence": "high",
+					"distance": 0.15,
+					"id": "N2",
+					"reasons": [],
+					"score": 0.85
+				}
+			],
+			"correctionSuggestions": [],
+			"hardBlocks": [],
+			"selected": {
+				"confidence": "high",
+				"id": "N2",
+				"score": 0.85
+			},
+			"status": "matched"
+		},
+		"locale": "pt-BR",
+		"rawIntent": {
+			"desiredOutcome": "Conseguir criar scripts básicos",
+			"locale": "pt-BR",
+			"text": "Quero aprender Python do zero",
+			"version": "v1"
+		},
+		"rulers": {
+			"decision": 2,
+			"inference": 2,
+			"meta": 4,
+			"scope": 3,
+			"source": 1
+		},
+		"version": "v1"
+	},
+	"createdAt": "2026-05-01T10:00:00.000Z",
+	"feedback": null,
+	"id": "sess-export-completed-001",
+	"initialRole": "role.analyze",
+	"inputText": "Quero aprender Python do zero",
+	"levelMatch": {
+		"candidates": [
+			{
+				"confidence": "high",
+				"distance": 0.15,
+				"id": "N2",
+				"reasons": [],
+				"score": 0.85
+			}
+		],
+		"correctionSuggestions": [],
+		"hardBlocks": [],
+		"selected": {
+			"confidence": "high",
+			"id": "N2",
+			"score": 0.85
+		},
+		"status": "matched"
+	},
+	"locale": "pt-BR",
+	"model": "deepseek-v4-flash",
+	"promptResult": {
+		"contractId": "contract-001",
+		"generatedAt": "2026-05-01T10:10:00.000Z",
+		"model": "deepseek-v4-flash",
+		"prompt": "Você é um mentor experiente em Python...",
+		"usage": {
+			"inputTokens": 100,
+			"outputTokens": 200,
+			"totalTokens": 300
+		},
+		"version": "v1",
+		"warnings": []
+	},
+	"rawIntent": {
+		"desiredOutcome": "Conseguir criar scripts básicos",
+		"locale": "pt-BR",
+		"text": "Quero aprender Python do zero",
+		"version": "v1"
+	},
+	"rulers": {
+		"decision": 2,
+		"inference": 2,
+		"meta": 4,
+		"scope": 3,
+		"source": 1
+	},
+	"status": "completed",
+	"title": "Aprender Python",
+	"updatedAt": "2026-05-01T10:10:00.000Z"
+}

@@ -20,7 +20,8 @@
     {
       "binding": "HACI_DB",
       "database_name": "haci-local",
-      "database_id": "local"
+      "database_id": "local",
+      "migrations_dir": "./drizzle/migrations"
     }
   ]
 }

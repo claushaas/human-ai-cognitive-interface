@@ -1,131 +1,101 @@
 import { describe, expect, it } from 'vitest';
-import type { SessionExportData } from '../../../app/lib/db/session-export.server';
 import {
-	formatAsJson,
-	formatAsMarkdown,
-} from '../../../app/lib/db/session-export.server';
+	exportSessionAsJson,
+	exportSessionAsMarkdown,
+} from '../../../app/lib/export/session-export.server';
+import completedSession from '../../fixtures/export/completed-session-export-input.json';
+import draftSession from '../../fixtures/export/draft-session-export-input.json';
+import feedbackSession from '../../fixtures/export/session-with-feedback-export-input.json';
+import llmSession from '../../fixtures/export/session-with-llm-metadata-export-input.json';
 
 describe('session-export.server', () => {
-	const mockData: SessionExportData = {
-		answers: [
-			{
-				answerJson: '"Iniciante completo"',
-				questionId: 'q1',
-			},
-		],
-		contract: {
-			collectedCriteria: { q1: 'Iniciante completo' },
-			createdAt: '2026-05-01T10:05:00.000Z',
-			id: 'contract-001',
-			initialRole: 'mentor',
-			levelMatch: { status: 'matched' },
-			locale: 'pt-BR',
-			rawIntent: {
-				locale: 'pt-BR',
-				text: 'Quero aprender Python',
-				version: 'v1',
-			},
-			rulers: { depth: 3 },
-			version: 'v1',
-		},
-		createdAt: '2026-05-01T10:00:00.000Z',
-		desiredOutcome: 'Conseguir criar scripts básicos',
-		id: 'sess-001',
-		inputText: 'Quero aprender Python do zero',
-		levelMatch: { status: 'matched' },
-		locale: 'pt-BR',
-		model: 'deepseek-v4-flash',
-		prompt: 'Você é um mentor...',
-		promptResult: { prompt: 'Você é um mentor...', version: 'v1' },
-		rawIntent: {
-			locale: 'pt-BR',
-			text: 'Quero aprender Python',
-			version: 'v1',
-		},
-		rulers: { depth: 3 },
-		status: 'completed',
-		title: 'Aprender Python',
-		user: { email: 'dev@haci.local', name: 'Developer' },
-		variablesCollected: 1,
-	};
-
-	describe('formatAsMarkdown', () => {
-		it('includes title and metadata', () => {
-			const markdown = formatAsMarkdown(mockData);
-			expect(markdown).toContain('# Aprender Python');
-			expect(markdown).toContain('**ID:** sess-001');
-			expect(markdown).toContain('**Status:** completed');
-		});
-
-		it('includes input text', () => {
-			const markdown = formatAsMarkdown(mockData);
+	describe('exportSessionAsMarkdown', () => {
+		it('contains intention original', () => {
+			const markdown = exportSessionAsMarkdown(completedSession);
 			expect(markdown).toContain('Quero aprender Python do zero');
 		});
 
-		it('includes desired outcome', () => {
-			const markdown = formatAsMarkdown(mockData);
-			expect(markdown).toContain('Conseguir criar scripts básicos');
-		});
-
-		it('includes prompt if present', () => {
-			const markdown = formatAsMarkdown(mockData);
-			expect(markdown).toContain('Você é um mentor...');
-			expect(markdown).toContain('**Modelo:** deepseek-v4-flash');
-		});
-
-		it('does not include auth headers or secrets', () => {
-			const markdown = formatAsMarkdown(mockData);
-			expect(markdown).not.toContain('Authorization');
-			expect(markdown).not.toContain('secret');
-			expect(markdown).not.toContain('api_key');
-		});
-	});
-
-	describe('formatAsJson', () => {
-		it('produces valid JSON', () => {
-			const json = formatAsJson(mockData);
-			const parsed = JSON.parse(json);
-			expect(parsed.id).toBe('sess-001');
-			expect(parsed.status).toBe('completed');
-		});
-
-		it('does not include auth headers or secrets', () => {
-			const json = formatAsJson(mockData);
-			expect(json).not.toContain('Authorization');
-			expect(json).not.toContain('secret');
-			expect(json).not.toContain('api_key');
-		});
-	});
-
-	describe('incomplete session', () => {
-		it('does not break with missing optional fields', () => {
-			const incomplete: SessionExportData = {
-				answers: [],
-				contract: null,
-				createdAt: '2026-05-01T10:00:00.000Z',
-				desiredOutcome: null,
-				id: 'sess-draft',
-				inputText: 'Draft input',
-				levelMatch: null,
-				locale: 'pt-BR',
-				model: null,
-				prompt: null,
-				promptResult: null,
-				rawIntent: null,
-				rulers: null,
-				status: 'draft',
-				title: null,
-				user: { email: 'dev@haci.local', name: null },
-				variablesCollected: 0,
+		it('contains prompt final when completed', () => {
+			const session = {
+				...completedSession,
+				prompt: 'Você é um mentor experiente em Python...',
 			};
+			const markdown = exportSessionAsMarkdown(session);
+			expect(markdown).toContain('Você é um mentor experiente em Python...');
+		});
 
-			const markdown = formatAsMarkdown(incomplete);
-			expect(markdown).toContain('Sessão HACI');
-			expect(markdown).toContain('Draft input');
+		it('informs absence of prompt when draft', () => {
+			const markdown = exportSessionAsMarkdown(draftSession);
+			expect(markdown).toContain('Sessão ainda em rascunho');
+		});
 
-			const json = formatAsJson(incomplete);
-			const parsed = JSON.parse(json);
-			expect(parsed.status).toBe('draft');
+		it('contains feedback when exists', () => {
+			const markdown = exportSessionAsMarkdown(feedbackSession);
+			expect(markdown).toContain('Feedback positivo registrado');
+		});
+
+		it('contains model metadata when exists', () => {
+			const markdown = exportSessionAsMarkdown(llmSession);
+			expect(markdown).toContain('deepseek-v4-flash');
+		});
+
+		it('does not contain API key', () => {
+			const markdown = exportSessionAsMarkdown(completedSession);
+			expect(markdown).not.toContain('apiKey');
+			expect(markdown).not.toContain('sk-');
+		});
+
+		it('does not contain JWT', () => {
+			const markdown = exportSessionAsMarkdown(completedSession);
+			expect(markdown).not.toContain('jwt');
+			expect(markdown).not.toContain('eyJhbGci');
+		});
+
+		it('is written in Portuguese by default', () => {
+			const markdown = exportSessionAsMarkdown(completedSession);
+			expect(markdown).toContain('Sessão de Prompt');
+			expect(markdown).toContain('Intenção original');
+			expect(markdown).toContain('Papel escolhido');
+		});
+	});
+
+	describe('exportSessionAsJson', () => {
+		it('contains contract/match/promptResult', () => {
+			const json = exportSessionAsJson(completedSession) as Record<
+				string,
+				unknown
+			>;
+			expect(json.cognitiveContract).toBeDefined();
+			expect(json.levelMatch).toBeDefined();
+			expect(json.promptResult).toBeDefined();
+		});
+
+		it('passes through redaction', () => {
+			const sessionWithSecret = {
+				...completedSession,
+				promptResult: {
+					...completedSession.promptResult,
+					apiKey: 'sk-secret-123',
+				},
+			};
+			const json = exportSessionAsJson(sessionWithSecret) as Record<
+				string,
+				unknown
+			>;
+			const promptResult = json.promptResult as
+				| Record<string, unknown>
+				| undefined;
+			expect(promptResult?.apiKey).not.toBe('sk-secret-123');
+			expect(String(promptResult?.apiKey)).toContain('REDACTED');
+		});
+
+		it('is versioned', () => {
+			const json = exportSessionAsJson(completedSession) as Record<
+				string,
+				unknown
+			>;
+			expect(json.version).toContain('v1');
+			expect(json.exportedAt).toBeDefined();
 		});
 	});
 });

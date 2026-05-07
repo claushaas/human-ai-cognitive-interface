@@ -1,16 +1,24 @@
 import { useState } from 'react';
+import { Link } from 'react-router';
 import { Button } from '~/components/ui/Button';
 import { Callout } from '~/components/ui/Callout';
 import { Card } from '~/components/ui/Card';
-import { FeedbackControl } from '~/components/ui/FeedbackControl';
 import type { PromptGenerationResult } from '~/domain/contracts';
+import { FeedbackSection } from '~/features/feedback/FeedbackSection';
 
 export interface ResultStepProps {
 	promptResult: PromptGenerationResult;
 	onNewPrompt: () => void;
+	sessionId?: string;
+	feedbackValue?: 'positive' | 'negative' | 'none';
 }
 
-export function ResultStep({ promptResult, onNewPrompt }: ResultStepProps) {
+export function ResultStep({
+	promptResult,
+	onNewPrompt,
+	sessionId,
+	feedbackValue = 'none',
+}: ResultStepProps) {
 	const [copied, setCopied] = useState(false);
 
 	const handleCopy = async () => {
@@ -69,20 +77,24 @@ export function ResultStep({ promptResult, onNewPrompt }: ResultStepProps) {
 				</pre>
 			</Card>
 
-			<div className="flex flex-wrap items-center gap-4">
-				<div className="flex items-center gap-2">
-					<span className="text-haci-text-subtle text-sm">
-						O prompt funcionou?
-					</span>
-					<FeedbackControl />
-				</div>
-			</div>
+			{sessionId && (
+				<FeedbackSection feedbackValue={feedbackValue} sessionId={sessionId} />
+			)}
 
-			<div className="flex justify-between">
+			<div className="flex justify-between flex-wrap gap-3">
 				<Button onClick={onNewPrompt}>Criar novo prompt</Button>
-				<Button disabled variant="secondary">
-					Exportar (em breve)
-				</Button>
+				{sessionId ? (
+					<Link
+						className="inline-flex items-center justify-center rounded-lg font-medium transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-haci-bg disabled:opacity-50 disabled:cursor-not-allowed bg-haci-surface text-haci-text border border-haci-border hover:bg-haci-surface-subtle hover:border-haci-border-strong focus-visible:ring-haci-focus px-4 py-2.5 text-sm"
+						to={`/app/export/${sessionId}`}
+					>
+						Exportar
+					</Link>
+				) : (
+					<Button disabled variant="secondary">
+						Exportar (salve primeiro)
+					</Button>
+				)}
 			</div>
 		</div>
 	);

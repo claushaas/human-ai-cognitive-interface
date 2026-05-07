@@ -16,6 +16,10 @@ import PromptSessionFlow from '~/features/prompt-session/PromptSessionFlow';
 import { requireUser } from '~/lib/auth/require-user.server';
 import { createDbClient, getD1FromEnv } from '~/lib/db/client.server';
 import {
+	getFeedbackForSession,
+	upsertFeedback,
+} from '~/lib/db/feedback.server';
+import {
 	getSessionForUser,
 	markSessionFailed,
 	updateSessionCollectionProtocol,
@@ -28,6 +32,7 @@ import {
 import { getRuntimeEnv } from '~/lib/env/runtime.server';
 import { getLlmClient, getLlmRuntimeConfig } from '~/lib/llm/client.server';
 import { toSafeLlmError } from '~/lib/llm/errors';
+import { recordInternalEvent } from '~/lib/observability/events.server';
 import {
 	consumePromptDailyLimit,
 	RateLimitExceededError,
@@ -60,7 +65,19 @@ export async function loader({ context, params, request }: Route.LoaderArgs) {
 		throw new Response('Sessão não encontrada', { status: 404 });
 	}
 
+	const feedback = await getFeedbackForSession(db, params.sessionId, user.id);
+
 	return {
+		feedback: feedback
+			? {
+					createdAt: feedback.createdAt,
+					id: feedback.id,
+					sessionId: feedback.sessionId,
+					updatedAt: feedback.updatedAt ?? undefined,
+					userId: feedback.userId,
+					value: feedback.value as 'positive' | 'negative',
+				}
+			: null,
 		session: {
 			contractJson: session.contractJson,
 			desiredOutcome: session.desiredOutcome,
@@ -123,6 +140,16 @@ export async function action({ context, params, request }: Route.ActionArgs) {
 				sessionId: params.sessionId,
 				userId: user.id,
 			});
+			recordInternalEvent({
+				metadata: {
+					matchStatus: levelMatch.status,
+					selectedLevel: levelMatch.selected?.id ?? null,
+				},
+				sessionId: params.sessionId,
+				timestamp: new Date().toISOString(),
+				type: 'match.completed',
+				userId: user.id,
+			});
 			return { success: true };
 		}
 
@@ -158,6 +185,13 @@ export async function action({ context, params, request }: Route.ActionArgs) {
 				await consumePromptDailyLimit(db, user.id, env);
 			} catch (err) {
 				if (err instanceof RateLimitExceededError) {
+					recordInternalEvent({
+						metadata: { reason: 'daily_limit' },
+						sessionId: params.sessionId,
+						timestamp: new Date().toISOString(),
+						type: 'rate_limit.exceeded',
+						userId: user.id,
+					});
 					return { error: err.message, rateLimited: true };
 				}
 				throw err;
@@ -197,6 +231,14 @@ export async function action({ context, params, request }: Route.ActionArgs) {
 				return { error: safe.message, errorCode: safe.code };
 			}
 
+			recordInternalEvent({
+				metadata: { model: env.LLM_MODEL ?? 'unknown' },
+				sessionId: params.sessionId,
+				timestamp: new Date().toISOString(),
+				type: 'generation.started',
+				userId: user.id,
+			});
+
 			// 6. Generate
 			try {
 				const llmConfig = getLlmRuntimeConfig(env);
@@ -215,12 +257,27 @@ export async function action({ context, params, request }: Route.ActionArgs) {
 					userId: user.id,
 				});
 
+				recordInternalEvent({
+					metadata: { model: result.model ?? llmConfig.model },
+					sessionId: params.sessionId,
+					timestamp: new Date().toISOString(),
+					type: 'generation.completed',
+					userId: user.id,
+				});
+
 				return { promptResult: result, success: true };
 			} catch (err) {
 				const safe = toSafeLlmError(err);
 				await markSessionFailed(db, {
 					error: safe.message,
 					sessionId: params.sessionId,
+					userId: user.id,
+				});
+				recordInternalEvent({
+					metadata: { errorCode: safe.code },
+					sessionId: params.sessionId,
+					timestamp: new Date().toISOString(),
+					type: 'generation.failed',
 					userId: user.id,
 				});
 				return { error: safe.message, errorCode: safe.code };
@@ -264,6 +321,36 @@ export async function action({ context, params, request }: Route.ActionArgs) {
 			return { success: true };
 		}
 
+		case 'submitFeedback': {
+			const feedbackValue = formData.get('feedback') as string;
+			if (!feedbackValue) {
+				return { error: 'Feedback value is required' };
+			}
+
+			try {
+				const result = await upsertFeedback(db, {
+					sessionId: params.sessionId,
+					userId: user.id,
+					value: feedbackValue,
+				});
+
+				recordInternalEvent({
+					metadata: { value: feedbackValue },
+					sessionId: params.sessionId,
+					timestamp: new Date().toISOString(),
+					type: result.created ? 'feedback.created' : 'feedback.updated',
+					userId: user.id,
+				});
+
+				return { feedback: { value: feedbackValue }, success: true };
+			} catch (err) {
+				return {
+					error: err instanceof Error ? err.message : 'Erro ao salvar feedback',
+					success: false,
+				};
+			}
+		}
+
 		default:
 			return { error: 'Ação desconhecida' };
 	}
@@ -271,7 +358,7 @@ export async function action({ context, params, request }: Route.ActionArgs) {
 
 export default function AppSession({ loaderData }: Route.ComponentProps) {
 	const navigate = useNavigate();
-	const { session } = loaderData;
+	const { feedback, session } = loaderData;
 
 	// If session is completed or failed, show summary
 	if (session.status === 'completed' || session.status === 'failed') {
@@ -298,6 +385,17 @@ export default function AppSession({ loaderData }: Route.ComponentProps) {
 							<p className="mt-2 text-sm">{session.inputText}</p>
 						)}
 					</Callout>
+
+					{feedback && (
+						<Callout
+							tone={feedback.value === 'positive' ? 'success' : 'warning'}
+						>
+							<p className="text-sm">
+								Feedback:{' '}
+								{feedback.value === 'positive' ? 'Positivo' : 'Negativo'}
+							</p>
+						</Callout>
+					)}
 
 					<div className="flex gap-4">
 						<Button onClick={() => navigate('/app/new')}>
@@ -374,6 +472,10 @@ export default function AppSession({ loaderData }: Route.ComponentProps) {
 	}
 
 	return (
-		<PromptSessionFlow initialState={initialState} sessionId={session.id} />
+		<PromptSessionFlow
+			initialFeedback={feedback?.value ?? 'none'}
+			initialState={initialState}
+			sessionId={session.id}
+		/>
 	);
 }

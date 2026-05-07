@@ -82,4 +82,62 @@ test.describe('Prompt Session Flow', () => {
 			page.getByText('O que você quer conseguir com a IA?'),
 		).toBeVisible();
 	});
+
+	test('user copies prompt', async ({ page }) => {
+		await page
+			.getByLabel('Descrição da tarefa')
+			.fill('Quero criar um resumo de reunião');
+		await page.getByRole('button', { name: 'Continuar' }).click();
+		await page.getByRole('button', { name: 'Documentar' }).click();
+		await page.getByRole('button', { name: 'Continuar' }).click();
+		await page.getByRole('button', { name: 'Continuar' }).click();
+		await page.getByRole('button', { name: 'Continuar' }).click();
+		await page.getByRole('button', { name: 'Continuar' }).click();
+		await page.getByRole('button', { name: 'Gerar' }).click();
+
+		await expect(page.getByRole('button', { name: 'Copiar' })).toBeVisible();
+		await page.getByRole('button', { name: 'Copiar' }).click();
+		await expect(page.getByText('Copiado!')).toBeVisible();
+	});
+
+	test('user registers feedback', async ({ page }) => {
+		await page
+			.getByLabel('Descrição da tarefa')
+			.fill('Quero criar um resumo de reunião');
+		await page.getByRole('button', { name: 'Continuar' }).click();
+		await page.getByRole('button', { name: 'Documentar' }).click();
+		await page.getByRole('button', { name: 'Continuar' }).click();
+		await page.getByRole('button', { name: 'Continuar' }).click();
+		await page.getByRole('button', { name: 'Continuar' }).click();
+		await page.getByRole('button', { name: 'Continuar' }).click();
+		await page.getByRole('button', { name: 'Gerar' }).click();
+
+		await expect(page.getByText('Esse prompt foi útil?')).toBeVisible();
+		await page.getByRole('button', { name: 'Sim, o prompt foi útil' }).click();
+		await expect(page.getByText('Obrigado pelo feedback!')).toBeVisible();
+	});
+
+	test('export link appears in result', async ({ page }) => {
+		await page
+			.getByLabel('Descrição da tarefa')
+			.fill('Quero criar um resumo de reunião');
+		await page.getByRole('button', { name: 'Continuar' }).click();
+		await page.getByRole('button', { name: 'Documentar' }).click();
+		await page.getByRole('button', { name: 'Continuar' }).click();
+		await page.getByRole('button', { name: 'Continuar' }).click();
+		await page.getByRole('button', { name: 'Continuar' }).click();
+		await page.getByRole('button', { name: 'Continuar' }).click();
+		await page.getByRole('button', { name: 'Gerar' }).click();
+
+		await expect(page.getByRole('link', { name: 'Exportar' })).toBeVisible();
+	});
+
+	test('debug is not open by default', async ({ page }) => {
+		await expect(
+			page.getByRole('button', { name: 'Mostrar debug' }),
+		).toBeVisible();
+		await expect(
+			page.getByRole('button', { name: 'Ocultar debug' }),
+		).not.toBeVisible();
+	});
 });

@@ -5,6 +5,7 @@ import { Callout } from '~/components/ui/Callout';
 import { Card } from '~/components/ui/Card';
 import { requireUser } from '~/lib/auth/require-user.server';
 import { createDbClient, getD1FromEnv } from '~/lib/db/client.server';
+import { getFeedbackForSession } from '~/lib/db/feedback.server';
 import {
 	listSessionsForUser,
 	softDeleteSession,
@@ -33,16 +34,29 @@ export async function loader({ context, request }: Route.LoaderArgs) {
 
 	const sessions = await listSessionsForUser(db, user.id);
 
+	// Fetch feedback for each session
+	const sessionsWithFeedback = await Promise.all(
+		sessions.map(async (s) => {
+			const fb = await getFeedbackForSession(db, s.id, user.id);
+			return {
+				createdAt: s.createdAt,
+				feedback: fb
+					? {
+							value: fb.value as 'positive' | 'negative',
+						}
+					: null,
+				id: s.id,
+				status: s.status,
+				title:
+					s.title ??
+					s.inputText.slice(0, 60) + (s.inputText.length > 60 ? '…' : ''),
+				updatedAt: s.updatedAt,
+			};
+		}),
+	);
+
 	return {
-		sessions: sessions.map((s: (typeof sessions)[number]) => ({
-			createdAt: s.createdAt,
-			id: s.id,
-			status: s.status,
-			title:
-				s.title ??
-				s.inputText.slice(0, 60) + (s.inputText.length > 60 ? '…' : ''),
-			updatedAt: s.updatedAt,
-		})),
+		sessions: sessionsWithFeedback,
 	};
 }
 
@@ -98,6 +112,11 @@ export default function AppHistory({ loaderData }: Route.ComponentProps) {
 											<p className="text-haci-text-subtle text-xs">
 												{s.status} ·{' '}
 												{new Date(s.updatedAt).toLocaleDateString('pt-BR')}
+												{s.feedback && (
+													<span className="ml-2">
+														{s.feedback.value === 'positive' ? '👍' : '👎'}
+													</span>
+												)}
 											</p>
 										</div>
 										<Form className="flex gap-2" method="post">

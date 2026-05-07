@@ -1,0 +1,28 @@
+{
+	"answers": [],
+	"contract": null,
+	"createdAt": "2026-05-01T10:00:00.000Z",
+	"feedback": null,
+	"id": "sess-export-deleted-001",
+	"initialRole": "role.analyze",
+	"inputText": "Quero aprender Python do zero",
+	"levelMatch": null,
+	"locale": "pt-BR",
+	"model": null,
+	"promptResult": null,
+	"rawIntent": {
+		"locale": "pt-BR",
+		"text": "Quero aprender Python do zero",
+		"version": "v1"
+	},
+	"rulers": {
+		"decision": 2,
+		"inference": 2,
+		"meta": 4,
+		"scope": 3,
+		"source": 1
+	},
+	"status": "deleted",
+	"title": "Aprender Python",
+	"updatedAt": "2026-05-01T10:10:00.000Z"
+}

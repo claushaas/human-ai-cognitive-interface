@@ -1,0 +1,27 @@
+{
+	"promptResult": {
+		"contractId": "contract-001",
+		"generatedAt": "2026-05-01T10:10:00.000Z",
+		"prompt": "Você é um mentor...",
+		"version": "v1"
+	},
+	"rawIntent": {
+		"locale": "pt-BR",
+		"text": "Quero aprender Python",
+		"version": "v1"
+	},
+	"rulers": {
+		"decision": 2,
+		"inference": 2,
+		"meta": 4,
+		"scope": 3,
+		"source": 1
+	},
+	"session": {
+		"createdAt": "2026-05-01T10:00:00.000Z",
+		"id": "sess-debug-001",
+		"locale": "pt-BR",
+		"status": "completed",
+		"updatedAt": "2026-05-01T10:10:00.000Z"
+	}
+}

@@ -811,7 +811,7 @@ Integrar DeepSeek-V4-Flash via gateway server-side, mantendo mock no CI, valida�
 - Chamadas reais ao DeepSeek são validação manual/staging, não gate de CI.
 - Não implementar streaming no MVP.
 
-## 15. Fase 9 — Feedback, exportação e modo debug
+## 15. Fase 9 — Feedback, exportação e modo debug ✅
 
 ### Objetivo
 

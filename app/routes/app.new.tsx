@@ -2,6 +2,7 @@ import { redirect } from 'react-router';
 import { requireUser } from '~/lib/auth/require-user.server';
 import { createDbClient, getD1FromEnv } from '~/lib/db/client.server';
 import { createSession } from '~/lib/db/sessions.server';
+import { recordInternalEvent } from '~/lib/observability/events.server';
 import type { Route } from './+types/app.new';
 
 export function meta() {
@@ -33,6 +34,14 @@ export async function loader({ context, request }: Route.LoaderArgs) {
 			version: 'v1',
 		},
 		status: 'draft',
+		userId: user.id,
+	});
+
+	recordInternalEvent({
+		metadata: { locale: 'pt-BR' },
+		sessionId,
+		timestamp: new Date().toISOString(),
+		type: 'session.created',
 		userId: user.id,
 	});
 

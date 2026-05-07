@@ -1,0 +1,22 @@
+{
+	"answers": [],
+	"contract": null,
+	"createdAt": "2026-05-01T10:00:00.000Z",
+	"feedback": null,
+	"id": "sess-export-draft-001",
+	"initialRole": null,
+	"inputText": "Quero aprender Python do zero",
+	"levelMatch": null,
+	"locale": "pt-BR",
+	"model": null,
+	"promptResult": null,
+	"rawIntent": {
+		"locale": "pt-BR",
+		"text": "Quero aprender Python do zero",
+		"version": "v1"
+	},
+	"rulers": null,
+	"status": "draft",
+	"title": null,
+	"updatedAt": "2026-05-01T10:00:00.000Z"
+}

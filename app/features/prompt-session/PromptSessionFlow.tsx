@@ -70,11 +70,13 @@ function generateId(): string {
 interface PromptSessionFlowProps {
 	initialState?: Partial<import('./types').PromptSessionState>;
 	sessionId?: string;
+	initialFeedback?: 'positive' | 'negative' | 'none';
 }
 
 export default function PromptSessionFlow({
 	initialState,
 	sessionId: _sessionId,
+	initialFeedback = 'none',
 }: PromptSessionFlowProps = {}) {
 	const [state, dispatch] = useReducer(
 		promptSessionReducer,
@@ -475,8 +477,10 @@ export default function PromptSessionFlow({
 
 					{state.currentStep === 'result' && state.promptResult && (
 						<ResultStep
+							feedbackValue={initialFeedback}
 							onNewPrompt={handleNewPrompt}
 							promptResult={state.promptResult}
+							sessionId={_sessionId}
 						/>
 					)}
 				</div>
@@ -488,6 +492,15 @@ export default function PromptSessionFlow({
 						contract={state.contract}
 						initialRole={state.initialRole}
 						levelMatch={state.levelMatch}
+						llmMetadata={
+							state.promptResult
+								? {
+										model: state.promptResult.model,
+										usage: state.promptResult.usage,
+										warnings: state.promptResult.warnings,
+									}
+								: undefined
+						}
 						promptResult={state.promptResult}
 						rawIntent={state.rawIntent}
 						rulers={state.rulers}

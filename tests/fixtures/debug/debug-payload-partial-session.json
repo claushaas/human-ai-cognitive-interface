@@ -1,0 +1,11 @@
+{
+	"rawIntent": {
+		"locale": "pt-BR",
+		"text": "Quero aprender Python",
+		"version": "v1"
+	},
+	"session": {
+		"id": "sess-debug-003",
+		"status": "draft"
+	}
+}
