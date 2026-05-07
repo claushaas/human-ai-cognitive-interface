@@ -2,22 +2,15 @@
  * Dev/mock user authentication — server-side only.
  *
  * This is a temporary helper for local/test environments.
- * Will be replaced by Cloudflare Access in Phase 7.
+ * Will be replaced/encapsulated by Cloudflare Access in production.
  *
  * ONLY works when APP_ENV is 'local' or 'test'.
  */
 
 import type { RuntimeEnv } from '~/lib/env/runtime.server';
+import type { AuthenticatedUser } from './types';
 
-export type DevUser = {
-	email: string;
-	id: string;
-	name: string;
-	provider: string;
-	providerSubject: string;
-};
-
-const DEV_USER_DEFAULT: DevUser = {
+const DEV_USER_DEFAULT: AuthenticatedUser = {
 	email: 'dev@haci.local',
 	id: 'dev-user-local',
 	name: 'Developer',
@@ -25,7 +18,7 @@ const DEV_USER_DEFAULT: DevUser = {
 	providerSubject: 'dev-subject-local',
 };
 
-export function getDevUser(env: RuntimeEnv): DevUser {
+export function getDevUser(env: RuntimeEnv): AuthenticatedUser {
 	if (env.APP_ENV !== 'local' && env.APP_ENV !== 'test') {
 		throw new Error(
 			'Dev user fallback is only allowed in local/test environment',
@@ -33,15 +26,16 @@ export function getDevUser(env: RuntimeEnv): DevUser {
 	}
 
 	const email = env.DEV_AUTH_EMAIL ?? DEV_USER_DEFAULT.email;
+	const normalized = email.trim().toLowerCase();
 
 	return {
 		...DEV_USER_DEFAULT,
-		email,
-		id: `dev-user-${email}`,
-		providerSubject: `dev-subject-${email}`,
+		email: normalized,
+		id: `dev-user-${normalized}`,
+		providerSubject: `dev-subject-${normalized}`,
 	};
 }
 
-export function requireDevUser(env: RuntimeEnv): DevUser {
+export function requireDevUser(env: RuntimeEnv): AuthenticatedUser {
 	return getDevUser(env);
 }

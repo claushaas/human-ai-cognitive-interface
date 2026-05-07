@@ -94,6 +94,26 @@ export const feedback = sqliteTable(
 	],
 );
 
+export const rateLimits = sqliteTable(
+	'rate_limits',
+	{
+		action: text('action').notNull(),
+		count: text('count').notNull(),
+		createdAt: text('created_at').notNull(),
+		id: text('id').primaryKey(),
+		limit: text('limit').notNull(),
+		updatedAt: text('updated_at').notNull(),
+		userId: text('user_id')
+			.notNull()
+			.references(() => users.id),
+		windowKey: text('window_key').notNull(),
+	},
+	(table) => [
+		index('rate_limits_user_id_idx').on(table.userId),
+		index('rate_limits_window_key_idx').on(table.windowKey),
+	],
+);
+
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 export type Session = typeof sessions.$inferSelect;
@@ -102,3 +122,5 @@ export type CollectionAnswerRow = typeof collectionAnswers.$inferSelect;
 export type NewCollectionAnswerRow = typeof collectionAnswers.$inferInsert;
 export type FeedbackRow = typeof feedback.$inferSelect;
 export type NewFeedbackRow = typeof feedback.$inferInsert;
+export type RateLimitRow = typeof rateLimits.$inferSelect;
+export type NewRateLimitRow = typeof rateLimits.$inferInsert;

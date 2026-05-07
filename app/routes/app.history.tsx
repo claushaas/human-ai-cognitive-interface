@@ -3,13 +3,12 @@ import { AppShell } from '~/components/shell/AppShell';
 import { Button } from '~/components/ui/Button';
 import { Callout } from '~/components/ui/Callout';
 import { Card } from '~/components/ui/Card';
-import { getDevUser } from '~/lib/auth/dev-user.server';
+import { requireUser } from '~/lib/auth/require-user.server';
 import { createDbClient, getD1FromEnv } from '~/lib/db/client.server';
 import {
 	listSessionsForUser,
 	softDeleteSession,
 } from '~/lib/db/sessions.server';
-import { getRuntimeEnv } from '~/lib/env/runtime.server';
 import type { Route } from './+types/app.history';
 
 export function meta() {
@@ -22,13 +21,11 @@ export function meta() {
 	];
 }
 
-export async function loader({ context }: Route.LoaderArgs) {
-	const rawEnv = context.cloudflare.env as unknown as Record<
-		string,
-		string | undefined
-	>;
-	const env = getRuntimeEnv(rawEnv);
-	const user = getDevUser(env);
+export async function loader({ context, request }: Route.LoaderArgs) {
+	const user = await requireUser(
+		request,
+		context.cloudflare.env as unknown as Record<string, unknown>,
+	);
 	const d1 = getD1FromEnv(
 		context.cloudflare.env as unknown as Record<string, unknown>,
 	);
@@ -50,12 +47,10 @@ export async function loader({ context }: Route.LoaderArgs) {
 }
 
 export async function action({ context, request }: Route.ActionArgs) {
-	const rawEnv = context.cloudflare.env as unknown as Record<
-		string,
-		string | undefined
-	>;
-	const env = getRuntimeEnv(rawEnv);
-	const user = getDevUser(env);
+	const user = await requireUser(
+		request,
+		context.cloudflare.env as unknown as Record<string, unknown>,
+	);
 	const d1 = getD1FromEnv(
 		context.cloudflare.env as unknown as Record<string, unknown>,
 	);

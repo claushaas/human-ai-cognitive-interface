@@ -1,0 +1,7 @@
+{
+	"expected": {
+		"reason": "Missing Cloudflare Access email header",
+		"status": "unauthenticated"
+	},
+	"headers": {}
+}

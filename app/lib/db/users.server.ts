@@ -3,7 +3,7 @@
  */
 
 import { eq } from 'drizzle-orm';
-import type { DevUser } from '~/lib/auth/dev-user.server';
+import type { AuthenticatedUser } from '~/lib/auth/types';
 import type { DbClient } from './client.server';
 import { users } from './schema';
 
@@ -69,7 +69,7 @@ export async function getUserByEmail(db: DbClient, email: string) {
 
 export async function ensureDevUser(
 	db: DbClient,
-	devUser: DevUser,
+	devUser: AuthenticatedUser,
 ): Promise<void> {
 	await upsertUser(db, {
 		email: devUser.email,

@@ -1,0 +1,10 @@
+{
+	"expected": {
+		"email": "user@example.com",
+		"provider": "cloudflare-access",
+		"providerSubject": "user@example.com"
+	},
+	"headers": {
+		"Cf-Access-Authenticated-User-Email": "user@example.com"
+	}
+}

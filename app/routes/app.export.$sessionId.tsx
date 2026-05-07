@@ -1,14 +1,13 @@
 import { AppShell } from '~/components/shell/AppShell';
 import { Callout } from '~/components/ui/Callout';
 import { CopyExportActions } from '~/components/ui/CopyExportActions';
-import { getDevUser } from '~/lib/auth/dev-user.server';
+import { requireUser } from '~/lib/auth/require-user.server';
 import { createDbClient, getD1FromEnv } from '~/lib/db/client.server';
 import {
 	exportSessionData,
 	formatAsJson,
 	formatAsMarkdown,
 } from '~/lib/db/session-export.server';
-import { getRuntimeEnv } from '~/lib/env/runtime.server';
 import type { Route } from './+types/app.export.$sessionId';
 
 export function meta({ params }: { params: { sessionId?: string } }) {
@@ -22,12 +21,10 @@ export function meta({ params }: { params: { sessionId?: string } }) {
 }
 
 export async function loader({ context, params, request }: Route.LoaderArgs) {
-	const rawEnv = context.cloudflare.env as unknown as Record<
-		string,
-		string | undefined
-	>;
-	const env = getRuntimeEnv(rawEnv);
-	const user = getDevUser(env);
+	const user = await requireUser(
+		request,
+		context.cloudflare.env as unknown as Record<string, unknown>,
+	);
 	const d1 = getD1FromEnv(
 		context.cloudflare.env as unknown as Record<string, unknown>,
 	);

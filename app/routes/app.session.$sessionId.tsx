@@ -11,7 +11,7 @@ import {
 	RulersVectorSchema,
 } from '~/domain/contracts';
 import PromptSessionFlow from '~/features/prompt-session/PromptSessionFlow';
-import { getDevUser } from '~/lib/auth/dev-user.server';
+import { requireUser } from '~/lib/auth/require-user.server';
 import { createDbClient, getD1FromEnv } from '~/lib/db/client.server';
 import {
 	getSessionForUser,
@@ -24,6 +24,10 @@ import {
 	updateSessionRoleAndRulers,
 } from '~/lib/db/sessions.server';
 import { getRuntimeEnv } from '~/lib/env/runtime.server';
+import {
+	consumePromptDailyLimit,
+	RateLimitExceededError,
+} from '~/lib/rate-limit/rate-limit.server';
 import type { Route } from './+types/app.session.$sessionId';
 
 export function meta({ params }: { params: { sessionId?: string } }) {
@@ -36,13 +40,11 @@ export function meta({ params }: { params: { sessionId?: string } }) {
 	];
 }
 
-export async function loader({ context, params }: Route.LoaderArgs) {
-	const rawEnv = context.cloudflare.env as unknown as Record<
-		string,
-		string | undefined
-	>;
-	const env = getRuntimeEnv(rawEnv);
-	const user = getDevUser(env);
+export async function loader({ context, params, request }: Route.LoaderArgs) {
+	const user = await requireUser(
+		request,
+		context.cloudflare.env as unknown as Record<string, unknown>,
+	);
 	const d1 = getD1FromEnv(
 		context.cloudflare.env as unknown as Record<string, unknown>,
 	);
@@ -72,12 +74,10 @@ export async function loader({ context, params }: Route.LoaderArgs) {
 }
 
 export async function action({ context, params, request }: Route.ActionArgs) {
-	const rawEnv = context.cloudflare.env as unknown as Record<
-		string,
-		string | undefined
-	>;
-	const env = getRuntimeEnv(rawEnv);
-	const user = getDevUser(env);
+	const user = await requireUser(
+		request,
+		context.cloudflare.env as unknown as Record<string, unknown>,
+	);
 	const d1 = getD1FromEnv(
 		context.cloudflare.env as unknown as Record<string, unknown>,
 	);
@@ -145,6 +145,18 @@ export async function action({ context, params, request }: Route.ActionArgs) {
 		}
 
 		case 'savePromptResult': {
+			const env = getRuntimeEnv(
+				context.cloudflare.env as unknown as Record<string, string | undefined>,
+			);
+			try {
+				await consumePromptDailyLimit(db, user.id, env);
+			} catch (err) {
+				if (err instanceof RateLimitExceededError) {
+					return { error: err.message, rateLimited: true };
+				}
+				throw err;
+			}
+
 			const promptResultJson = formData.get('promptResult') as string;
 			const promptResult = PromptGenerationResultSchema.parse(
 				JSON.parse(promptResultJson),

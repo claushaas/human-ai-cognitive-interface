@@ -1,0 +1,9 @@
+{
+	"expected": {
+		"reason": "Invalid Cloudflare Access email format",
+		"status": "unauthenticated"
+	},
+	"headers": {
+		"Cf-Access-Authenticated-User-Email": "not-an-email"
+	}
+}

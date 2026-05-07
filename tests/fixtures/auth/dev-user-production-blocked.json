@@ -1,0 +1,8 @@
+{
+	"env": {
+		"APP_ENV": "production"
+	},
+	"expected": {
+		"error": "Dev user fallback is only allowed in local/test environment"
+	}
+}

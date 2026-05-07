@@ -1,0 +1,9 @@
+{
+	"env": {
+		"APP_ENV": "local"
+	},
+	"expected": {
+		"email": "dev@haci.local",
+		"provider": "dev"
+	}
+}
