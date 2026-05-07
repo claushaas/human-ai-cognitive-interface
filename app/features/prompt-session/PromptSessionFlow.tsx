@@ -32,6 +32,12 @@ import { generateMockPromptResult } from '~/domain/prompt/mock-generate-prompt';
 import type { InternalRoleId } from '~/domain/roles';
 import { DEFAULT_WEIGHTS } from '~/domain/rulers';
 import { DebugContractPanel } from '~/features/debug/DebugContractPanel';
+import {
+	saveContract,
+	saveIntent,
+	saveMatch,
+	savePromptResult,
+} from './persistence';
 import { createInitialPromptSessionState, promptSessionReducer } from './state';
 import { CollectionStep } from './steps/CollectionStep';
 import { IntentStep } from './steps/IntentStep';
@@ -61,10 +67,20 @@ function generateId(): string {
 	return `session-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 }
 
-export default function PromptSessionFlow() {
+interface PromptSessionFlowProps {
+	initialState?: Partial<import('./types').PromptSessionState>;
+	sessionId?: string;
+}
+
+export default function PromptSessionFlow({
+	initialState,
+	sessionId: _sessionId,
+}: PromptSessionFlowProps = {}) {
 	const [state, dispatch] = useReducer(
 		promptSessionReducer,
-		createInitialPromptSessionState(),
+		initialState
+			? { ...createInitialPromptSessionState(), ...initialState }
+			: createInitialPromptSessionState(),
 	);
 
 	const currentStepIndex = getCurrentStepIndex(state.currentStep);
@@ -93,10 +109,20 @@ export default function PromptSessionFlow() {
 		dispatch({ type: 'GO_BACK' });
 	}, []);
 
-	const handleIntentSubmit = useCallback((intent: RawIntent) => {
-		dispatch({ payload: intent, type: 'SET_INTENT' });
-		dispatch({ type: 'ADVANCE_STEP' });
-	}, []);
+	const handleIntentSubmit = useCallback(
+		async (intent: RawIntent) => {
+			dispatch({ payload: intent, type: 'SET_INTENT' });
+			if (_sessionId) {
+				try {
+					await saveIntent(_sessionId, intent);
+				} catch {
+					// Silently fail - user can continue
+				}
+			}
+			dispatch({ type: 'ADVANCE_STEP' });
+		},
+		[_sessionId],
+	);
 
 	const handleRoleSelect = useCallback((role: InitialRole) => {
 		dispatch({ payload: role, type: 'SET_ROLE' });
@@ -104,7 +130,7 @@ export default function PromptSessionFlow() {
 	}, []);
 
 	const handleRulersSubmit = useCallback(
-		(rulers: RulersVector) => {
+		async (rulers: RulersVector) => {
 			dispatch({ payload: rulers, type: 'SET_RULERS' });
 
 			// Compute match
@@ -170,7 +196,7 @@ export default function PromptSessionFlow() {
 	);
 
 	const handleApplyCorrection = useCallback(
-		(rulers: RulersVector) => {
+		async (rulers: RulersVector) => {
 			dispatch({ payload: { rulers }, type: 'APPLY_CORRECTION' });
 
 			// Recompute match with new rulers
@@ -230,12 +256,20 @@ export default function PromptSessionFlow() {
 			};
 
 			dispatch({ payload: levelMatch, type: 'SET_MATCH' });
+
+			if (_sessionId) {
+				try {
+					await saveMatch(_sessionId, levelMatch);
+				} catch {
+					// Silently fail
+				}
+			}
 		},
-		[state.initialRole],
+		[state.initialRole, _sessionId],
 	);
 
 	const handleCollectionSubmit = useCallback(
-		(answers: CollectionAnswer[]) => {
+		async (answers: CollectionAnswer[]) => {
 			dispatch({ payload: answers, type: 'SET_COLLECTION_ANSWERS' });
 
 			// Build contract
@@ -280,6 +314,13 @@ export default function PromptSessionFlow() {
 					}
 
 					dispatch({ payload: contract, type: 'SET_CONTRACT' });
+					if (_sessionId) {
+						try {
+							await saveContract(_sessionId, contract);
+						} catch {
+							// Silently fail
+						}
+					}
 					dispatch({ type: 'ADVANCE_STEP' });
 				} catch (err) {
 					dispatch({
@@ -295,10 +336,11 @@ export default function PromptSessionFlow() {
 			state.rulers,
 			state.levelMatch,
 			state.collectionProtocol,
+			_sessionId,
 		],
 	);
 
-	const handleGenerate = useCallback(() => {
+	const handleGenerate = useCallback(async () => {
 		if (!state.contract) return;
 
 		dispatch({ type: 'START_GENERATING' });
@@ -312,6 +354,13 @@ export default function PromptSessionFlow() {
 			});
 
 			dispatch({ payload: result, type: 'FINISH_GENERATING' });
+			if (_sessionId) {
+				try {
+					await savePromptResult(_sessionId, result);
+				} catch {
+					// Silently fail
+				}
+			}
 			dispatch({ type: 'ADVANCE_STEP' });
 		} catch (err) {
 			dispatch({
@@ -319,7 +368,12 @@ export default function PromptSessionFlow() {
 				type: 'SET_ERROR',
 			});
 		}
-	}, [state.contract, state.collectionAnswers, state.collectionProtocol]);
+	}, [
+		state.contract,
+		state.collectionAnswers,
+		state.collectionProtocol,
+		_sessionId,
+	]);
 
 	const handleNewPrompt = useCallback(() => {
 		dispatch({ type: 'RESET' });

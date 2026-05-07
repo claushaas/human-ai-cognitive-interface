@@ -71,7 +71,8 @@ export type PromptSessionAction =
 	| { type: 'APPLY_CORRECTION'; payload: { rulers: RulersVector } }
 	| { type: 'START_GENERATING' }
 	| { type: 'FINISH_GENERATING'; payload: PromptGenerationResult }
-	| { type: 'GO_TO_STEP'; payload: PromptSessionStep };
+	| { type: 'GO_TO_STEP'; payload: PromptSessionStep }
+	| { type: 'HYDRATE'; payload: Partial<PromptSessionState> };
 
 export interface PromptSessionSnapshot {
 	step: PromptSessionStep;

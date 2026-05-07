@@ -191,6 +191,14 @@ export function promptSessionReducer(
 		case 'RESET':
 			return createInitialPromptSessionState();
 
+		case 'HYDRATE':
+			return {
+				...createInitialPromptSessionState(),
+				...action.payload,
+				// Ensure collectionAnswers is always an array
+				collectionAnswers: action.payload.collectionAnswers ?? [],
+			};
+
 		case 'APPLY_CORRECTION':
 			return invalidateDownstream(
 				{

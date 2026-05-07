@@ -1,0 +1,20 @@
+{
+	"collectionProtocolJson": "{\"contractId\":\"sess-completed-001\",\"version\":\"v1\",\"status\":\"ready\",\"questions\":[{\"id\":\"q1\",\"text\":\"Qual seu nível atual?\",\"required\":true,\"type\":\"text\"}]}",
+	"completedAt": "2026-05-01T10:10:00.000Z",
+	"contractJson": "{\"id\":\"contract-001\",\"version\":\"v1\",\"createdAt\":\"2026-05-01T10:05:00.000Z\",\"locale\":\"pt-BR\",\"initialRole\":\"mentor\",\"rawIntent\":{\"text\":\"Quero aprender Python do zero\",\"locale\":\"pt-BR\",\"version\":\"v1\",\"desiredOutcome\":\"Conseguir criar scripts básicos\"},\"rulers\":{\"source\":1,\"inference\":2,\"scope\":3,\"meta\":4,\"depth\":3,\"creativity\":2,\"adaptability\":4,\"reasoning\":3,\"length\":2,\"formality\":3},\"levelMatch\":{\"candidates\":[{\"id\":\"N2\",\"score\":0.85,\"confidence\":\"high\",\"distance\":0.15,\"reasons\":[]}],\"selected\":{\"id\":\"N2\",\"score\":0.85,\"confidence\":\"high\"},\"status\":\"matched\",\"hardBlocks\":[],\"correctionSuggestions\":[]},\"collectedCriteria\":{\"q1\":\"Iniciante completo\"}}",
+	"createdAt": "2026-05-01T10:00:00.000Z",
+	"deletedAt": null,
+	"error": null,
+	"id": "sess-completed-001",
+	"initialRole": "mentor",
+	"levelMatchJson": "{\"candidates\":[{\"id\":\"N2\",\"score\":0.85,\"confidence\":\"high\",\"distance\":0.15,\"reasons\":[]}],\"selected\":{\"id\":\"N2\",\"score\":0.85,\"confidence\":\"high\"},\"status\":\"matched\",\"hardBlocks\":[],\"correctionSuggestions\":[]}",
+	"locale": "pt-BR",
+	"prompt": "# Prompt Gerado\n\nVocê é um mentor...",
+	"promptResultJson": "{\"prompt\":\"Você é um mentor...\",\"version\":\"v1\",\"confidence\":0.9,\"tokens\":{\"prompt\":100,\"completion\":200,\"total\":300}}",
+	"rawIntentJson": "{\"text\":\"Quero aprender Python do zero\",\"locale\":\"pt-BR\",\"version\":\"v1\",\"desiredOutcome\":\"Conseguir criar scripts básicos\"}",
+	"rulersJson": "{\"source\":1,\"inference\":2,\"scope\":3,\"meta\":4,\"depth\":3,\"creativity\":2,\"adaptability\":4,\"reasoning\":3,\"length\":2,\"formality\":3}",
+	"status": "completed",
+	"title": "Aprender Python",
+	"updatedAt": "2026-05-01T10:10:00.000Z",
+	"userId": "user-test-local"
+}

@@ -1,0 +1,9 @@
+{
+	"createdAt": "2026-05-01T00:00:00.000Z",
+	"email": "dev@haci.local",
+	"id": "user-test-local",
+	"name": "Developer",
+	"provider": "dev",
+	"providerSubject": "dev-subject-local",
+	"updatedAt": "2026-05-01T00:00:00.000Z"
+}

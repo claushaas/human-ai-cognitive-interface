@@ -598,7 +598,7 @@ Implementar o fluxo de UX completo com dados locais/server mockados e geração 
 - Se uma etapa depender de server action, manter fallback de teste com mocks.
 - O protocolo de coleta mock deve ser substituível pelo output LLM validado na Fase 8.
 
-## 12. Fase 6 — Persistência, sessões e histórico
+## 12. Fase 6 — Persistência, sessões e histórico ✅
 
 ### Objetivo
 

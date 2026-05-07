@@ -1,0 +1,20 @@
+{
+	"dialect": "sqlite",
+	"entries": [
+		{
+			"breakpoints": true,
+			"idx": 0,
+			"tag": "0000_parallel_blockbuster",
+			"version": "6",
+			"when": 1778110143215
+		},
+		{
+			"breakpoints": true,
+			"idx": 1,
+			"tag": "0001_purple_callisto",
+			"version": "6",
+			"when": 1778123065340
+		}
+	],
+	"version": "7"
+}

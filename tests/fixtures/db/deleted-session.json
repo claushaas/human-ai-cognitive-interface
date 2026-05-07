@@ -1,0 +1,19 @@
+{
+	"collectionProtocolJson": null,
+	"completedAt": null,
+	"contractJson": null,
+	"createdAt": "2026-05-01T09:00:00.000Z",
+	"deletedAt": "2026-05-01T09:05:00.000Z",
+	"error": null,
+	"id": "sess-deleted-001",
+	"initialRole": null,
+	"levelMatchJson": null,
+	"locale": "pt-BR",
+	"promptResultJson": null,
+	"rawIntentJson": "{\"text\":\"Sessão deletada\",\"locale\":\"pt-BR\",\"version\":\"v1\"}",
+	"rulersJson": null,
+	"status": "deleted",
+	"title": null,
+	"updatedAt": "2026-05-01T09:05:00.000Z",
+	"userId": "user-test-local"
+}

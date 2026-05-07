@@ -1,0 +1,19 @@
+{
+	"collectionProtocolJson": null,
+	"completedAt": null,
+	"contractJson": null,
+	"createdAt": "2026-05-01T10:00:00.000Z",
+	"deletedAt": null,
+	"error": null,
+	"id": "sess-draft-001",
+	"initialRole": null,
+	"levelMatchJson": null,
+	"locale": "pt-BR",
+	"promptResultJson": null,
+	"rawIntentJson": "{\"text\":\"Quero aprender Python\",\"locale\":\"pt-BR\",\"version\":\"v1\"}",
+	"rulersJson": null,
+	"status": "draft",
+	"title": null,
+	"updatedAt": "2026-05-01T10:00:00.000Z",
+	"userId": "user-test-local"
+}
